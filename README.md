@@ -13,7 +13,7 @@ Uma biblioteca completa, com padrão das PSR e garantia de todos os métodos ter
 via composer.json
 
 ```
-"brunoconte3/dev-utils": "1.0.2"
+"brunoconte3/dev-utils": "1.1.0"
 ```
 
 via composer.
