@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace devUtils\test;
+namespace DevUtils\Test;
 
-use devUtils\Compare;
+use DevUtils\Compare;
 use PHPUnit\Framework\TestCase;
 
 class UnitTestCompare extends TestCase

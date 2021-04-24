@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace devUtils;
+namespace DevUtils;
 
-use devUtils\Format;
+use DevUtils\Format;
 
 class Arrays
 {

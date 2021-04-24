@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace devUtils\test;
+namespace DevUtils\Test;
 
-use devUtils\Arrays;
+use DevUtils\Arrays;
 use PHPUnit\Framework\TestCase;
 
 class UnitTestArray extends TestCase

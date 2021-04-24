@@ -1,6 +1,6 @@
 <?php
 
-namespace devUtils\Validation;
+namespace DevUtils\Validation;
 
 class ValidateHour
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace devUtils;
+namespace DevUtils;
 
 abstract class FormatAux
 {

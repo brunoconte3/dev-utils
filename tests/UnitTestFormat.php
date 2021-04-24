@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace devUtils\test;
+namespace DevUtils\Test;
 
-use devUtils\Format;
+use DevUtils\Format;
 use PHPUnit\Framework\TestCase;
 
 class UnitTestFormat extends TestCase

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace devUtils\test;
+namespace DevUtils\Test;
 
-use devUtils\Utility;
+use DevUtils\Utility;
 use PHPUnit\Framework\TestCase;
 
 class UnitTestUtility extends TestCase

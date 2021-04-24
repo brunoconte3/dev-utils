@@ -1,8 +1,8 @@
 <?php
 
-namespace devUtils;
+namespace DevUtils;
 
-use devUtils\Validation\{
+use DevUtils\Validation\{
     ValidateDate,
     ValidatePhone,
     ValidateFile,

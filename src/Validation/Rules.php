@@ -1,14 +1,6 @@
 <?php
 
-namespace devUtils\Validation;
-
-use devUtils\Validation\{
-    ValidateCpf,
-    ValidateCnpj,
-    ValidatePhone,
-    ValidateHour,
-    ValidateFile,
-};
+namespace DevUtils\Validation;
 
 class Rules
 {

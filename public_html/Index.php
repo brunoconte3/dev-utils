@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace devUtils\test;
+namespace DevUtils\Test;
 
-use devUtils\Validation\Validator;
-use devUtils\Format;
+use DevUtils\Validation\Validator;
+use DevUtils\Format;
 
 require dirname(__DIR__) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';
 ?>

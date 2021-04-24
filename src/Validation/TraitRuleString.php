@@ -1,8 +1,8 @@
 <?php
 
-namespace devUtils\Validation;
+namespace DevUtils\Validation;
 
-use devUtils\Format;
+use DevUtils\Format;
 
 trait TraitRuleString
 {

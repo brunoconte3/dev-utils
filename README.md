@@ -6,7 +6,7 @@ Uma biblioteca completa, com padrão das PSR e garantia de todos os métodos ter
 - Classe de Comparação
 - Classe de Formatação
 - Classe de Utilitário
-- Classe de Testes Unitários
+- Classe de Teste Unitário
 
 # Instalação
 
@@ -47,7 +47,7 @@ $rules = [
 `Validando os dados de acordo com as regras`
 
 ```php
-  $validator = new devUtils\Validation\Validator();
+  $validator = new DevUtils\Validation\Validator();
 
   $validator->set($datas, $rules);
 
@@ -66,8 +66,8 @@ $rules = [
 
 require 'vendor/autoload.php';
 
-use devUtils\Format;
-use devUtils\Validation\Validator;
+use DevUtils\Format;
+use DevUtils\Validation\Validator;
 
  $datas = [
     'sexo' => '',
@@ -266,7 +266,7 @@ Após definir algumas de nossas regras aos dados você também pode adicionar um
 
 require 'vendor/autoload.php';
 
-use devUtils\Format;
+use DevUtils\Format;
 
 Format::companyIdentification('39678379000129') . '<br>'; //CNPJ ==> 39.678.379/0001-29
 Format::convertTypes($datas, $rules); //Converte o valor para o tipo correto dele ['bool', 'float', 'int', 'numeric',]
@@ -425,7 +425,7 @@ Format::restructFileArray($fileUploadMultiple); // Chamada do método responsáv
 
 require 'vendor/autoload.php';
 
-use devUtils\Compare;
+use DevUtils\Compare;
 
 //Retorna +30 (+30 dias de diferença)
 Compare::daysDifferenceBetweenData('31/05/2020', '30/06/2020') . '<br>'; //Aceita data Americana também
@@ -458,7 +458,7 @@ Compare::contains('AçaFrão', 'çaF');
 
 require 'vendor/autoload.php';
 
-use devUtils\Array;
+use DevUtils\Array;
 
 $array = ['primeiro' => 15, 'segundo' => 25];
 var_dump(Arrays::searchKey($array, 'primeiro'));   // Procura chave no array, e retorna a posição ==> returns 0
@@ -520,7 +520,7 @@ var_dump(Arrays::checkExistIndexArrayRecursive($array, 'subcategoria1')); // Ret
 
 require 'vendor/autoload.php';
 
-use devUtils\Utility;
+use DevUtils\Utility;
 
 echo Utility::captureClientIp(); //Retorna o IP do usuário, captura por camada disponível, Ex: 201.200.25.40
 

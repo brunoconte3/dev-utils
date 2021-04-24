@@ -42,9 +42,9 @@
     },
     "autoload": {
         "psr-4": {
-            "devUtils\\": "src/",
-            "devUtils\\test\\": "test/",
-            "devUtils\\Validation\\": "src/Validation/"
+            "DevUtils\\": "src/",
+            "DevUtils\\Test\\": "test/",
+            "DevUtils\\Validation\\": "src/Validation/"
         }
     },
     "require-dev": {
