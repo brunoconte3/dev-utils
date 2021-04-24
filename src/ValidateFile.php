@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace DevUtils\Validation;
+namespace DevUtils;
 
 class ValidateFile
 {

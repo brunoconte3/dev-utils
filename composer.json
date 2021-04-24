@@ -43,8 +43,8 @@
     "autoload": {
         "psr-4": {
             "DevUtils\\": "src/",
-            "DevUtils\\Test\\": "test/",
-            "DevUtils\\Validation\\": "src/Validation/"
+            "DevUtils\\DependencyInjection\\": "src/DependencyInjection/",
+            "DevUtils\\Test\\": "tests/"
         }
     },
     "require-dev": {

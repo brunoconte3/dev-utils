@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace DevUtils\Test;
 
-use DevUtils\Validation\Validator;
-use DevUtils\Format;
+use DevUtils\{
+    Validator,
+    Format,
+};
 
 require dirname(__DIR__) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';
 ?>

@@ -200,7 +200,7 @@ class UnitTestFormat extends TestCase
 
     public function testWriteDateExtensive(): void
     {
-        $this->assertEquals('sexta-feira, 06 de novembro de 2020', Format::writeDateExtensive('06/11/2020'));
+        $this->assertEquals('domingo, 08 de novembro de 2020', Format::writeDateExtensive('08/11/2020'));
     }
 
     public function testWriteCurrencyExtensive(): void

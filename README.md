@@ -13,7 +13,7 @@ Uma biblioteca completa, com padrão das PSR e garantia de todos os métodos ter
 via composer.json
 
 ```
-"brunoconte3/dev-utils": "1.0.1"
+"brunoconte3/dev-utils": "1.0.2"
 ```
 
 via composer.
@@ -47,7 +47,7 @@ $rules = [
 `Validando os dados de acordo com as regras`
 
 ```php
-  $validator = new DevUtils\Validation\Validator();
+  $validator = new DevUtils\Validator();
 
   $validator->set($datas, $rules);
 
@@ -66,8 +66,10 @@ $rules = [
 
 require 'vendor/autoload.php';
 
-use DevUtils\Format;
-use DevUtils\Validation\Validator;
+use DevUtils\{
+    Format,
+    Validator,
+};
 
  $datas = [
     'sexo' => '',

@@ -2,11 +2,12 @@
 
 namespace DevUtils;
 
-use DevUtils\Validation\{
+use DevUtils\{
     ValidateDate,
     ValidatePhone,
     ValidateFile,
 };
+use DevUtils\DependencyInjection\FormatAux;
 
 class Format extends FormatAux
 {

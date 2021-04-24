@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace DevUtils\Test;
 
-use DevUtils\Validation\Validator;
+use DevUtils\Validator;
 use PHPUnit\Framework\TestCase;
 
 class UnitTestString extends TestCase

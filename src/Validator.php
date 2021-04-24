@@ -1,6 +1,8 @@
 <?php
 
-namespace DevUtils\Validation;
+namespace DevUtils;
+
+use DevUtils\DependencyInjection\Rules;
 
 class Validator extends Rules
 {

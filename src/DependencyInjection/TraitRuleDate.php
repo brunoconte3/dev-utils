@@ -1,8 +1,12 @@
 <?php
 
-namespace DevUtils\Validation;
+namespace DevUtils\DependencyInjection;
 
-use DevUtils\Format;
+use DevUtils\{
+    Format,
+    ValidateDate,
+    ValidateHour,
+};
 
 trait TraitRuleDate
 {

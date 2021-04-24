@@ -1,6 +1,8 @@
 <?php
 
-namespace DevUtils\Validation;
+namespace DevUtils\DependencyInjection;
+
+use DevUtils\ValidateFile;
 
 trait TraitRuleFile
 {
