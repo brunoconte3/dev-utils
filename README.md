@@ -1,13 +1,11 @@
 # dev-utils
 
-Permite validar vários tipos de dados.
-Aplicado padrão das PSR.
-
-# Adicionais
+Uma biblioteca completa, com padrão das PSR e garantia de todos os métodos terem testes unitários.
 
 - Classe de Arrays
 - Classe de Comparação
 - Classe de Formatação
+- Classe de Utilitário
 - Classe de Testes Unitários
 
 # Instalação
@@ -49,7 +47,7 @@ $rules = [
 `Validando os dados de acordo com as regras`
 
 ```php
-  $validator = new devUtils\Validation();
+  $validator = new devUtils\Validation\Validator();
 
   $validator->set($datas, $rules);
 
