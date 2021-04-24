@@ -68,7 +68,8 @@ $rules = [
 
 require 'vendor/autoload.php';
 
-use devUtils\Validation;
+use devUtils\Format;
+use devUtils\Validation\Validator;
 
  $datas = [
     'sexo' => '',
@@ -313,7 +314,7 @@ $arrayComNull = Format::emptyToNull($array); //Converte vazio para null
   'a' => 222,
   'b' => 333,
   'c' => null,
-]
+];
 
 //$value = Format::arrayToInt($array); ==> Opção para sem ser por Referencia
 Format::arrayToIntReference($array); //Formata valores do array em inteiro ==>
@@ -323,7 +324,7 @@ Format::arrayToIntReference($array); //Formata valores do array em inteiro ==>
   'a' => 222,
   'b' => 333,
   'c' => 0,
-]
+];
 
 ```
 

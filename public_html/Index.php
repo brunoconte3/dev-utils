@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace brunoconte3\test;
+namespace devUtils\test;
 
 use devUtils\Validation\Validator;
 use devUtils\Format;
