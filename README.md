@@ -49,7 +49,7 @@ $rules = [
 `Validando os dados de acordo com as regras`
 
 ```php
-  $validator = new devUtils\Validator();
+  $validator = new devUtils\Validation();
 
   $validator->set($datas, $rules);
 
@@ -68,7 +68,7 @@ $rules = [
 
 require 'vendor/autoload.php';
 
-use devUtils\Validator;
+use devUtils\Validation;
 
  $datas = [
     'sexo' => '',
