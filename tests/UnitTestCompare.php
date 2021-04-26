@@ -19,6 +19,7 @@ class UnitTestCompare extends TestCase
     {
         $this->assertFalse(Compare::startDateLessThanEnd('30/11/2020', '31/10/2020'));
         $this->assertTrue(Compare::startDateLessThanEnd('31/10/2020', '30/11/2020'));
+        $this->assertFalse(Compare::startDateLessThanEnd('31/10/2020', '31/10/2020'));
     }
 
     public function testStartHourLessThanEnd(): void

@@ -27,7 +27,7 @@ class Compare
         string $dtFin
     ): bool {
         if (!empty($dtIni) && !empty($dtFin)) {
-            if (self::daysDifferenceBetweenData($dtIni, $dtFin) < 0) {
+            if (self::daysDifferenceBetweenData($dtIni, $dtFin) <= 0) {
                 return false;
             }
         } else {
