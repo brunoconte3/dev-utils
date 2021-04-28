@@ -179,10 +179,14 @@ class Format extends FormatAux
         return preg_replace('/[^0-9]/', '.', preg_replace('/[^0-9,]/', '', $str));
     }
 
-    public static function emptyToNull(array $array): array
+    public static function emptyToNull(array $array, string $exception = null): array
     {
-        return array_map(function ($value) {
-            return (isset($value) && empty(trim($value)) || $value === 'null') ? null : $value;
+        return array_map(function ($value) use ($exception) {
+            return (isset($value)
+                && empty(trim($value))
+                && $value !== $exception
+                || $value === 'null')
+                ? null : $value;
         }, $array);
     }
 

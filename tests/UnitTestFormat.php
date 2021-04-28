@@ -139,16 +139,21 @@ class UnitTestFormat extends TestCase
             'a' => '222',
             'b' => 333,
             'c' => null,
-            'd' => null
+            'd' => null,
+            'e' => '0',
         ];
 
-        $this->assertEquals($array, Format::emptyToNull([
-            0 => '1',
-            'a' => '222',
-            'b' => 333,
-            'c' => '',
-            'd' => 'null'
-        ]));
+        $this->assertEquals($array, Format::emptyToNull(
+            [
+                0 => '1',
+                'a' => '222',
+                'b' => 333,
+                'c' => '',
+                'd' => 'null',
+                'e' => '0',
+            ],
+            '0'
+        ));
     }
 
     public function testMask(): void

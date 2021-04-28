@@ -276,7 +276,7 @@ Format::convertTimestampBrazilToAmerican('15/04/2021 19:50:25'); //Converte form
 Format::currency('113', 'R$ ') . '<br>'; //Moeda padrão BR ==>  123,00 - o 2º parâmetro escolhe o label da Moeda
 Format::currencyUsd('1123.45') . '<br>'; //Moeda padrão USD ==> 1,123.45 - o 2º parâmetro escolhe o label da Moeda
 Format::dateAmerican('12-05-2020') . '<br>'; //Data ==>  2020-05-12
-Format::emptyToNull(['test' => 'null']) . '<br>'; //['test' => null]
+Format::emptyToNull(['test' => 'null']) . '<br>'; //['test' => null] - o 2º parâmetro opcional, passando a excessão
 Format::dateBrazil('2020-05-12') . '<br>'; //Data ==>  12/05/2020
 Format::identifier('73381209000') . '<br>';  //CPF ==>  733.812.090-00
 Format::identifierOrCompany('30720870089') . '<br>'; //CPF/CNPJ ==> 307.208.700-89
