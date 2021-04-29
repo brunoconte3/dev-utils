@@ -462,7 +462,7 @@ require 'vendor/autoload.php';
 
 use DevUtils\ValidateCnpj;
 
-$teste = ValidateCnpj::validateCnpj('57.169.078/0001-51'); //Retorna boolean, exemplo true [Pode passar com máscara]
+ValidateCnpj::validateCnpj('57.169.078/0001-51'); //Retorna boolean, exemplo true [Pode passar com máscara]
 
 use DevUtils\validateCpf;
 
