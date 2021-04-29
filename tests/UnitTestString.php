@@ -16,7 +16,7 @@ class UnitTestString extends TestCase
 
         $validator = new Validator();
         $validator->set($array, $rules);
-        $this->assertCount(1, $validator->getErros());
+        self::assertCount(1, $validator->getErros());
     }
 
     public function testAlphaNoSpecial(): void
@@ -26,7 +26,7 @@ class UnitTestString extends TestCase
 
         $validator = new Validator();
         $validator->set($array, $rules);
-        $this->assertCount(1, $validator->getErros());
+        self::assertCount(1, $validator->getErros());
     }
 
     public function testAlphaNum(): void
@@ -36,7 +36,7 @@ class UnitTestString extends TestCase
 
         $validator = new Validator();
         $validator->set($array, $rules);
-        $this->assertCount(1, $validator->getErros());
+        self::assertCount(1, $validator->getErros());
     }
 
     public function testAlphaNumNoSpecial(): void
@@ -46,7 +46,7 @@ class UnitTestString extends TestCase
 
         $validator = new Validator();
         $validator->set($array, $rules);
-        $this->assertCount(1, $validator->getErros());
+        self::assertCount(1, $validator->getErros());
     }
 
     public function testRgbColor(): void
@@ -56,6 +56,6 @@ class UnitTestString extends TestCase
 
         $validator = new Validator();
         $validator->set($array, $rules);
-        $this->assertCount(1, $validator->getErros());
+        self::assertCount(1, $validator->getErros());
     }
 }

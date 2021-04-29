@@ -12,6 +12,6 @@ class UnitTestUtility extends TestCase
     public function testCaptureClientIp(): void
     {
         $ip = Utility::captureClientIp();
-        $this->assertNull($ip); //Phpunit not read global ambient
+        self::assertNull($ip); //Phpunit not read global ambient
     }
 }

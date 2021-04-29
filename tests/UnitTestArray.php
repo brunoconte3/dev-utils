@@ -12,15 +12,15 @@ class UnitTestArray extends TestCase
     public function testSearchKey(): void
     {
         $array = ['primeiro' => 15, 'segundo' => 25];
-        $this->assertIsInt(Arrays::searchKey($array, 'primeiro'));
-        $this->assertNull(Arrays::searchKey($array, 'nao-existe'));
+        self::assertIsInt(Arrays::searchKey($array, 'primeiro'));
+        self::assertNull(Arrays::searchKey($array, 'nao-existe'));
     }
 
     public function testRenameKey(): void
     {
         $array = ['primeiro' => 10, 'segundo' => 20];
-        $this->assertTrue(Arrays::renameKey($array, 'primeiro', 'novoNome'));
-        $this->assertFalse(Arrays::renameKey($array, 'nao-existe', 'novoNome'));
+        self::assertTrue(Arrays::renameKey($array, 'primeiro', 'novoNome'));
+        self::assertFalse(Arrays::renameKey($array, 'nao-existe', 'novoNome'));
     }
 
     public function testCheckExistIndexByValue(): void
@@ -32,8 +32,8 @@ class UnitTestArray extends TestCase
             'verduras' => ['verdura_1' => 'Rúcula', 'verdura_2' => 'Acelga', 'verdura_3' => 'Alface'],
             'legume' => 'Tomate'
         ];
-        $this->assertTrue(Arrays::checkExistIndexByValue($array, 'Tomate'));
-        $this->assertFalse(Arrays::checkExistIndexByValue($array, 'nao-existe'));
+        self::assertTrue(Arrays::checkExistIndexByValue($array, 'Tomate'));
+        self::assertFalse(Arrays::checkExistIndexByValue($array, 'nao-existe'));
     }
 
     public function testFindValueByKey(): void
@@ -45,7 +45,7 @@ class UnitTestArray extends TestCase
             'verduras' => ['verdura_1' => 'Rúcula', 'verdura_2' => 'Acelga', 'verdura_3' => 'Alface'],
             'legume' => 'Tomate'
         ];
-        $this->assertIsArray(Arrays::findValueByKey($array, 'fruta_2'));
+        self::assertIsArray(Arrays::findValueByKey($array, 'fruta_2'));
     }
 
     public function testFindIndexByValue(): void
@@ -57,7 +57,7 @@ class UnitTestArray extends TestCase
             'verduras' => ['verdura_1' => 'Rúcula', 'verdura_2' => 'Acelga', 'verdura_3' => 'Alface'],
             'legume' => 'Tomate'
         ];
-        $this->assertIsArray(Arrays::findIndexByValue($array, 'Rúcula'));
+        self::assertIsArray(Arrays::findIndexByValue($array, 'Rúcula'));
     }
 
     public function testConvertArrayToXml(): void
@@ -73,8 +73,8 @@ class UnitTestArray extends TestCase
         $xml = new \SimpleXMLElement('<root/>');
         Arrays::convertArrayToXml($array, $xml);
 
-        $this->assertIsObject($xml);
-        $this->assertNotEmpty($xml->asXML());
+        self::assertIsObject($xml);
+        self::assertNotEmpty($xml->asXML());
     }
 
     public function testConvertJsonIndexToArray(): void
@@ -88,8 +88,8 @@ class UnitTestArray extends TestCase
 
         Arrays::convertJsonIndexToArray($array);
 
-        $this->assertIsArray($array);
-        $this->assertIsArray($array['verduras']);
+        self::assertIsArray($array);
+        self::assertIsArray($array['verduras']);
     }
 
     public function testCheckExistsIndexArrayRecursive(): void
@@ -103,7 +103,7 @@ class UnitTestArray extends TestCase
             ]
         ];
 
-        $this->assertTrue(Arrays::checkExistIndexArrayRecursive($array, 'subcategoria1'));
-        $this->assertFalse(Arrays::checkExistIndexArrayRecursive($array, 'mercado'));
+        self::assertTrue(Arrays::checkExistIndexArrayRecursive($array, 'subcategoria1'));
+        self::assertFalse(Arrays::checkExistIndexArrayRecursive($array, 'mercado'));
     }
 }
