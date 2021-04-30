@@ -17,9 +17,9 @@ class UnitTestCompare extends TestCase
 
     public function testStartDateLessThanEnd(): void
     {
-        self::assertFalse(Compare::startDateLessThanEnd('30/11/2020', '31/10/2020'));
-        self::assertTrue(Compare::startDateLessThanEnd('31/10/2020', '30/11/2020'));
-        self::assertFalse(Compare::startDateLessThanEnd('31/10/2020', '31/10/2020'));
+        self::assertFalse(Compare::startDateLessThanEnd('27/11/2020', '24/10/2020'));
+        self::assertTrue(Compare::startDateLessThanEnd('01/10/2020', '04/10/2020'));
+        self::assertTrue(Compare::startDateLessThanEnd('15/10/2020', '15/10/2020'));
     }
 
     public function testStartHourLessThanEnd(): void
