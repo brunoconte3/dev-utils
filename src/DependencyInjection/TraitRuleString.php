@@ -131,7 +131,7 @@ trait TraitRuleString
 
     protected function validateMinimumField($rule = '', $field = '', $value = null, $message = null)
     {
-        if (strlen($value) < $rule) {
+        if (mb_strlen($value) < $rule) {
             $this->errors[$field] = !empty($message) ?
                 $message : "O campo $field precisa conter no mínimo $rule caracteres!";
         }
@@ -139,7 +139,7 @@ trait TraitRuleString
 
     protected function validateMaximumField($rule = '', $field = '', $value = null, $message = null)
     {
-        if (strlen($value) > $rule) {
+        if (mb_strlen($value) > $rule) {
             $this->errors[$field] = !empty($message) ?
                 $message : "O campo $field precisa conter no máximo $rule caracteres!";
         };

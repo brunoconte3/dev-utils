@@ -164,8 +164,8 @@ class UnitTestRule extends TestCase
 
     public function testMax(): void
     {
-        $array = ['testError' => 123, 'testValid' => 1234];
-        $rules = ['testError' => 'max:2', 'testValid' => 'max:4'];
+        $array = ['testError' => 123, 'testValid' => "Avenida Pedra D'Água"];
+        $rules = ['testError' => 'max:2', 'testValid' => 'max:20'];
 
         $validator = new Validator();
         $validator->set($array, $rules);
@@ -174,8 +174,8 @@ class UnitTestRule extends TestCase
 
     public function testMin(): void
     {
-        $array = ['testError' => '123', 'testValid' => '1234'];
-        $rules = ['testError' => 'min:5', 'testValid' => 'min:4'];
+        $array = ['testError' => '123', 'testValid' => "Avenida Pedra D'Água"];
+        $rules = ['testError' => 'min:5', 'testValid' => 'min:20'];
 
         $validator = new Validator();
         $validator->set($array, $rules);

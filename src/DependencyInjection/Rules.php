@@ -167,10 +167,10 @@ class Rules
             return $data;
         }
         //se for raiz retorna json
-        return strtr(stripslashes(json_encode(
+        return strtr(json_encode(
             $data,
             JSON_UNESCAPED_UNICODE
-        )), ["\r" => '', "\n" => '', "\t" => '']);
+        ), ["\r" => '', "\n" => '', "\t" => '', "\\" => ""]);
     }
 
     protected function validateSubLevelData(
