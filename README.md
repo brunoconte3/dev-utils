@@ -7,6 +7,7 @@ Uma biblioteca completa, com padrão das PSR e garantia de todos os métodos ter
 - Classe de Formatação
 - Classe de Utilitário
 - Classe de Teste Unitário
+- Classes de Validações
 
 # Instalação
 
