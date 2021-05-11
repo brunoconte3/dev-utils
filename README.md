@@ -466,26 +466,26 @@ Compare::contains('AçaFrão', 'çaF');
 require 'vendor/autoload.php';
 
 use DevUtils\ValidateCnpj;
-ValidateCnpj::validateCnpj('57.169.078/0001-51'); //Retorna boolean, exemplo true [Pode passar com máscara]
+ValidateCnpj::validateCnpj('57.169.078/0001-51'); `Retorna boolean, exemplo true [Pode passar com máscara]`
 
 use DevUtils\validateCpf;
-validateCpf::validateCpf('257.877.760-89'); //Retorna boolean, exemplo true [Pode passar com máscara]
+validateCpf::validateCpf('257.877.760-89'); `Retorna boolean, exemplo true [Pode passar com máscara]`
 
 use DevUtils\ValidateDate;
-//Exemplos retorno true
-ValidateDate::validateDateBrazil('29/04/2021'); //Retorna boolean [Formato dd/mm/yyyy]
-ValidateDate::validateDateAmerican('2021-04-29'); //Retorna boolean [Formato yyyy-mm-dd]
-ValidateDate::validateTimeStamp('2021-04-29 11:17:12'); //Retorna boolean [Formato yyyy-mm-dd hh:mm:ss]
+`***** Exemplos retorno true *****`
+ValidateDate::validateDateBrazil('29/04/2021'); `Retorna boolean [Formato dd/mm/yyyy]`
+ValidateDate::validateDateAmerican('2021-04-29'); `Retorna boolean [Formato yyyy-mm-dd]`
+ValidateDate::validateTimeStamp('2021-04-29 11:17:12'); `Retorna boolean [Formato yyyy-mm-dd hh:mm:ss]`
 
 use DevUtils\ValidateHour;
-ValidateHour::validateHour('08:50'); //Retorna boolean [Formato YY:YY]
+ValidateHour::validateHour('08:50');  `Retorna boolean [Formato YY:YY]`
 
 use DevUtils\ValidatePhone;
-ValidatePhone::validate('44999999999'); //Retorna boolean [Pode passar com máscara]
+ValidatePhone::validate('44999999999');  `Retorna boolean [Pode passar com máscara]`
 
 use DevUtils\ValidateString;
-ValidateString::minWords('Bruno Conte', 2) //Retorna boolean
-ValidateString::maxWords('Bruno Conte', 2) //Retorna boolean
+ValidateString::minWords('Bruno Conte', 2)  `Retorna boolean`
+ValidateString::maxWords('Bruno Conte', 2)  `Retorna boolean`
 ```
 
 # Manipular Arrays
