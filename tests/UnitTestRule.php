@@ -172,10 +172,30 @@ class UnitTestRule extends TestCase
         self::assertCount(1, $validator->getErros());
     }
 
+    public function testMaxWords(): void
+    {
+        $array = ['testError' => 'Jorge da Silva', 'testValid' => 'Bruno Conte'];
+        $rules = ['testError' => 'maxWords:2', 'testValid' => 'maxWords:2'];
+
+        $validator = new Validator();
+        $validator->set($array, $rules);
+        self::assertCount(1, $validator->getErros());
+    }
+
     public function testMin(): void
     {
         $array = ['testError' => '123', 'testValid' => "Avenida Pedra D'Água"];
         $rules = ['testError' => 'min:5', 'testValid' => 'min:20'];
+
+        $validator = new Validator();
+        $validator->set($array, $rules);
+        self::assertCount(1, $validator->getErros());
+    }
+
+    public function testMinWords(): void
+    {
+        $array = ['testError' => 'Jorge da Silva', 'testValid' => 'Bruno Conte'];
+        $rules = ['testError' => 'minWords:4', 'testValid' => 'minWords:2'];
 
         $validator = new Validator();
         $validator->set($array, $rules);

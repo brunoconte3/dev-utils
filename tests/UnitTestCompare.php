@@ -33,8 +33,7 @@ class UnitTestCompare extends TestCase
 
     public function testCalculateAgeInYears(): void
     {
-        self::assertEquals('31', Compare::calculateAgeInYears('20/05/1989'));
-        self::assertEquals('0', Compare::calculateAgeInYears('03/05/2020'));
+        self::assertEquals('32', Compare::calculateAgeInYears('17/04/1989'));
     }
 
     public function testDifferenceBetweenHours(): void

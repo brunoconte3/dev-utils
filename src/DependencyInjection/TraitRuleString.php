@@ -7,6 +7,7 @@ use DevUtils\{
     ValidateCnpj,
     ValidateCpf,
     ValidatePhone,
+    ValidateString,
 };
 
 trait TraitRuleString
@@ -134,6 +135,22 @@ trait TraitRuleString
         if (mb_strlen($value) < $rule) {
             $this->errors[$field] = !empty($message) ?
                 $message : "O campo $field precisa conter no mínimo $rule caracteres!";
+        }
+    }
+
+    protected function validateMinimumWords($rule = '', $field = '', $value = null, $message = null)
+    {
+        if (!ValidateString::minWords($value, $rule)) {
+            $this->errors[$field] = !empty($message) ?
+                $message : "O campo $field precisa conter no mínimo $rule palavras!";
+        }
+    }
+
+    protected function validateMaximumWords($rule = '', $field = '', $value = null, $message = null)
+    {
+        if (!ValidateString::maxWords($value, $rule)) {
+            $this->errors[$field] = !empty($message) ?
+                $message : "O campo $field precisa conter no máximo $rule palavras!";
         }
     }
 

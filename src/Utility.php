@@ -17,4 +17,31 @@ class Utility
         }
         return $ip;
     }
+
+    public static function generatePassword(
+        int $size,
+        bool $uppercase = true,
+        bool $lowercase = true,
+        bool $numbers = true,
+        bool $symbols = true
+    ): string {
+        $alphabet = 'abcdefghijklmnopqrstuvyxwz';
+        $nums = '0123456789';
+        $sym = '@#$!()-+';
+        $password = null;
+
+        if ($uppercase) {
+            $password .= str_shuffle(strtoupper($alphabet));
+        }
+        if ($lowercase) {
+            $password .= str_shuffle(strtolower($alphabet));
+        }
+        if ($numbers) {
+            $password .= str_shuffle($nums);
+        }
+        if ($symbols) {
+            $password .= str_shuffle($sym);
+        }
+        return substr(str_shuffle($password), 0, $size);
+    }
 }

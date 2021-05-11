@@ -6,7 +6,7 @@ Uma biblioteca completa, com padrão das PSR e garantia de todos os métodos ter
 - Classe de Comparação
 - Classe de Formatação
 - Classe de Utilitário
-- Classe de Teste Unitário
+- Classes de Testes Unitários
 - Classes de Validações
 
 # Instalação
@@ -14,7 +14,7 @@ Uma biblioteca completa, com padrão das PSR e garantia de todos os métodos ter
 via composer.json
 
 ```
-"brunoconte3/dev-utils": "1.2.2"
+"brunoconte3/dev-utils": "1.3.0"
 ```
 
 via composer.
@@ -91,7 +91,8 @@ use DevUtils\{
     'validaJson' => '{
         "nome": "Bruno"
     }',
-    'placaVeiculo' => 'AXI-3668'
+    'placaVeiculo' => 'AXI-3668',
+    'nomeCompleto' => 'Bruno',
 ];
 
 /**
@@ -119,7 +120,8 @@ use DevUtils\{
     'tratandoTipoNumeric' => 'numeric|convert',
     'validarValores' => 'arrayValues:S-N-T',  //Opções aceitas [S,N,T]
     'validaJson' => 'type:json',
-    'placaVeiculo' => 'plate'
+    'placaVeiculo' => 'plate',
+    'nomeCompleto' => 'minWords:2',
 ];
 
 $validator = new Validator();
@@ -224,8 +226,10 @@ Com os validadores fileName, maxFile, maxUploadSize, mimeType, minFile, minUploa
 - max: `Define o tamanho máximo do valor.`
 - maxFile: `Define a quantidade máxima de arquivos para upload.`
 - maxUploadSize: `Define o tamanho (bytes) máximo do arquivo.`
+- maxWords: `Define a quantidade máxima de palavras de uma string`
 - min: `Define o tamanho mínimo do valor.`
 - minFile: `Define a quantidade mínima de arquivos para upload.`
+- minWords: `Define a quantidade mínima de palavras de uma string`
 - mimeType: `Define a(s) extensão(ões) permitida(s) para upload.`
 - minUploadSize: `Define o tamanho (bytes) mínimo do arquivo.`
 - numeric: `Verifica se o valor contém apenas valores numéricos (Aceita zero a esquerda).`
@@ -474,11 +478,14 @@ ValidateDate::validateDateAmerican('2021-04-29'); //Retorna boolean [Formato yyy
 ValidateDate::validateTimeStamp('2021-04-29 11:17:12'); //Retorna boolean [Formato yyyy-mm-dd hh:mm:ss]
 
 use DevUtils\ValidateHour;
-ValidateHour::validateHour('08:50'); //Retorna boolean, exemplo true [Formato YY:YY]
+ValidateHour::validateHour('08:50'); //Retorna boolean [Formato YY:YY]
 
 use DevUtils\ValidatePhone;
-ValidatePhone::validate('44999999999'); //Retorna boolean, exemplo true [Pode passar com máscara]
+ValidatePhone::validate('44999999999'); //Retorna boolean [Pode passar com máscara]
 
+use DevUtils\ValidateString;
+ValidateString::minWords('Bruno Conte', 2) //Retorna boolean
+ValidateString::maxWords('Bruno Conte', 2) //Retorna boolean
 ```
 
 # Manipular Arrays
@@ -552,7 +559,17 @@ require 'vendor/autoload.php';
 
 use DevUtils\Utility;
 
-echo Utility::captureClientIp(); //Retorna o IP do usuário, captura por camada disponível, Ex: 201.200.25.40
+Utility::captureClientIp(); //Retorna o IP do usuário, captura por camada disponível, Ex: 201.200.25.40
+
+/*
+Retorna uma senha gerada automaticamente, são 5 parâmetros, apenas o primeiro é obrigatório
+int $size       ==> Quantidade de caracteres da senha (Obrigatório)
+bool $uppercase ==> Se vai ter letras maiúsculas
+bool $lowercase ==> Se vai ter letras minúsculas
+bool $numbers   ==> Se vai ter números
+bool $symbols   ==> Se vai ter simbolos
+*/
+Utility::generatePassword(8);
 
 ```
 
