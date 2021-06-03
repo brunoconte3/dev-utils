@@ -13,6 +13,20 @@ class Rules
     protected $errors = false;
     public const RULES_WITHOUT_FUNCS = ['convert'];
 
+    private function methodsNoRuleValue(): array
+    {
+        return [
+            'validateAlphabets', 'validateAlphaNoSpecial', 'validateAlphaNumNoSpecial',
+            'validateAlphaNumerics', 'validateEmail', 'validateIdentifier', 'validateIp',
+            'validateLower', 'validateMac', 'validatePlate', 'validatePhone', 'validateRgbColor',
+            'validateSpace', 'validateUpper', 'validateUrl', 'validateZipCode', 'validateInteger',
+            'validateNumeric', 'validateNumMonth', 'validateFileName', 'validateFileUploadMandatory',
+            'validateDateBrazil', 'validateDateAmerican', 'validateHour', 'validateTimestamp',
+            'validateWeekend', 'validateArray', 'validateFieldMandatory', 'validateBoolean',
+            'validateFloating', 'validateJson',
+        ];
+    }
+
     private function invalidRule($rule = '', $field = '', $value = null, $message = null)
     {
         $msg = "Uma regra inválida está sendo aplicada no campo $field!";
@@ -72,6 +86,7 @@ class Rules
             'dateAmerican' => 'validateDateAmerican',
             'dateBrazil' => 'validateDateBrazil',
             'email' => 'validateEmail',
+            'equals' => 'validateEquals',
             'fileName' => 'validateFileName',
             'float' => 'validateFloating',
             'hour' => 'validateHour',
@@ -117,7 +132,7 @@ class Rules
         return true;
     }
 
-    protected function validateFieldMandatory($rule = '', $field = '', $value = null, $message = null)
+    protected function validateFieldMandatory($field = '', $value = null, $message = null)
     {
         if (is_array($value)) {
             if (count($value) <= 0) {
@@ -141,7 +156,14 @@ class Rules
         $call = [$this, $method];
         //chama há função de validação, de cada parametro json
         if (is_callable($call, true, $method)) {
-            call_user_func_array($call, [$rule, $field, $value, $message]);
+            //call_user_func_array($call, [$rule, $field, $value, $message]);
+            if (in_array(substr($method, 20), $this->methodsNoRuleValue())) {
+                call_user_func_array($call, [$field, $value, $message]);
+            } elseif ($method === 'validateEquals') {
+                call_user_func_array($call, [$rule, $field, $value, $message]);
+            } else {
+                call_user_func_array($call, [$rule, $field, $value, $message]);
+            }
         } else {
             $this->errors[$field] = "Há regras de validação não implementadas no campo $field!";
         }
@@ -195,13 +217,13 @@ class Rules
             }
             //validação campo a campo
             if (is_string($val)) {
-                $this->validateRuleField($key, ($data[$key] ?? null), $val, array_key_exists($key, $data));
+                $this->validateRuleField($key, ($data[$key] ?? null), $val, array_key_exists($key, $data), $data);
             }
         }
         return $rules;
     }
 
-    protected function validateRuleField($field, $value, $rules, $valid = false)
+    protected function validateRuleField($field, $value, $rules, $valid = false, $data = [])
     {
         //se o campo é valido, ele existe no json de dados, no mesmo nivel que a regra
         if ($valid) {
@@ -225,16 +247,13 @@ class Rules
                             if (isset($ruleArrayConf[1]) && (strpos($valueRuleConf, ';') > 0) && !$regEx) {
                                 $ruleArrayConf[1] = explode(';', $ruleArrayConf[1]);
                             }
-
                             if (array_key_exists(1, $conf) && !empty($conf[1])) {
                                 $rulesArray['mensagem'] = trim(strip_tags($conf[1]));
                             }
-
                             if (!empty($ruleArrayConf)) {
                                 $rulesArray[$ruleArrayConf[0] ?? (count($rulesArray) + 1)] = $ruleArrayConf[1] ?? true;
                             }
                         }
-                        //--------------------------------------------------
                         if (empty($rulesArray)) {
                             $this->errors[$field] = "Há errors no json de regras de validação do campo $field!";
                         }
@@ -256,8 +275,18 @@ class Rules
                     $method = trim(Rules::functionsValidation()[trim($key)] ?? 'invalidRule');
                     $call = [$this, $method];
                     //chama a função de validação, de cada parametro json
+
                     if (is_callable($call, true, $method)) {
-                        call_user_func_array($call, [$val, $field, $value, $msgCustomized]);
+                        if (
+                            in_array(substr($method, 20), $this->methodsNoRuleValue())
+                            || in_array($method, $this->methodsNoRuleValue())
+                        ) {
+                            call_user_func_array($call, [$field, $value, $msgCustomized]);
+                        } elseif (substr($method, 20) === 'validateEquals') {
+                            call_user_func_array($call, [$val, $field, $value, $msgCustomized, $data]);
+                        } else {
+                            call_user_func_array($call, [$val, $field, $value, $msgCustomized]);
+                        }
                     } else {
                         $this->errors[$field] = "Há regras de validação não implementadas no campo $field!";
                     }
@@ -300,7 +329,7 @@ class Rules
         }
     }
 
-    protected function validateBoolean($rule = '', $field = '', $value = null, $message = null)
+    protected function validateBoolean($field = '', $value = null, $message = null)
     {
         if (!filter_var($value, FILTER_VALIDATE_BOOLEAN)) {
             $this->errors[$field] = !empty($message) ?
@@ -308,7 +337,7 @@ class Rules
         }
     }
 
-    protected function validateFloating($rule = '', $field = '', $value = null, $message = null)
+    protected function validateFloating($field = '', $value = null, $message = null)
     {
         if (!filter_var($value, FILTER_VALIDATE_FLOAT)) {
             $this->errors[$field] = !empty($message) ?
@@ -316,7 +345,7 @@ class Rules
         }
     }
 
-    protected function validateJson($rule = '', $field = '', $value = null, $message = null)
+    protected function validateJson($field = '', $value = null, $message = null)
     {
         $value = is_array($value) ? json_encode($value) : $value;
         if (is_string($value)) {

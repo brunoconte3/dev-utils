@@ -696,4 +696,23 @@ class UnitTestRule extends TestCase
 
         self::assertCount(2, $validator->getErros());
     }
+
+    public function testEquals(): void
+    {
+        $array = [
+            'senha' => 'mudar',
+            'confirmarSenha' => 'mudar123',
+            'regraInvalida' => 'teste',
+        ];
+        $rules = [
+            'senha' => 'min:3|max:5|alpha',
+            'confirmarSenha' => 'min:3|max:5|alpha|equals:senha',
+            'regraInvalida' => 'equals',
+        ];
+
+        $validator = new Validator();
+        $validator->set($array, $rules);
+
+        self::assertCount(2, $validator->getErros());
+    }
 }

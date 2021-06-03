@@ -4,7 +4,7 @@ namespace DevUtils\DependencyInjection;
 
 trait TraitRuleInteger
 {
-    protected function validateInteger($rule = '', $field = '', $value = null, $message = null)
+    protected function validateInteger($field = '', $value = null, $message = null)
     {
         if (!filter_var($value, FILTER_VALIDATE_INT)) {
             $this->errors[$field] = !empty($message) ?
@@ -12,7 +12,7 @@ trait TraitRuleInteger
         }
     }
 
-    protected function validateNumeric($rule = '', $field = '', $value = null, $message = null)
+    protected function validateNumeric($field = '', $value = null, $message = null)
     {
         if (!is_numeric($value)) {
             $this->errors[$field] = !empty($message) ?
@@ -28,7 +28,7 @@ trait TraitRuleInteger
         }
     }
 
-    protected function validateNumMonth($rule = '', $field = '', $value = null, $message = null)
+    protected function validateNumMonth($field = '', $value = null, $message = null)
     {
         if (!is_int((int) $value)) {
             $this->errors[$field] = !empty($message) ?

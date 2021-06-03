@@ -27,20 +27,20 @@ class Utility
     ): string {
         $alphabet = 'abcdefghijklmnopqrstuvyxwz';
         $nums = '0123456789';
-        $sym = '@#$!()-+';
+        $sym = '@#$!()-+%=';
         $password = null;
 
-        if ($uppercase) {
-            $password .= str_shuffle(strtoupper($alphabet));
-        }
-        if ($lowercase) {
-            $password .= str_shuffle(strtolower($alphabet));
-        }
         if ($numbers) {
             $password .= str_shuffle($nums);
         }
         if ($symbols) {
             $password .= str_shuffle($sym);
+        }
+        if ($uppercase) {
+            $password .= str_shuffle(strtoupper($alphabet));
+        }
+        if ($lowercase) {
+            $password .= str_shuffle(strtolower($alphabet));
         }
         return substr(str_shuffle($password), 0, $size);
     }

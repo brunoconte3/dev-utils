@@ -91,7 +91,7 @@ class Arrays
 
     public static function convertJsonIndexToArray(array &$array): void
     {
-        array_walk_recursive($array, function (&$value, $key) {
+        array_walk_recursive($array, function (&$value) {
             if (is_string($value) && !empty($value)) {
                 $arr = json_decode($value, true);
                 if (is_array($arr) && (json_last_error() === JSON_ERROR_NONE)) {

@@ -40,7 +40,7 @@ trait TraitRuleFile
         );
     }
 
-    protected function validateFileName($rule = '', $field = '', $value = null, $message = null): void
+    protected function validateFileName($field = '', $value = null, $message = null): void
     {
         if (empty($value) || (count($value) <= 0)) {
             $this->errors[$field][0] = !empty($message) ? $message : "O campo $field não pode ser vazio!";
@@ -58,7 +58,7 @@ trait TraitRuleFile
         $this->validateHandleErrorsInArray(ValidateFile::validateMimeType($rule, $value, $message), $field);
     }
 
-    protected function validateFileUploadMandatory($rule = '', $field = '', $value = null, $message = null): void
+    protected function validateFileUploadMandatory($field = '', $value = null, $message = null): void
     {
         $this->validateHandleErrorsInArray(
             ValidateFile::validateFileUploadMandatory($field, $value, $message),

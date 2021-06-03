@@ -14,7 +14,7 @@ Uma biblioteca completa, com padrão das PSR e garantia de todos os métodos ter
 via composer.json
 
 ```
-"brunoconte3/dev-utils": "1.3.0"
+"brunoconte3/dev-utils": "1.4.0"
 ```
 
 via composer.
@@ -93,6 +93,8 @@ use DevUtils\{
     }',
     'placaVeiculo' => 'AXI-3668',
     'nomeCompleto' => 'Bruno',
+    'novaSenha' => 'mudar',
+    'confirmarSenha' => 'mudar123',
 ];
 
 /**
@@ -122,6 +124,8 @@ use DevUtils\{
     'validaJson' => 'type:json',
     'placaVeiculo' => 'plate',
     'nomeCompleto' => 'minWords:2',
+    'novaSenha' => 'min:5',
+    'confirmarSenha' => 'min:5|equals:novaSenha',
 ];
 
 $validator = new Validator();
@@ -213,6 +217,7 @@ Com os validadores fileName, maxFile, maxUploadSize, mimeType, minFile, minUploa
 - dateAmerican: `Valida se a data americana é valida.`
 - dateBrazil: `Valida se a data brasileira é valida.`
 - email: `Verifica se é um email válido.`
+- equals: `Verifica se o campo é igual a outro campo, acima na documentação tem exemplo de uso no campo novaSenha`
 - fileName: `Verifica se o nome do arquivo contém caracteres regular, não pode ter ascentos.`
 - float: `Verifica se o valor é do tipo flutuante(valor real).`
 - hour: `Valida se a hora é valida.`
@@ -569,7 +574,7 @@ bool $lowercase ==> Se vai ter letras minúsculas
 bool $numbers   ==> Se vai ter números
 bool $symbols   ==> Se vai ter simbolos
 */
-Utility::generatePassword(8);
+Utility::generatePassword(10);
 
 ```
 

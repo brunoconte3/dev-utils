@@ -4,7 +4,7 @@ namespace DevUtils\DependencyInjection;
 
 trait TraitRuleArray
 {
-    protected function validateArray($rule = '', $field = '', $value = null, $message = null)
+    protected function validateArray($field = '', $value = null, $message = null)
     {
         if (!is_array($value)) {
             $this->errors[$field] = !empty($message) ? $message : "A variável $field não é um array!";
