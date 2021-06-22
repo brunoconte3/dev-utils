@@ -101,9 +101,33 @@ class ValidateFile
                 list($width) = getimagesize($tmpName);
 
                 if ($width < $rule) {
-                    $msgMinWidth = "O campo $field não pode ser menor que $rule pexels!";
+                    $msgMinWidth = "O campo $field não pode ser menor que $rule pexels de comprimento!";
                     $msgMinWidth = (!empty($message)) ? $message : $msgMinWidth;
                     array_push($arrayFileError, $msgMinWidth);
+                }
+            }
+        }
+        return $arrayFileError;
+    }
+
+    public static function validateMinHeight(
+        string $field,
+        int $rule = 0,
+        array $file = [],
+        string $message = null
+    ): array {
+        $arrayFileError = [];
+
+        if (validateFile::validateFileCount($file) > 0) {
+            self::validateFileTransformSingleToMultiple($file);
+
+            foreach ($file['tmp_name'] as $key => $tmpName) {
+                list(, $height) = getimagesize($tmpName);
+
+                if ($height < $rule) {
+                    $msgMinHeight = "O campo $field não pode ser menor que $rule pexels de altura!";
+                    $msgMinHeight = (!empty($message)) ? $message : $msgMinHeight;
+                    array_push($arrayFileError, $msgMinHeight);
                 }
             }
         }
@@ -125,9 +149,33 @@ class ValidateFile
                 list($width) = getimagesize($tmpName);
 
                 if ($width > $rule) {
-                    $msgMinWidth = "O campo $field não pode ser maior que $rule pexels!";
-                    $msgMinWidth = (!empty($message)) ? $message : $msgMinWidth;
-                    array_push($arrayFileError, $msgMinWidth);
+                    $msgMaxWidth = "O campo $field não pode ser maior que $rule pexels de comprimento!";
+                    $msgMaxWidth = (!empty($message)) ? $message : $msgMaxWidth;
+                    array_push($arrayFileError, $msgMaxWidth);
+                }
+            }
+        }
+        return $arrayFileError;
+    }
+
+    public static function validateMaxHeight(
+        string $field,
+        int $rule = 0,
+        array $file = [],
+        string $message = null
+    ): array {
+        $arrayFileError = [];
+
+        if (validateFile::validateFileCount($file) > 0) {
+            self::validateFileTransformSingleToMultiple($file);
+
+            foreach ($file['tmp_name'] as $key => $tmpName) {
+                list(, $height) = getimagesize($tmpName);
+
+                if ($height > $rule) {
+                    $msgMaxHeight = "O campo $field não pode ser maior que $rule pexels de altura!";
+                    $msgMaxHeight = (!empty($message)) ? $message : $msgMaxHeight;
+                    array_push($arrayFileError, $msgMaxHeight);
                 }
             }
         }

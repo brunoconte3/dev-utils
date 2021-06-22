@@ -749,6 +749,25 @@ class UnitTestRule extends TestCase
         self::assertCount(1, $validator->getErros());
     }
 
+    public function testMaxHeight(): void
+    {
+        $_FILES = $this->mountFileSingle();
+
+        $array = [
+            'fileUploadError' => $_FILES,
+            'fileUploadValid' => $_FILES,
+        ];
+        $rules = [
+            'fileUploadError' => 'maxHeight:100',
+            'fileUploadValid' => 'maxHeight:200',
+        ];
+
+        $validator = new Validator();
+        $validator->set($array, $rules);
+
+        self::assertCount(1, $validator->getErros());
+    }
+
     public function testMinWidth(): void
     {
         $_FILES = $this->mountFileSingle();
@@ -760,6 +779,25 @@ class UnitTestRule extends TestCase
         $rules = [
             'fileUploadError' => 'minWidth:500',
             'fileUploadValid' => 'minWidth:200',
+        ];
+
+        $validator = new Validator();
+        $validator->set($array, $rules);
+
+        self::assertCount(1, $validator->getErros());
+    }
+
+    public function testMinHeight(): void
+    {
+        $_FILES = $this->mountFileSingle();
+
+        $array = [
+            'fileUploadError' => $_FILES,
+            'fileUploadValid' => $_FILES,
+        ];
+        $rules = [
+            'fileUploadError' => 'minHeight:500',
+            'fileUploadValid' => 'minHeight:200',
         ];
 
         $validator = new Validator();

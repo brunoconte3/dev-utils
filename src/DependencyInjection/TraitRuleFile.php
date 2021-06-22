@@ -96,7 +96,6 @@ trait TraitRuleFile
     {
         $rule = trim($rule);
         $this->validateRuleFile($rule, $field, 'minWidth');
-
         $msg = $this->validateFileCalculateSize();
 
         if (!empty($msg)) {
@@ -109,17 +108,49 @@ trait TraitRuleFile
         }
     }
 
+    protected function validateMinHeight($rule = '', $field = '', $value = null, $message = null): void
+    {
+        $rule = trim($rule);
+        $this->validateRuleFile($rule, $field, 'minHeight');
+        $msg = $this->validateFileCalculateSize();
+
+        if (!empty($msg)) {
+            $this->errors[$field][0] = $msg;
+        } else {
+            $this->validateHandleErrorsInArray(
+                ValidateFile::validateMinHeight($field, intval($rule), $value, $message),
+                $field
+            );
+        }
+    }
+
     protected function validateMaxWidth($rule = '', $field = '', $value = null, $message = null): void
     {
         $rule = trim($rule);
         $this->validateRuleFile($rule, $field, 'minWidth');
-
         $msg = $this->validateFileCalculateSize();
+
         if (!empty($msg)) {
             $this->errors[$field][0] = $msg;
         } else {
             $this->validateHandleErrorsInArray(
                 ValidateFile::validateMaxWidth($field, intval($rule), $value, $message),
+                $field
+            );
+        }
+    }
+
+    protected function validateMaxHeight($rule = '', $field = '', $value = null, $message = null): void
+    {
+        $rule = trim($rule);
+        $this->validateRuleFile($rule, $field, 'maxHeight');
+        $msg = $this->validateFileCalculateSize();
+
+        if (!empty($msg)) {
+            $this->errors[$field][0] = $msg;
+        } else {
+            $this->validateHandleErrorsInArray(
+                ValidateFile::validateMaxHeight($field, intval($rule), $value, $message),
                 $field
             );
         }

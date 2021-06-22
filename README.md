@@ -192,7 +192,7 @@ Com os validadores fileName, maxFile, maxUploadSize, mimeType, minFile, minUploa
             'fileUploadSingle' => 'requiredFile|fileName|mimeType:jpeg;png;jpg;txt;docx;xlsx;pdf|minUploadSize:10|
             maxUploadSize:100|minWidth:200|maxWidth:200',
             'fileUploadMultiple' => 'fileName|mimeType:jpeg|minFile:1|maxFile:3|minUploadSize:10|
-            maxUploadSize:100, Mensagem personalizada aqui!',
+            minWidth:200|maxWidth:200|maxUploadSize:100, Mensagem personalizada aqui!',
         ];
 
         $validator = new Validator();
@@ -233,8 +233,10 @@ Com os validadores fileName, maxFile, maxUploadSize, mimeType, minFile, minUploa
 - lower: `Verifica se todos os caracteres são minúsculos.`
 - mac: `Verifica se o valor é um endereço de MAC válido.`
 - max: `Define o tamanho máximo do valor.`
-- minWidth: `Define o tamanho (pexels) mínimo do arquivo.`
-- maxWidth: `Define o tamanho (pexels) máximo do arquivo.`
+- minHeight: `Define o tamanho em altura (pexels) mínimo do arquivo.`
+- minWidth: `Define o tamanho em comprimento (pexels) mínimo do arquivo.`
+- maxHeight: `Define o tamanho em altura (pexels) máxima do arquivo.`
+- maxWidth: `Define o tamanho em comprimento (pexels) máxima do arquivo.`
 - maxFile: `Define a quantidade máxima de arquivos para upload.`
 - maxUploadSize: `Define o tamanho (bytes) máximo do arquivo.`
 - maxWords: `Define a quantidade máxima de palavras de uma string`
