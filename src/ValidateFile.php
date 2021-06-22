@@ -87,9 +87,9 @@ class ValidateFile
     }
 
     public static function validateMinWidth(
+        string $field,
         int $rule = 0,
         array $file = [],
-        string $field,
         string $message = null
     ): array {
         $arrayFileError = [];
@@ -111,9 +111,9 @@ class ValidateFile
     }
 
     public static function validateMaxWidth(
+        string $field,
         int $rule = 0,
         array $file = [],
-        string $field,
         string $message = null
     ): array {
         $arrayFileError = [];

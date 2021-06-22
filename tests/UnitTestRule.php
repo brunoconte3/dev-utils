@@ -759,7 +759,7 @@ class UnitTestRule extends TestCase
         ];
         $rules = [
             'fileUploadError' => 'minWidth:500',
-            'fileUploadValid' => 'minWidth:100',
+            'fileUploadValid' => 'minWidth:200',
         ];
 
         $validator = new Validator();

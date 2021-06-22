@@ -103,7 +103,7 @@ trait TraitRuleFile
             $this->errors[$field][0] = $msg;
         } else {
             $this->validateHandleErrorsInArray(
-                ValidateFile::validateMinWidth(intval($rule), $value, $field, $message),
+                ValidateFile::validateMinWidth($field, intval($rule), $value, $message),
                 $field
             );
         }
@@ -119,7 +119,7 @@ trait TraitRuleFile
             $this->errors[$field][0] = $msg;
         } else {
             $this->validateHandleErrorsInArray(
-                ValidateFile::validateMaxWidth(intval($rule), $value, $field, $message),
+                ValidateFile::validateMaxWidth($field, intval($rule), $value, $message),
                 $field
             );
         }
