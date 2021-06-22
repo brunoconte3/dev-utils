@@ -6,16 +6,20 @@ use DevUtils\ValidateFile;
 
 trait TraitRuleFile
 {
-    protected function validateFileMaxUploadSize($rule = '', $field = '', $value = null, $message = null): void
+    private function validateRuleFile($rule, $field, $label): void
     {
-        $rule = trim($rule);
-
         if (!is_numeric($rule) || ($rule <= 0)) {
-            $text = "O parâmetro do validador 'maxUploadSize', deve ser numérico e maior que zero!";
+            $text = "O parâmetro do validador '$label', deve ser numérico e maior ou igual a zero!";
             $text = !empty($message) ? $message : $text;
             $this->errors[$field][0] = $text;
             return;
         }
+    }
+
+    protected function validateFileMaxUploadSize($rule = '', $field = '', $value = null, $message = null): void
+    {
+        $rule = trim($rule);
+        $this->validateRuleFile($rule, $field, 'maxUploadSize');
 
         $this->validateHandleErrorsInArray(
             ValidateFile::validateMaxUploadSize(intval($rule), $value, $message),
@@ -26,13 +30,7 @@ trait TraitRuleFile
     protected function validateFileMinUploadSize($rule = '', $field = '', $value = null, $message = null): void
     {
         $rule = trim($rule);
-
-        if (!is_numeric($rule) || ($rule <= 0)) {
-            $text = "O parâmetro do validador 'minUploadSize', deve ser numérico e maior ou igual a zero!";
-            $text = !empty($message) ? $message : $text;
-            $this->errors[$field][0] = $text;
-            return;
-        }
+        $this->validateRuleFile($rule, $field, 'minUploadSize');
 
         $this->validateHandleErrorsInArray(
             ValidateFile::validateMinUploadSize(intval($rule), $value, $message),
@@ -69,13 +67,7 @@ trait TraitRuleFile
     protected function validateMaximumFileNumbers($rule = '', $field = '', $value = null, $message = null): void
     {
         $rule = intval(trim($rule));
-
-        if (!is_numeric($rule) || ($rule <= 0)) {
-            $text = "O parâmetro do validador 'maxFile', deve ser numérico e maior que zero!";
-            $text = !empty($message) ? $message : $text;
-            $this->errors[$field][0] = $text;
-            return;
-        }
+        $this->validateRuleFile($rule, $field, 'maxFile');
 
         $validateResult = ValidateFile::validateMaximumFileNumbers($rule, $field, $value, $message);
         $this->validateHandleErrorsInArray($validateResult, $field);
@@ -84,23 +76,17 @@ trait TraitRuleFile
     protected function validateMinimumFileNumbers($rule = '', $field = '', $value = null, $message = null): void
     {
         $rule = trim($rule);
-
-        if (!is_numeric($rule) || ($rule < 0)) {
-            $text = "O parâmetro do validador 'minFile', deve ser numérico e maior ou igual a zero!";
-            $text = !empty($message) ? $message : $text;
-            $this->errors[$field][0] = $text;
-            return;
-        }
+        $this->validateRuleFile($rule, $field, 'minFile');
 
         $validateResult = ValidateFile::validateMinimumFileNumbers($rule, $field, $value, $message);
         $this->validateHandleErrorsInArray($validateResult, $field);
     }
 
-    private function validateFileCalculateSize($field, $value): ?string
+    private function validateFileCalculateSize(): ?string
     {
         if (!extension_loaded('gd')) {
             return 'Biblioteca GD não foi encontrada!';
-        } elseif (empty($value['name'])) {
+        } elseif (count($_FILES) === 0) {
             return 'Anexo não foi encontrado!';
         }
         return null;
@@ -108,31 +94,34 @@ trait TraitRuleFile
 
     protected function validateMinWidth($rule = '', $field = '', $value = null, $message = null): void
     {
-        $msg = $this->validateFileCalculateSize($field, $value);
-        if (!empty($file)) {
+        $rule = trim($rule);
+        $this->validateRuleFile($rule, $field, 'minWidth');
+
+        $msg = $this->validateFileCalculateSize();
+
+        if (!empty($msg)) {
             $this->errors[$field][0] = $msg;
         } else {
-            $tmpName = $_FILES[$field]['tmp_name'] ?? $_FILES['tmp_name'];
-            list($width) = getimagesize($tmpName);
-            if ($width < $rule) {
-                $this->errors[$field][0] = !empty($message) ?
-                    $message : "O campo $field não pode ser menor que $rule pexels!";
-            }
+            $this->validateHandleErrorsInArray(
+                ValidateFile::validateMinWidth(intval($rule), $value, $field, $message),
+                $field
+            );
         }
     }
 
     protected function validateMaxWidth($rule = '', $field = '', $value = null, $message = null): void
     {
-        $msg = $this->validateFileCalculateSize($field, $value);
-        if (!empty($file)) {
+        $rule = trim($rule);
+        $this->validateRuleFile($rule, $field, 'minWidth');
+
+        $msg = $this->validateFileCalculateSize();
+        if (!empty($msg)) {
             $this->errors[$field][0] = $msg;
         } else {
-            $tmpName = $_FILES[$field]['tmp_name'] ?? $_FILES['tmp_name'];
-            list($width) = getimagesize($tmpName);
-            if ($width > $rule) {
-                $this->errors[$field][0] = !empty($message) ?
-                    $message : "O campo $field não pode ser maior que $rule pexels!";
-            }
+            $this->validateHandleErrorsInArray(
+                ValidateFile::validateMaxWidth(intval($rule), $value, $field, $message),
+                $field
+            );
         }
     }
 }

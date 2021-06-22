@@ -86,6 +86,54 @@ class ValidateFile
         return $arrayFileError;
     }
 
+    public static function validateMinWidth(
+        int $rule = 0,
+        array $file = [],
+        string $field,
+        string $message = null
+    ): array {
+        $arrayFileError = [];
+
+        if (validateFile::validateFileCount($file) > 0) {
+            self::validateFileTransformSingleToMultiple($file);
+
+            foreach ($file['tmp_name'] as $key => $tmpName) {
+                list($width) = getimagesize($tmpName);
+
+                if ($width < $rule) {
+                    $msgMinWidth = "O campo $field não pode ser menor que $rule pexels!";
+                    $msgMinWidth = (!empty($message)) ? $message : $msgMinWidth;
+                    array_push($arrayFileError, $msgMinWidth);
+                }
+            }
+        }
+        return $arrayFileError;
+    }
+
+    public static function validateMaxWidth(
+        int $rule = 0,
+        array $file = [],
+        string $field,
+        string $message = null
+    ): array {
+        $arrayFileError = [];
+
+        if (validateFile::validateFileCount($file) > 0) {
+            self::validateFileTransformSingleToMultiple($file);
+
+            foreach ($file['tmp_name'] as $key => $tmpName) {
+                list($width) = getimagesize($tmpName);
+
+                if ($width > $rule) {
+                    $msgMinWidth = "O campo $field não pode ser maior que $rule pexels!";
+                    $msgMinWidth = (!empty($message)) ? $message : $msgMinWidth;
+                    array_push($arrayFileError, $msgMinWidth);
+                }
+            }
+        }
+        return $arrayFileError;
+    }
+
     public static function validateMinUploadSize(
         int $rule = 0,
         array $file = [],
