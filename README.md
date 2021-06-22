@@ -14,7 +14,7 @@ Uma biblioteca completa, com padrão das PSR e garantia de todos os métodos ter
 via composer.json
 
 ```
-"brunoconte3/dev-utils": "1.4.0"
+"brunoconte3/dev-utils": "1.5.0"
 ```
 
 via composer.
@@ -173,7 +173,9 @@ Com os validadores fileName, maxFile, maxUploadSize, mimeType, minFile, minUploa
      *
      * maxFile: Deve ser um valor do tipo inteiro.
      * minFile: Deve ser um valor do tipo inteiro.
+     * minWidth: Deve ser um valor do tipo inteiro.
      * maxUploadSize: Deve ser um valor do tipo inteiro.
+     * maxWidth: Deve ser um valor do tipo inteiro.
      * minUploadSize: Deve ser um valor do tipo inteiro.
      * mimeType: Para passar um array com as extensões permitidas, basta utilizar o delimitador ';' entre os valores.
      */
@@ -187,8 +189,10 @@ Com os validadores fileName, maxFile, maxUploadSize, mimeType, minFile, minUploa
         ];
 
         $rules = [
-            'fileUploadSingle' => 'requiredFile|fileName|mimeType:jpeg;png;jpg;txt;docx;xlsx;pdf|minUploadSize:10|maxUploadSize:100',
-            'fileUploadMultiple' => 'fileName|mimeType:jpeg|minFile:1|maxFile:3|minUploadSize:10|maxUploadSize:100, Mensagem personalizada aqui!',
+            'fileUploadSingle' => 'requiredFile|fileName|mimeType:jpeg;png;jpg;txt;docx;xlsx;pdf|minUploadSize:10|
+            maxUploadSize:100|minWidth:200|maxWidth:200',
+            'fileUploadMultiple' => 'fileName|mimeType:jpeg|minFile:1|maxFile:3|minUploadSize:10|
+            maxUploadSize:100, Mensagem personalizada aqui!',
         ];
 
         $validator = new Validator();
@@ -229,6 +233,8 @@ Com os validadores fileName, maxFile, maxUploadSize, mimeType, minFile, minUploa
 - lower: `Verifica se todos os caracteres são minúsculos.`
 - mac: `Verifica se o valor é um endereço de MAC válido.`
 - max: `Define o tamanho máximo do valor.`
+- minWidth: `Define o tamanho (pexels) mínimo do arquivo.`
+- maxWidth: `Define o tamanho (pexels) máximo do arquivo.`
 - maxFile: `Define a quantidade máxima de arquivos para upload.`
 - maxUploadSize: `Define o tamanho (bytes) máximo do arquivo.`
 - maxWords: `Define a quantidade máxima de palavras de uma string`

@@ -62,9 +62,9 @@ require dirname(__DIR__) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR 
                         ];
 
                         $ruleSingle = 'requiredFile|fileName|mimeType:jpeg;png;jpg;txt;docx;xlsx;pdf|minUploadSize:10|';
-                        $ruleSingle .= 'maxUploadSize:100';
+                        $ruleSingle .= 'maxUploadSize:30000|maxFile:1|minWidth:200|maxWidth:200';
 
-                        $ruleMultiple = 'fileName|mimeType:jpeg|minFile:1|maxFile:3|minUploadSize:10|maxUploadSize:100';
+                        $ruleMultiple = 'fileName|mimeType:jpeg|minFile:1|maxFile:3|minUploadSize:10|maxUploadSize:500';
                         $ruleMultiple .= ', Mensagem personalizada aqui!';
 
                         $rules = [

@@ -217,7 +217,6 @@ class ValidateFile
         if (validateFile::validateFileCount($file) < $rule) {
             array_push($arrayFileError, $message);
         }
-
         return $arrayFileError;
     }
 }

@@ -9,6 +9,20 @@ use PHPUnit\Framework\TestCase;
 
 class UnitTestRule extends TestCase
 {
+    private function mountFileSingle(): array
+    {
+        $l = DIRECTORY_SEPARATOR;
+        $path = realpath(dirname(__FILE__)) . '/../public_html' . $l . 'static' . $l . 'img' . $l;
+
+        return [
+            'name'     => 'fileUpload ',
+            'type'     => 'image/jpeg',
+            'tmp_name' => $path . 'iconTest.png',
+            'error'    => 0,
+            'size'     => 19639,
+        ];
+    }
+
     public function testArray(): void
     {
         $array = ['testError' => 'a', 'testValid' => ['a' => 1, 'b' => 2]];
@@ -714,5 +728,43 @@ class UnitTestRule extends TestCase
         $validator->set($array, $rules);
 
         self::assertCount(2, $validator->getErros());
+    }
+
+    public function testMaxWidth(): void
+    {
+        $_FILES = $this->mountFileSingle();
+
+        $array = [
+            'fileUploadError' => $_FILES,
+            'fileUploadValid' => $_FILES,
+        ];
+        $rules = [
+            'fileUploadError' => 'maxWidth:100',
+            'fileUploadValid' => 'maxWidth:200',
+        ];
+
+        $validator = new Validator();
+        $validator->set($array, $rules);
+
+        self::assertCount(1, $validator->getErros());
+    }
+
+    public function testMinWidth(): void
+    {
+        $_FILES = $this->mountFileSingle();
+
+        $array = [
+            'fileUploadError' => $_FILES,
+            'fileUploadValid' => $_FILES,
+        ];
+        $rules = [
+            'fileUploadError' => 'minWidth:500',
+            'fileUploadValid' => 'minWidth:100',
+        ];
+
+        $validator = new Validator();
+        $validator->set($array, $rules);
+
+        self::assertCount(1, $validator->getErros());
     }
 }

@@ -95,4 +95,44 @@ trait TraitRuleFile
         $validateResult = ValidateFile::validateMinimumFileNumbers($rule, $field, $value, $message);
         $this->validateHandleErrorsInArray($validateResult, $field);
     }
+
+    private function validateFileCalculateSize($field, $value): ?string
+    {
+        if (!extension_loaded('gd')) {
+            return 'Biblioteca GD não foi encontrada!';
+        } elseif (empty($value['name'])) {
+            return 'Anexo não foi encontrado!';
+        }
+        return null;
+    }
+
+    protected function validateMinWidth($rule = '', $field = '', $value = null, $message = null): void
+    {
+        $msg = $this->validateFileCalculateSize($field, $value);
+        if (!empty($file)) {
+            $this->errors[$field][0] = $msg;
+        } else {
+            $tmpName = $_FILES[$field]['tmp_name'] ?? $_FILES['tmp_name'];
+            list($width) = getimagesize($tmpName);
+            if ($width < $rule) {
+                $this->errors[$field][0] = !empty($message) ?
+                    $message : "O campo $field não pode ser menor que $rule pexels!";
+            }
+        }
+    }
+
+    protected function validateMaxWidth($rule = '', $field = '', $value = null, $message = null): void
+    {
+        $msg = $this->validateFileCalculateSize($field, $value);
+        if (!empty($file)) {
+            $this->errors[$field][0] = $msg;
+        } else {
+            $tmpName = $_FILES[$field]['tmp_name'] ?? $_FILES['tmp_name'];
+            list($width) = getimagesize($tmpName);
+            if ($width > $rule) {
+                $this->errors[$field][0] = !empty($message) ?
+                    $message : "O campo $field não pode ser maior que $rule pexels!";
+            }
+        }
+    }
 }
