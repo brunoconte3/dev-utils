@@ -35,8 +35,8 @@
         }
     ],
     "suggest": {
-		"ext-mbstring": "to use Format::lower() etc...",
-        "ext-gd": "to use the GD implementation"
+		"ext-gd": "to use the GD implementation",
+        "ext-mbstring": "to use Format::lower() etc..."
 	},
     "require": {
         "php": ">=7.3"
