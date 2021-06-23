@@ -82,12 +82,28 @@ trait TraitRuleFile
         $this->validateHandleErrorsInArray($validateResult, $field);
     }
 
-    private function validateFileCalculateSize(): ?string
+    private function validateFileCalculateSize($field): ?string
     {
+        $imgValid = ['image/gif', 'image/png', 'image/jpeg', 'image/bmp', 'image/webp'];
         if (!extension_loaded('gd')) {
             return 'Biblioteca GD não foi encontrada!';
         } elseif (count($_FILES) === 0) {
             return 'Anexo não foi encontrado!';
+        } else {
+            $msg = 'Para validar minWidth, maxWidth, minHeight e maxHeight o arquivo precisa ser uma imagem!';
+            $file = $_FILES[$field] ?? $_FILES;
+            foreach ($file as $key => $value) {
+                if (is_array($value)) {
+                    foreach ($value as $valor) {
+                        if ($key === 'type' && !empty($valor) && !in_array($valor, $imgValid)) {
+                            return $msg;
+                        }
+                    }
+                }
+                if ($key === 'type' && !empty($value) && is_string($value) && !in_array($value, $imgValid)) {
+                    return $msg;
+                }
+            }
         }
         return null;
     }
@@ -96,7 +112,7 @@ trait TraitRuleFile
     {
         $rule = trim($rule);
         $this->validateRuleFile($rule, $field, 'minWidth');
-        $msg = $this->validateFileCalculateSize();
+        $msg = $this->validateFileCalculateSize($field);
 
         if (!empty($msg)) {
             $this->errors[$field][0] = $msg;
@@ -112,7 +128,7 @@ trait TraitRuleFile
     {
         $rule = trim($rule);
         $this->validateRuleFile($rule, $field, 'minHeight');
-        $msg = $this->validateFileCalculateSize();
+        $msg = $this->validateFileCalculateSize($field);
 
         if (!empty($msg)) {
             $this->errors[$field][0] = $msg;
@@ -128,7 +144,7 @@ trait TraitRuleFile
     {
         $rule = trim($rule);
         $this->validateRuleFile($rule, $field, 'minWidth');
-        $msg = $this->validateFileCalculateSize();
+        $msg = $this->validateFileCalculateSize($field);
 
         if (!empty($msg)) {
             $this->errors[$field][0] = $msg;
@@ -144,7 +160,7 @@ trait TraitRuleFile
     {
         $rule = trim($rule);
         $this->validateRuleFile($rule, $field, 'maxHeight');
-        $msg = $this->validateFileCalculateSize();
+        $msg = $this->validateFileCalculateSize($field);
 
         if (!empty($msg)) {
             $this->errors[$field][0] = $msg;

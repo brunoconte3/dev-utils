@@ -142,7 +142,8 @@ if (!$validator->getErros()) {
 
 # Validando Upload de Arquivo(s)
 
-Com os validadores fileName, maxFile, maxUploadSize, mimeType, minFile, minUploadSize e requiredFile, será possível definir o tamanho (bytes) mínimo e máximo do arquivo; quantidade mínima e máxima de arquivos; extensões permitidas; validar o nome do arquivo e definir se o campo do tipo "File" é obrigatório.
+Com os validadores fileName, maxFile, maxUploadSize, mimeType, minFile, minUploadSize, minHeight, minWidth, maxHeight,
+maxWidth e requiredFile, será possível definir o tamanho (bytes) mínimo e máximo do arquivo; quantidade mínima e máxima de arquivos; extensões permitidas; mínimo e máximo de altura e comprimento de imagens, validar o nome do arquivo e definir se o campo do tipo "File" é obrigatório.
 
 `Exemplo:`
 
@@ -171,12 +172,7 @@ Com os validadores fileName, maxFile, maxUploadSize, mimeType, minFile, minUploa
     /**
      * Observações
      *
-     * maxFile: Deve ser um valor do tipo inteiro.
-     * minFile: Deve ser um valor do tipo inteiro.
-     * minWidth: Deve ser um valor do tipo inteiro.
-     * maxUploadSize: Deve ser um valor do tipo inteiro.
-     * maxWidth: Deve ser um valor do tipo inteiro.
-     * minUploadSize: Deve ser um valor do tipo inteiro.
+     * maxFile, minFile, minHeight, minWidth, maxUploadSize, maxHeight, maxWidth e minUploadSize: Devem ser do tipo inteiro.
      * mimeType: Para passar um array com as extensões permitidas, basta utilizar o delimitador ';' entre os valores.
      */
     if (filter_input(INPUT_SERVER, 'REQUEST_METHOD') === 'POST') {
@@ -233,10 +229,10 @@ Com os validadores fileName, maxFile, maxUploadSize, mimeType, minFile, minUploa
 - lower: `Verifica se todos os caracteres são minúsculos.`
 - mac: `Verifica se o valor é um endereço de MAC válido.`
 - max: `Define o tamanho máximo do valor.`
-- minHeight: `Define o tamanho em altura (pexels) mínimo do arquivo.`
-- minWidth: `Define o tamanho em comprimento (pexels) mínimo do arquivo.`
-- maxHeight: `Define o tamanho em altura (pexels) máxima do arquivo.`
-- maxWidth: `Define o tamanho em comprimento (pexels) máxima do arquivo.`
+- minHeight: `Define o tamanho em altura (pexels) mínimo da imagem.`
+- minWidth: `Define o tamanho em comprimento (pexels) mínimo da imagem.`
+- maxHeight: `Define o tamanho em altura (pexels) máximo da imagem.`
+- maxWidth: `Define o tamanho em comprimento (pexels) máximo da imagem.`
 - maxFile: `Define a quantidade máxima de arquivos para upload.`
 - maxUploadSize: `Define o tamanho (bytes) máximo do arquivo.`
 - maxWords: `Define a quantidade máxima de palavras de uma string`
