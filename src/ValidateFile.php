@@ -212,7 +212,7 @@ class ValidateFile
             self::validateFileTransformSingleToMultiple($file);
 
             foreach ($file['name'] as $fileName) {
-                $dataName = explode('.', strtolower(trim($fileName)));
+                $dataName = explode('.', strtolower(trim(str_replace(' ', '', $fileName))));
 
                 if (preg_match('/\W/', reset($dataName))) {
                     $msgFileName = "O nome do arquivo {$fileName}, não pode conter caracteres especiais e ascentos!";
