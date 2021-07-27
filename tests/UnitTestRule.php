@@ -604,7 +604,7 @@ class UnitTestRule extends TestCase
 
         $validator = new Validator();
         $validator->set($array, $rules);
-        self::assertCount(2, $validator->getErros());
+        self::assertFalse($validator->getErros());
     }
 
     public function testRequiredFile(): void

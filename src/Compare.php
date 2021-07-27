@@ -23,8 +23,8 @@ class Compare
     }
 
     public static function startDateLessThanEnd(
-        string $dtIni,
-        string $dtFin
+        ?string $dtIni,
+        ?string $dtFin
     ): bool {
         if (!empty($dtIni) && !empty($dtFin)) {
             if (str_replace('+', '', self::daysDifferenceBetweenData($dtIni, $dtFin)) < '0') {

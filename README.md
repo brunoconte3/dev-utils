@@ -14,7 +14,7 @@ Uma biblioteca completa, com padrão das PSR e garantia de todos os métodos ter
 via composer.json
 
 ```
-"brunoconte3/dev-utils": "1.5.2"
+"brunoconte3/dev-utils": "1.5.3"
 ```
 
 via composer.
@@ -218,7 +218,7 @@ maxWidth e requiredFile, será possível definir o tamanho (bytes) mínimo e má
 - dateBrazil: `Valida se a data brasileira é valida.`
 - email: `Verifica se é um email válido.`
 - equals: `Verifica se o campo é igual a outro campo, acima na documentação tem exemplo de uso no campo novaSenha`
-- fileName: `Verifica se o nome do arquivo contém caracteres regular, não pode ter ascentos.`
+- fileName: `Verifica se o nome do arquivo é um nome válido, e formata o nome removendo caracteres especiais`
 - float: `Verifica se o valor é do tipo flutuante(valor real).`
 - hour: `Valida se a hora é valida.`
 - identifier: `Valida se o CPF é válido, passando CPF com ou sem mascara`
