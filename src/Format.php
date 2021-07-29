@@ -37,7 +37,7 @@ class Format extends FormatAux
         }
 
         $dataName = implode('_', $dataName);
-        $dataName = preg_replace('/\W/', '_', strtolower(self::removeAccent($dataName)));
+        $dataName = preg_replace('/\W/', '_', strtolower(self::removeSpecialCharacters($dataName)));
 
         return "{$dataName}.{$ext}";
     }
@@ -272,6 +272,18 @@ class Format extends FormatAux
             explode(' ', 'a A e E i I o O u U n N c C'),
             $string
         );
+    }
+
+    public static function removeSpecialCharacters(?string $string, bool $space = true): ?string
+    {
+        if (empty($string)) {
+            return null;
+        }
+        $newString = self::removeAccent($string);
+        if ($space) {
+            return preg_replace("/[^a-zA-Z0-9 ]/", "", $newString);
+        }
+        return preg_replace("/[^a-zA-Z0-9]/", "", $newString);
     }
 
     public static function writeDateExtensive(string $date): string

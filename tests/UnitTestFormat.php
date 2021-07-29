@@ -200,7 +200,18 @@ class UnitTestFormat extends TestCase
     public function testRemoveAccent(): void
     {
         self::assertEquals('Acafrao', Format::removeAccent('Açafrão'));
+        self::assertEquals('Acafrao com Espaco', Format::removeAccent('Açafrão com Espaço'));
         self::assertNull(Format::removeAccent(''));
+        self::assertNull(Format::removeAccent(null));
+    }
+
+    public function testRemoveSpecialCharacters(): void
+    {
+        self::assertEquals('Acafrao ', Format::removeSpecialCharacters('Açafrão !@#$%¨&*()_+-='));
+        self::assertEquals('Acafrao com Espaco ', Format::removeSpecialCharacters('Açafrão com Espaço %$#@!'));
+        self::assertEquals('AcafraosemEspaco', Format::removeSpecialCharacters('Açafrão sem Espaço %$#@!', false));
+        self::assertNull(Format::removeSpecialCharacters(''));
+        self::assertNull(Format::removeSpecialCharacters(null));
     }
 
     public function testWriteDateExtensive(): void

@@ -14,7 +14,7 @@ Uma biblioteca completa, com padrão das PSR e garantia de todos os métodos ter
 via composer.json
 
 ```
-"brunoconte3/dev-utils": "1.5.3"
+"brunoconte3/dev-utils": "1.6.0"
 ```
 
 via composer.
@@ -303,6 +303,8 @@ Format::onlyNumbers('548Abc87@') . '<br>'; //Retorna apenas números ==> 54887;
 Format::onlyLettersNumbers('548Abc87@') . '<br>'; //Retorna apenas letras e números ==> 548Abc87;
 Format::pointOnlyValue('1.350,45') . '<br>'; //Moeda para gravação no BD ==>  1350.45
 Format::removeAccent('Açafrão') . '<br>'; //Remove acentos e o caracter 'ç' ==> Acafrao
+//Remove todos os caracteres especiais ==> "Acafrao com Espaco ", 2º parâmetro escolhe se permite espaço, default true
+Format::removeSpecialCharacters('Açafrão com Espaco %$#@!', true) . '<br>';
 Format::returnPhoneOrAreaCode('44999998888', false) . '<br>'; //Retorna apenas o número do telefone ==> 999998888
 Format::returnPhoneOrAreaCode('44999998888', true) . '<br>'; //Retorna apenas o DDD do telefone ==> 44
 Format::reverse('Abacaxi') . '<br>'; //Retorna string invertida ==> ixacabA

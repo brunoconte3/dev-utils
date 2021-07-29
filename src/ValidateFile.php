@@ -213,7 +213,7 @@ class ValidateFile
 
             foreach ($file['name'] as $key => $fileName) {
                 $file['name'][$key] = explode('.', strtolower(trim(
-                    str_replace(' ', '', Format::removeAccent($fileName))
+                    str_replace(' ', '', Format::removeSpecialCharacters($fileName))
                 )));
             }
         }
