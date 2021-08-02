@@ -257,7 +257,7 @@ maxWidth e requiredFile, será possível definir o tamanho (bytes) mínimo e má
 - timestamp: `Verifica se o valor é um timestamp válido (aceita formato Brasileiro ou Americano).`
 - upper: `Verifica se todos os caracteres são maiúsculas.`
 - url: `Verifica se o valor é um endereço de URL válida.`
-- zipCode: `Verifica se o valor corresponde ao formato de um CEP.`
+- zipcode: `Verifica se o valor corresponde ao formato de um CEP.`
 
 # Definindo mensagem personalizada
 
