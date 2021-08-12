@@ -42,6 +42,10 @@ class Utility
         if ($lowercase) {
             $password .= str_shuffle(strtolower($alphabet));
         }
-        return substr(str_shuffle($password), 0, $size);
+        $result = substr(str_shuffle($password), 0, $size);
+        if ($symbols && $size >= 10 && !boolval(preg_match('@[0-9]@', $result))) {
+            $result = self::generatePassword($size, $uppercase, $lowercase, $numbers, $symbols);
+        }
+        return $result;
     }
 }
