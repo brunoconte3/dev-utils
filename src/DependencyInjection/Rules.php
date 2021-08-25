@@ -29,6 +29,16 @@ class Rules
 
     private function invalidRule($rule = '', $field = '', $value = null, $message = null)
     {
+        $msg = '';
+        if (!empty($rule)) {
+            $msg .= $rule;
+        }
+        if (!empty($value)) {
+            $msg .= $value;
+        }
+        if (!empty($message)) {
+            $msg .= $message;
+        }
         $msg = "Uma regra inválida está sendo aplicada no campo $field!";
         $this->errors[$field] = $msg;
     }
