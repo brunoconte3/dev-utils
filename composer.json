@@ -44,7 +44,6 @@
     "autoload": {
         "psr-4": {
             "DevUtils\\": "src/",
-            "DevUtils\\DependencyInjection\\": "src/DependencyInjection/",
             "DevUtils\\Test\\": "tests/"
         }
     },

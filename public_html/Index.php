@@ -9,7 +9,9 @@ use DevUtils\{
     Format,
 };
 
-require dirname(__DIR__) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';
+require_once '../conf/conf.php';
+require_once 'AutoInstall.php';
+require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';
 ?>
 
 <!DOCTYPE html>
