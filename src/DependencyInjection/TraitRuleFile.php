@@ -10,7 +10,6 @@ trait TraitRuleFile
     {
         if (!is_numeric($rule) || ($rule <= 0)) {
             $text = "O parâmetro do validador '$label', deve ser numérico e maior ou igual a zero!";
-            $text = !empty($message) ? $message : $text;
             $this->errors[$field][0] = $text;
             return;
         }

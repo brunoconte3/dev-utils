@@ -204,7 +204,7 @@ class ValidateFile
         return $arrayFileError;
     }
 
-    public static function validateFileName(array $file = [], string $message = null): array
+    public static function validateFileName(array $file = []): array
     {
         $arrayFileError = [];
 
