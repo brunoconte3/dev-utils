@@ -73,9 +73,9 @@ class Compare
             $seconds = 0;
             list($h, $m, $s) = explode(':', $time);
 
-            $seconds += $h * 3600;
-            $seconds += $m * 60;
-            $seconds += $s;
+            $seconds += intval($h) * 3600;
+            $seconds += intval($m) * 60;
+            $seconds += intval($s);
 
             $timeTotal[$i] = $seconds;
             $i++;

@@ -11,14 +11,14 @@ class ValidateCpf
             return false;
         }
         for ($i = 0, $j = 10, $sum = 0; $i < 9; $i++, $j--) {
-            $sum += $cpf[$i] * $j;
+            $sum += intval($cpf[$i]) * $j;
         }
         $rest = $sum % 11;
         if ($cpf[9] != ($rest < 2 ? 0 : 11 - $rest)) {
             return false;
         }
         for ($i = 0, $j = 11, $sum = 0; $i < 10; $i++, $j--) {
-            $sum += $cpf[$i] * $j;
+            $sum += intval($cpf[$i]) * $j;
         }
         $rest = $sum % 11;
         $res = $cpf[10] == ($rest < 2 ? 0 : 11 - $rest);

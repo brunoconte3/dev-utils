@@ -49,7 +49,7 @@ class ValidateCnpj
         }
 
         for ($i = 0, $j = 5, $sum = 0; $i < 12; $i++) {
-            $sum += $cnpj[$i] * $j;
+            $sum += intval($cnpj[$i]) * $j;
             $j = ($j == 2) ? 9 : $j - 1;
         }
         $rest = $sum % 11;
@@ -57,7 +57,7 @@ class ValidateCnpj
             return false;
         }
         for ($i = 0, $j = 6, $sum = 0; $i < 13; $i++) {
-            $sum += $cnpj[$i] * $j;
+            $sum += intval($cnpj[$i]) * $j;
             $j = ($j == 2) ? 9 : $j - 1;
         }
         $rest = $sum % 11;
