@@ -2,8 +2,11 @@
 
 namespace DevUtils\DependencyInjection;
 
+use DevUtils\Compare;
+
 class Rules
 {
+    use TraitRule;
     use TraitRuleArray;
     use TraitRuleDate;
     use TraitRuleInteger;
@@ -12,20 +15,6 @@ class Rules
 
     protected $errors = false;
     public const RULES_WITHOUT_FUNCS = ['convert'];
-
-    private function methodsNoRuleValue(): array
-    {
-        return [
-            'validateAlphabets', 'validateAlphaNoSpecial', 'validateAlphaNumNoSpecial',
-            'validateAlphaNumerics', 'validateEmail', 'validateIdentifier', 'validateIp',
-            'validateLower', 'validateMac', 'validatePlate', 'validatePhone', 'validateRgbColor',
-            'validateSpace', 'validateUpper', 'validateUrl', 'validateZipCode', 'validateInteger',
-            'validateNumeric', 'validateNumMonth', 'validateFileName', 'validateFileUploadMandatory',
-            'validateDateBrazil', 'validateDateAmerican', 'validateHour', 'validateTimestamp',
-            'validateWeekend', 'validateArray', 'validateFieldMandatory', 'validateBoolean',
-            'validateFloating', 'validateJson',
-        ];
-    }
 
     private function invalidRule($rule = '', $field = '', $value = null, $message = null)
     {
@@ -84,61 +73,10 @@ class Rules
 
     public static function functionsValidation(): array
     {
-        return [
-            'alpha' => 'validateAlphabets',
-            'alphaNoSpecial' => 'validateAlphaNoSpecial',
-            'alphaNum' => 'validateAlphaNumerics',
-            'alphaNumNoSpecial' => 'validateAlphaNumNoSpecial',
-            'array' => 'validateArray',
-            'arrayValues' => 'validateArrayValues',
-            'bool' => 'validateBoolean',
-            'companyIdentification' => 'validateCompanyIdentification',
-            'dateAmerican' => 'validateDateAmerican',
-            'dateBrazil' => 'validateDateBrazil',
-            'email' => 'validateEmail',
-            'equals' => 'validateEquals',
-            'fileName' => 'validateFileName',
-            'float' => 'validateFloating',
-            'hour' => 'validateHour',
-            'identifier' => 'validateIdentifier',
-            'identifierOrCompany' => 'validateIdentifierOrCompany',
-            'int' => 'validateInteger',
-            'ip' => 'validateIp',
-            'json' => 'validateJson',
-            'lower' => 'validateLower',
-            'mac' => 'validateMac',
-            'max' => 'validateMaximumField',
-            'maxFile' => 'validateMaximumFileNumbers',
-            'maxUploadSize' => 'validateFileMaxUploadSize',
-            'maxWidth' => 'validateMaxWidth',
-            'maxHeight' => 'validateMaxHeight',
-            'maxWords' => 'validateMaximumWords',
-            'min' => 'validateMinimumField',
-            'minFile' => 'validateMinimumFileNumbers',
-            'minHeight' => 'validateMinHeight',
-            'minWidth' => 'validateMinWidth',
-            'mimeType' => 'validateFileMimeType',
-            'minWords' => 'validateMinimumWords',
-            'minUploadSize' => 'validateFileMinUploadSize',
-            'notSpace' => 'validateSpace',
-            'noWeekend' => 'validateWeekend',
-            'numeric' => 'validateNumeric',
-            'numMax' => 'validateNumMax',
-            'numMin' => 'validateNumMin',
-            'numMonth' => 'validateNumMonth',
-            'optional' => 'validateOptional',
-            'phone' => 'validatePhone',
-            'plate' => 'validatePlate',
-            'regex' => 'validateRegex',
-            'required' => 'validateFieldMandatory',
-            'requiredFile' => 'validateFileUploadMandatory',
-            'rgbColor' => 'validateRgbColor',
-            'timestamp' => 'validateTimestamp',
-            'type' => 'validateFieldType',
-            'upper' => 'validateUpper',
-            'url' => 'validateUrl',
-            'zipcode' => 'validateZipCode',
-        ];
+        $data = self::functionsValidationAtoL();
+        $data += self::functionsValidationMtoN();
+        $data += self::functionsValidationOtoZ();
+        return $data;
     }
 
     protected function validateOptional(): bool
@@ -146,16 +84,13 @@ class Rules
         return true;
     }
 
-    protected function validateFieldMandatory($field = '', $value = null, $message = null)
+    protected function validateFieldMandatory($field = '', $value = null, string $message = null)
     {
-        if (is_array($value)) {
-            if (count($value) <= 0) {
-                $this->errors[$field] = !empty($message) ? $message : "O campo $field é obrigatório!";
-            }
-        } else {
-            if (empty(trim($value)) && (strval($value) !== '0')) {
-                $this->errors[$field] = !empty($message) ? $message : "O campo $field é obrigatório!";
-            }
+        if (is_array($value) && (count($value) <= 0)) {
+            return $this->errors[$field] = !empty($message) ? $message : "O campo $field é obrigatório!";
+        }
+        if (empty(trim($value)) && (strval($value) !== '0')) {
+            return $this->errors[$field] = !empty($message) ? $message : "O campo $field é obrigatório!";
         }
     }
 
@@ -222,10 +157,7 @@ class Rules
                 $this->validateSubLevelData($data[$key], $rules[$key]);
             }
             //valida campos filhos required, porém não existe no array de dados
-            if (
-                empty($data) && is_array($val) &&
-                (strpos(trim(strtolower(json_encode($val))), 'required') !== false)
-            ) {
+            if (empty($data) && is_array($val) && (strpos(trim(strtolower(json_encode($val))), 'required'))) {
                 $this->errors[$key] = "Não foi encontrado o indice $key, campos filhos são obrigatórios!";
                 return false;
             }
@@ -286,23 +218,31 @@ class Rules
                     if (in_array(trim(strtolower($key)), self::RULES_WITHOUT_FUNCS)) {
                         continue;
                     }
-                    $method = trim(Rules::functionsValidation()[trim($key)] ?? 'invalidRule');
-                    $call = [$this, $method];
-                    //chama a função de validação, de cada parametro json
-
-                    if (is_callable($call, true, $method)) {
-                        if (
-                            in_array(substr($method, 20), $this->methodsNoRuleValue())
-                            || in_array($method, $this->methodsNoRuleValue())
-                        ) {
-                            call_user_func_array($call, [$field, $value, $msgCustomized]);
-                        } elseif (substr($method, 20) === 'validateEquals') {
-                            call_user_func_array($call, [$val, $field, $value, $msgCustomized, $data]);
-                        } else {
-                            call_user_func_array($call, [$val, $field, $value, $msgCustomized]);
-                        }
+                    if (
+                        !empty($this->errors[$field])
+                        && Compare::contains($this->errors[$field], 'obrigatório!')
+                    ) {
+                        $this->errors[$field] = "O campo {$field} é obrigatório!";
                     } else {
-                        $this->errors[$field] = "Há regras de validação não implementadas no campo $field!";
+                        $method = trim(Rules::functionsValidation()[trim($key)] ?? 'invalidRule');
+
+                        $call = [$this, $method];
+                        //chama a função de validação, de cada parametro json
+
+                        if (is_callable($call, true, $method)) {
+                            if (
+                                in_array(substr($method, 20), $this->methodsNoRuleValue())
+                                || in_array($method, $this->methodsNoRuleValue())
+                            ) {
+                                call_user_func_array($call, [$field, $value, $msgCustomized]);
+                            } elseif (substr($method, 20) === 'validateEquals') {
+                                call_user_func_array($call, [$val, $field, $value, $msgCustomized, $data]);
+                            } else {
+                                call_user_func_array($call, [$val, $field, $value, $msgCustomized]);
+                            }
+                        } else {
+                            $this->errors[$field] = "Há regras de validação não implementadas no campo $field!";
+                        }
                     }
                 }
             }
