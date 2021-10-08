@@ -60,7 +60,7 @@ class Compare
         $dateBirth = new \DateTime($date, new \DateTimeZone('America/Sao_Paulo'));
         $dataNow = new \DateTime("now", new \DateTimeZone('America/Sao_Paulo'));
         $diff = $dataNow->diff($dateBirth);
-        return $diff->format("%y");
+        return intval($diff->format("%y"));
     }
 
     public static function differenceBetweenHours(string $hourIni, string $hourFin): string
