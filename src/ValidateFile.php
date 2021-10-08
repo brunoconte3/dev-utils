@@ -71,7 +71,7 @@ class ValidateFile
     ): array {
         $arrayFileError = [];
 
-        if (validateFile::validateFileCount($file) > 0) {
+        if (self::validateFileCount($file) > 0) {
             self::validateFileTransformSingleToMultiple($file);
 
             foreach ($file['size'] as $key => $size) {
@@ -94,7 +94,7 @@ class ValidateFile
     ): array {
         $arrayFileError = [];
 
-        if (validateFile::validateFileCount($file) > 0) {
+        if (self::validateFileCount($file) > 0) {
             self::validateFileTransformSingleToMultiple($file);
 
             foreach ($file['tmp_name'] as $key => $tmpName) {
@@ -118,7 +118,7 @@ class ValidateFile
     ): array {
         $arrayFileError = [];
 
-        if (validateFile::validateFileCount($file) > 0) {
+        if (self::validateFileCount($file) > 0) {
             self::validateFileTransformSingleToMultiple($file);
 
             foreach ($file['tmp_name'] as $key => $tmpName) {
@@ -142,7 +142,7 @@ class ValidateFile
     ): array {
         $arrayFileError = [];
 
-        if (validateFile::validateFileCount($file) > 0) {
+        if (self::validateFileCount($file) > 0) {
             self::validateFileTransformSingleToMultiple($file);
 
             foreach ($file['tmp_name'] as $key => $tmpName) {
@@ -166,7 +166,7 @@ class ValidateFile
     ): array {
         $arrayFileError = [];
 
-        if (validateFile::validateFileCount($file) > 0) {
+        if (self::validateFileCount($file) > 0) {
             self::validateFileTransformSingleToMultiple($file);
 
             foreach ($file['tmp_name'] as $key => $tmpName) {
@@ -189,7 +189,7 @@ class ValidateFile
     ): array {
         $arrayFileError = [];
 
-        if (validateFile::validateFileCount($file) > 0) {
+        if (self::validateFileCount($file) > 0) {
             self::validateFileTransformSingleToMultiple($file);
 
             foreach ($file['size'] as $key => $size) {
@@ -208,7 +208,7 @@ class ValidateFile
     {
         $arrayFileError = [];
 
-        if (validateFile::validateFileCount($file) > 0) {
+        if (self::validateFileCount($file) > 0) {
             self::validateFileTransformSingleToMultiple($file);
 
             foreach ($file['name'] as $key => $fileName) {
@@ -230,7 +230,7 @@ class ValidateFile
     ): array {
         $arrayFileError = [];
 
-        if (validateFile::validateFileCount($file) > 0) {
+        if (self::validateFileCount($file) > 0) {
             self::validateFileTransformSingleToMultiple($file);
 
             $rule = (is_array($rule)) ? array_map('trim', $rule) : trim($rule);
@@ -289,7 +289,7 @@ class ValidateFile
         $arrayFileError = [];
         $message = (!empty($message)) ? $message : "O campo {$field} deve conter, no máximo {$rule} arquivo(s)!";
 
-        if (validateFile::validateFileCount($file) > $rule) {
+        if (self::validateFileCount($file) > $rule) {
             array_push($arrayFileError, $message);
         }
 
@@ -305,7 +305,7 @@ class ValidateFile
         $arrayFileError = [];
         $message = (!empty($message)) ? $message : "O campo {$field} deve conter, no mínimo {$rule} arquivo(s)!";
 
-        if (validateFile::validateFileCount($file) < $rule) {
+        if (self::validateFileCount($file) < $rule) {
             array_push($arrayFileError, $message);
         }
         return $arrayFileError;

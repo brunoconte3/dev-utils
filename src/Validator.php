@@ -21,10 +21,10 @@ class Validator extends Rules
             count(array_filter(array_values($data), 'is_array')) == count($data)
         ) {
             foreach ($data as $val) {
-                $this->validateSubLevelData($val, $rules, true);
+                $this->validateSubLevelData($val, $rules);
             }
         } else {
-            $this->validateSubLevelData($data, $rules, true);
+            $this->validateSubLevelData($data, $rules);
         }
         return true;
     }

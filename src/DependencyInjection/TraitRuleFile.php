@@ -45,7 +45,7 @@ trait TraitRuleFile
         }
 
         $this->validateHandleErrorsInArray(
-            ValidateFile::validateFileName($value, $message),
+            ValidateFile::validateFileName($value),
             $field
         );
     }

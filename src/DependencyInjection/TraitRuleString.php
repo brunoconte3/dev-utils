@@ -104,7 +104,7 @@ trait TraitRuleString
             $value = Format::mask('##.###.###/####-##', $value);
         }
         if (strlen($value) === 14) {
-            if (!ValidateCpf::validateCpf($value, $rule)) {
+            if (!ValidateCpf::validateCpf($value)) {
                 $this->errors[$field] = !empty($message) ? $message : "O campo $field é inválido!";
             }
         }

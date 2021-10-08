@@ -1,0 +1,4 @@
+parameters:
+    bootstrapFiles:
+        - conf/conf.php
+        - conf/confDefine.php
