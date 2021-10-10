@@ -24,14 +24,10 @@ class ValidateFile
                         return (count($file['name']) - 1);
                     }
                     return count($file['name']);
-                    break;
-
                 case 0:
                     return (is_string($file['name']) && !empty($file['name'])) ? 1 : 0;
-                    break;
             }
         }
-
         return 0;
     }
 

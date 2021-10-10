@@ -145,7 +145,7 @@ class Format extends FormatAux
     public static function currency($value, string $coinType = ''): string
     {
         $value = self::formatCurrencyForFloat($value);
-        return ((float) $value !== '') ? $coinType . number_format((float) $value, 2, ',', '.') : '';
+        return (!empty($value)) ? $coinType . number_format((float) $value, 2, ',', '.') : '';
     }
 
     /**
@@ -154,7 +154,7 @@ class Format extends FormatAux
     public static function currencyUsd($value, string $coinType = ''): string
     {
         $value = self::formatCurrencyForFloat($value);
-        return ((float) $value !== '') ?  $coinType . number_format((float) $value, 2, '.', ',') : '';
+        return (!empty($value)) ?  $coinType . number_format((float) $value, 2, '.', ',') : '';
     }
 
     /**
