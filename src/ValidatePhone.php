@@ -10,7 +10,7 @@ class ValidatePhone
     {
         $phone = (int) Format::onlyNumbers($phone);
 
-        $phone = preg_replace('/\D+/', '', trim($phone));
+        $phone = preg_replace('/\D+/', '', trim(strval($phone)));
         $numberDigits = strlen($phone);
 
         if ($numberDigits < 10 || $numberDigits > 11) {

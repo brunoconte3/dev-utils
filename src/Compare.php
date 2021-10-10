@@ -83,13 +83,13 @@ class Compare
         $seconds = $timeTotal[1] - $timeTotal[2];
         $hours = floor($seconds / 3600);
         $seconds -= $hours * 3600;
-        $minutes = str_pad((floor($seconds / 60)), 2, '0', STR_PAD_LEFT);
+        $minutes = str_pad(strval((floor($seconds / 60))), 2, '0', STR_PAD_LEFT);
         $seconds -= $minutes * 60;
 
-        if (substr($hours, 0, 1) === '-') {
-            $hours = '-' . str_pad(substr($hours, 1, 2), 2, '0', STR_PAD_LEFT);
+        if (substr(strval($hours), 0, 1) === '-') {
+            $hours = '-' . str_pad(substr(strval($hours), 1, 2), 2, '0', STR_PAD_LEFT);
         } else {
-            $hours = str_pad($hours, 2, '0', STR_PAD_LEFT);
+            $hours = str_pad(strval($hours), 2, '0', STR_PAD_LEFT);
         }
         return "$hours:$minutes:$seconds";
     }
