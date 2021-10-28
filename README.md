@@ -313,8 +313,6 @@ Format::zipCode('87030585') . '<br>'; //CEP ==>  87030-585
 Format::writeDateExtensive('06/11/2020') . '<br>'; //Data por Extenso ==> sexta-feira, 06 de novembro de 2020
 Format::writeCurrencyExtensive(1.97) . '<br>'; //Moeda por Extenso ==> um real e noventa e sete centavos
 
-//Converte o valor para o tipo correto dele ['bool', 'float', 'int', 'numeric',]
-Format::convertTypes($datas, $rules);
 $data = [
     'tratandoTipoInt' => '12',
     'tratandoTipoFloat' => '9.63',
@@ -327,8 +325,7 @@ $rules = [
     'tratandoTipoBoolean' => 'convert|bool',
     'tratandoTipoNumeric' => 'convert|numeric',
 ];
-Format::convertTypes($data, $rules);
-
+Format::convertTypes($data, $rules); //Converte o valor para o tipo correto dele ['bool', 'float', 'int', 'numeric',]
 /*** RETORNO
 [
   'tratandoTipoInt' => int 12
@@ -338,7 +335,6 @@ Format::convertTypes($data, $rules);
 ]
 ***/
 
-//Converte vazio para null, - o 2º parâmetro é opcional, passando a excessão desejada
 $array = [
     0 => '1',
     1 => '123',
@@ -346,8 +342,7 @@ $array = [
     'b' => 333,
     'c' => '',
 ];
-Format::emptyToNull($array);
-
+Format::emptyToNull($array); //Converte vazio para null, - o 2º parâmetro é opcional, passando a excessão desejada
 /*** RETORNO
 [
   0 => 1,
