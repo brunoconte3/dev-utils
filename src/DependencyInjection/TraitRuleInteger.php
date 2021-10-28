@@ -6,7 +6,7 @@ trait TraitRuleInteger
 {
     protected function validateInteger($field = '', $value = null, $message = null)
     {
-        if (!filter_var($value, FILTER_VALIDATE_INT)) {
+        if (!is_int($value)) {
             $this->errors[$field] = !empty($message) ?
                 $message : "O campo $field deve ser do tipo inteiro!";
         }

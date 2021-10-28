@@ -14,7 +14,7 @@ Uma biblioteca completa, com padrão das PSR e garantia de todos os métodos ter
 via composer.json
 
 ```
-"brunoconte3/dev-utils": "1.6.3"
+"brunoconte3/dev-utils": "1.6.4"
 ```
 
 via composer.
@@ -285,12 +285,10 @@ require 'vendor/autoload.php';
 use DevUtils\Format;
 
 Format::companyIdentification('39678379000129') . '<br>'; //CNPJ ==> 39.678.379/0001-29
-Format::convertTypes($datas, $rules); //Converte o valor para o tipo correto dele ['bool', 'float', 'int', 'numeric',]
 Format::convertTimestampBrazilToAmerican('15/04/2021 19:50:25'); //Converte formato Timestamp Brasil para Americana
 Format::currency('113', 'R$ ') . '<br>'; //Moeda padrão BR ==>  123,00 - o 2º parâmetro escolhe o label da Moeda
 Format::currencyUsd('1123.45') . '<br>'; //Moeda padrão USD ==> 1,123.45 - o 2º parâmetro escolhe o label da Moeda
 Format::dateAmerican('12-05-2020') . '<br>'; //Data ==>  2020-05-12
-Format::emptyToNull(['test' => 'null']) . '<br>'; //['test' => null] - o 2º parâmetro opcional, passando a excessão
 Format::dateBrazil('2020-05-12') . '<br>'; //Data ==>  12/05/2020
 Format::identifier('73381209000') . '<br>';  //CPF ==>  733.812.090-00
 Format::identifierOrCompany('30720870089') . '<br>'; //CPF/CNPJ ==> 307.208.700-89
@@ -315,6 +313,32 @@ Format::zipCode('87030585') . '<br>'; //CEP ==>  87030-585
 Format::writeDateExtensive('06/11/2020') . '<br>'; //Data por Extenso ==> sexta-feira, 06 de novembro de 2020
 Format::writeCurrencyExtensive(1.97) . '<br>'; //Moeda por Extenso ==> um real e noventa e sete centavos
 
+//Converte o valor para o tipo correto dele ['bool', 'float', 'int', 'numeric',]
+Format::convertTypes($datas, $rules);
+$data = [
+    'tratandoTipoInt' => '12',
+    'tratandoTipoFloat' => '9.63',
+    'tratandoTipoBoolean' => 'true',
+    'tratandoTipoNumeric' => '11',
+];
+$rules = [
+    'tratandoTipoInt' => 'convert|int',
+    'tratandoTipoFloat' => 'convert|float',
+    'tratandoTipoBoolean' => 'convert|bool',
+    'tratandoTipoNumeric' => 'convert|numeric',
+];
+Format::convertTypes($data, $rules);
+
+/*** RETORNO
+[
+  'tratandoTipoInt' => int 12
+  'tratandoTipoFloat' => float 9.63
+  'tratandoTipoBoolean' => boolean true
+  'tratandoTipoNumeric' => float 11
+]
+***/
+
+//Converte vazio para null, - o 2º parâmetro é opcional, passando a excessão desejada
 $array = [
     0 => '1',
     1 => '123',
@@ -322,8 +346,9 @@ $array = [
     'b' => 333,
     'c' => '',
 ];
+Format::emptyToNull($array);
 
-$arrayComNull = Format::emptyToNull($array); //Converte vazio para null
+/*** RETORNO
 [
   0 => 1,
   1 => 123,
@@ -331,6 +356,7 @@ $arrayComNull = Format::emptyToNull($array); //Converte vazio para null
   'b' => 333,
   'c' => null,
 ];
+**/
 
 //$value = Format::arrayToInt($array); ==> Opção para sem ser por Referencia
 Format::arrayToIntReference($array); //Formata valores do array em inteiro ==>
