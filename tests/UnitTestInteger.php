@@ -14,7 +14,7 @@ class UnitTestInteger extends TestCase
         return
             [
                 'testIntError' => '0a',
-                'testLeftZero' => '01',
+                'testErrorLeftZero' => '01',
                 'testIntZero' => '0',
                 'testIntZeroTyped' => 0,
                 'testIntOne' => 1,
@@ -27,7 +27,7 @@ class UnitTestInteger extends TestCase
         $array = $this->assembleArrayForTests();
         $rules = [
             'testIntError' => 'int',
-            'testLeftZero' => 'int',
+            'testErrorLeftZero' => 'int',
             'testIntZero' => 'int',
             'testIntZeroTyped' => 'int',
             'testIntOne' => 'int',
@@ -36,7 +36,7 @@ class UnitTestInteger extends TestCase
 
         $validator = new Validator();
         $validator->set($array, $rules);
-        self::assertCount(4, $validator->getErros());
+        self::assertCount(2, $validator->getErros());
     }
 
     public function testIntegerTyped(): void
@@ -44,7 +44,7 @@ class UnitTestInteger extends TestCase
         $array = $this->assembleArrayForTests();
         $rules = [
             'testIntError' => 'integer',
-            'testLeftZero' => 'integer',
+            'testErrorLeftZero' => 'integer',
             'testIntZero' => 'integer',
             'testIntZeroTyped' => 'integer',
             'testIntOne' => 'integer',

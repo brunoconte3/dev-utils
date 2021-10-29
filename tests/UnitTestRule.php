@@ -281,11 +281,11 @@ class UnitTestRule extends TestCase
     {
         $array = [
             'testError' => '@&451',
-            'testValid' => 123
+            'testValid' => 123,
         ];
         $rules = [
             'testError' => '{"required":"true","type":"alpha"}',
-            'testValid' => '{"required":"true","type":"int"}'
+            'testValid' => '{"required":"true","type":"int"}',
         ];
 
         $validator = new Validator();
