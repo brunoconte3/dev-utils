@@ -250,12 +250,24 @@ class UnitTestRule extends TestCase
 
     public function testNumMin(): void
     {
-        $array = ['testError' => 2, 'testeErrorNoInt' => 'a', 'testValid' => 8];
-        $rules = ['testError' => 'numMin:5', 'testeErrorNoInt' => 'numMin:5', 'testValid' => 'numMin:5'];
+        $array = [
+            'testError' => 2,
+            'testeErrorNoInt' => 'a',
+            'testeErrorNegative' => '-2',
+            'testValid' => 8,
+            'testValidZero' => '0',
+        ];
+        $rules = [
+            'testError' => 'numMin:5',
+            'testeErrorNoInt' => 'numMin:5',
+            'testeErrorNegative' => 'numMin:-2',
+            'testValid' => 'numMin:5',
+            'testValidZero' => 'numMin:0',
+        ];
 
         $validator = new Validator();
         $validator->set($array, $rules);
-        self::assertCount(1, $validator->getErros());
+        self::assertCount(2, $validator->getErros());
     }
 
     public function testOptional(): void

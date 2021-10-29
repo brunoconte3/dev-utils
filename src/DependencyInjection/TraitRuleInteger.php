@@ -54,5 +54,9 @@ trait TraitRuleInteger
             $this->errors[$field] = !empty($message) ?
                 $message : "O campo $field deve ter o valor mínimo de $rule!";
         }
+        if ($value < 0) {
+            $this->errors[$field] = !empty($message) ?
+                $message : "O campo $field deve ter o valor mínimo de zero!";
+        }
     }
 }
