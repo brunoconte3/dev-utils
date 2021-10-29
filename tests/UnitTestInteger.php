@@ -9,23 +9,50 @@ use PHPUnit\Framework\TestCase;
 
 class UnitTestInteger extends TestCase
 {
+    private function assembleArrayForTests(): array
+    {
+        return
+            [
+                'testIntError' => '0a',
+                'testLeftZero' => '01',
+                'testIntZero' => '0',
+                'testIntZeroTyped' => 0,
+                'testIntOne' => 1,
+                'testIntNegative' => -2,
+            ];
+    }
+
     public function testInteger(): void
     {
-        $array = [
-            'testNumberError' => '01',
-            'testIntError' => '0a',
-            'testIntZeroValid' => 0,
-            'testIntOneValid' => 1,
-        ];
+        $array = $this->assembleArrayForTests();
         $rules = [
-            'testNumberError' => 'int',
             'testIntError' => 'int',
-            'testIntZeroValid' => 'int',
-            'testIntOneValid' => 'int',
+            'testLeftZero' => 'int',
+            'testIntZero' => 'int',
+            'testIntZeroTyped' => 'int',
+            'testIntOne' => 'int',
+            'testIntNegative' => 'int',
         ];
 
         $validator = new Validator();
         $validator->set($array, $rules);
-        self::assertCount(2, $validator->getErros());
+        self::assertCount(4, $validator->getErros());
+    }
+
+    public function testIntegerTyped(): void
+    {
+        $array = $this->assembleArrayForTests();
+        $rules = [
+            'testIntError' => 'integer',
+            'testLeftZero' => 'integer',
+            'testIntZero' => 'integer',
+            'testIntZeroTyped' => 'integer',
+            'testIntOne' => 'integer',
+            'testIntNegative' => 'integer',
+        ];
+
+        $validator = new Validator();
+        $validator->set($array, $rules);
+        self::assertCount(3, $validator->getErros());
     }
 }

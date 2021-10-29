@@ -25,12 +25,20 @@ abstract class FormatAux
     {
         switch ($type) {
             case 'bool':
-                return filter_var($value, FILTER_VALIDATE_BOOLEAN) ? (bool) $value : $value;
+                return filter_var($value, FILTER_VALIDATE_BOOLEAN) ? boolval($value) : $value;
             case 'int':
-                return filter_var($value, FILTER_VALIDATE_INT) ? (int) $value : $value;
+                if (is_int($value)) {
+                    return intval($value);
+                } elseif (filter_var($value, FILTER_VALIDATE_INT)) {
+                    return intval($value);
+                } elseif ($value === '0') {
+                    return intval($value);
+                } else {
+                    return $value;
+                }
             case 'float':
             case 'numeric':
-                return filter_var($value, FILTER_VALIDATE_FLOAT) ? (float) $value : $value;
+                return filter_var($value, FILTER_VALIDATE_FLOAT) ? floatval($value) : $value;
             default:
                 return $value;
         }

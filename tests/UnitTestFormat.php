@@ -18,20 +18,24 @@ class UnitTestFormat extends TestCase
     {
         $data = [
             'tratandoTipoInt' => '12',
+            'tratandoTipoIntZero' => '0',
+            'tratandoTipoIntNegativo' => '-8',
             'tratandoTipoFloat' => '9.63',
             'tratandoTipoBoolean' => 'true',
             'tratandoTipoNumeric' => '11',
         ];
-
         $rules = [
             'tratandoTipoInt' => 'convert|int',
+            'tratandoTipoIntZero' => 'convert|int',
+            'tratandoTipoIntNegativo' => 'convert|int',
             'tratandoTipoFloat' => 'convert|float',
             'tratandoTipoBoolean' => 'convert|bool',
             'tratandoTipoNumeric' => 'convert|numeric',
         ];
-
         Format::convertTypes($data, $rules);
         self::assertIsInt($data['tratandoTipoInt']);
+        self::assertIsInt($data['tratandoTipoIntZero']);
+        self::assertIsInt($data['tratandoTipoIntNegativo']);
         self::assertIsFloat($data['tratandoTipoFloat']);
         self::assertIsBool($data['tratandoTipoBoolean']);
         self::assertIsNumeric($data['tratandoTipoNumeric']);

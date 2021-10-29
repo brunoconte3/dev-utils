@@ -9,7 +9,7 @@ use DevUtils\{
     Format,
 };
 
-require_once '../conf/confDefine.php';
+require_once '../conf/conf.php';
 require_once 'AutoInstall.php';
 require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';
 ?>

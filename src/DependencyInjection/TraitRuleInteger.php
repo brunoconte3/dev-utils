@@ -6,17 +6,22 @@ trait TraitRuleInteger
 {
     protected function validateInteger($field = '', $value = null, $message = null)
     {
+        if (!filter_var($value, FILTER_VALIDATE_INT)) {
+            $this->errors[$field] = !empty($message) ? $message : "O campo $field deve ser do tipo inteiro!";
+        }
+    }
+
+    protected function validateIntegerTyped($field = '', $value = null, $message = null)
+    {
         if (!is_int($value)) {
-            $this->errors[$field] = !empty($message) ?
-                $message : "O campo $field deve ser do tipo inteiro!";
+            $this->errors[$field] = !empty($message) ? $message : "O campo $field deve ser do tipado como inteiro!";
         }
     }
 
     protected function validateNumeric($field = '', $value = null, $message = null)
     {
         if (!is_numeric($value)) {
-            $this->errors[$field] = !empty($message) ?
-                $message : "O campo $field só pode conter valores numéricos!";
+            $this->errors[$field] = !empty($message) ? $message : "O campo $field só pode conter valores numéricos!";
         }
     }
 

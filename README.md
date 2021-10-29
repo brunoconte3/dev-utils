@@ -14,7 +14,7 @@ Uma biblioteca completa, com padrão das PSR e garantia de todos os métodos ter
 via composer.json
 
 ```
-"brunoconte3/dev-utils": "1.6.4"
+"brunoconte3/dev-utils": "1.7.0"
 ```
 
 via composer.
@@ -223,7 +223,8 @@ maxWidth e requiredFile, será possível definir o tamanho (bytes) mínimo e má
 - hour: `Valida se a hora é valida.`
 - identifier: `Valida se o CPF é válido, passando CPF com ou sem mascara`
 - identifierOrCompany: `Valida se o CPF ou CNPJ é válido, passando CPF ou CNPJ com ou sem mascara`
-- int: `Verifica se o valor é do tipo inteiro.`
+- int: `Verifica se o valor é do tipo inteiro (Se vier String o formato, ele tenta fazer o parse).`
+- integer: `Verifica se o valor é do tipo inteiro (aqui verifica a tipagem exata).`
 - ip: `Verifica se o valor é um endereço de IP válido.`
 - json: `Verifica se o valor é um json válido.`
 - lower: `Verifica se todos os caracteres são minúsculos.`
