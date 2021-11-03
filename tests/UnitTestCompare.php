@@ -57,4 +57,40 @@ class UnitTestCompare extends TestCase
         self::assertFalse(Compare::contains('AçaFrão', 'Mac'));
         self::assertTrue(Compare::contains('AçaFrão', 'çaF'));
     }
+
+    public function testBeginUrlWith(): void
+    {
+        $search = '/teste';
+        $url = '/teste/variavel';
+        $result = Compare::beginUrlWith($search, $url);
+        self::assertTrue($result, 'Erro ao executar a função testBeginUrlWith!');
+
+        $search = '/teste';
+        $url = '/teste1234';
+        $result = Compare::beginUrlWith($search, $url);
+        self::assertTrue($result, 'Erro ao executar a função testBeginUrlWith!');
+
+        $search = '/teste123';
+        $url = '/testeasc';
+        $result = Compare::beginUrlWith($search, $url);
+        self::assertNotTrue($result, 'Erro ao executar a função testBeginUrlWith!');
+    }
+
+    public function testFinishUrlWith(): void
+    {
+        $search = '/teste';
+        $url = 'asd/teste';
+        $result = Compare::finishUrlWith($search, $url);
+        self::assertTrue($result, 'Erro ao executar a função testFinishUrlWith!');
+
+        $search = '/teste';
+        $url = 'sistema/teste';
+        $result = Compare::finishUrlWith($search, $url);
+        self::assertTrue($result, 'Erro ao executar a função testFinishUrlWith!');
+
+        $search = '/test';
+        $url = 'sistema/teste1';
+        $result = Compare::finishUrlWith($search, $url);
+        self::assertNotTrue($result, 'Erro ao executar a função testFinishUrlWith!');
+    }
 }
