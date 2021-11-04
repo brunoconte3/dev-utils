@@ -495,6 +495,9 @@ $result = Compare::beginUrlWith('/teste', '/teste/variavel');
 //Compara se a URL correspondente com o segundo parâmetro, finaliza com a cadeia inserida no primeiro parâmetro. Retorna booleano.
 $result = Compare::finishUrlWith('/teste', 'sistema/teste');
 
+//Compara se a cadeia correspondente com o primeiro parâmetro e igual a subcadeia obtida a partir do segundo parâmetro. Extraindo para comparar 7 catacteres do segundo parâmetro inicando na possição 0. Retorna booleano.
+$result = Compare::compareStringFrom('sistema', 'sistema/teste', 0, 7);
+
 ```
 
 # Validações em forma de Métodos
