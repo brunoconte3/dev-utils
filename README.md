@@ -14,7 +14,7 @@ Uma biblioteca completa, com padrão das PSR e garantia de todos os métodos ter
 via composer.json
 
 ```
-"brunoconte3/dev-utils": "1.7.1"
+"brunoconte3/dev-utils": "1.8.0"
 ```
 
 via composer.
@@ -486,8 +486,17 @@ Compare::calculateAgeInYears('20/05/1989');
 //terceiro parâmetro opcional, false para não comparar caseSensitive, default true
 Compare::checkDataEquality('AçaFrão', 'Açafrão');
 
-//Compara se o conteudo desejado existe na String, retorna booleano
+//Compara se o conteúdo desejado existe na String, retorna booleano
 Compare::contains('AçaFrão', 'çaF');
+
+//Compara se a URL correspondente com o segundo parâmetro, inicia com a cadeia inserida no primeiro parâmetro. Retorna booleano.
+$result = Compare::beginUrlWith('/teste', '/teste/variavel');
+
+//Compara se a URL correspondente com o segundo parâmetro, finaliza com a cadeia inserida no primeiro parâmetro. Retorna booleano.
+$result = Compare::finishUrlWith('/teste', 'sistema/teste');
+
+//Compara se a cadeia correspondente com o primeiro parâmetro e igual a subcadeia obtida a partir do segundo parâmetro. Extraindo para comparar 7 catacteres do segundo parâmetro inicando na possição 0. Retorna booleano.
+$result = Compare::compareStringFrom('sistema', 'sistema/teste', 0, 7);
 
 ```
 
