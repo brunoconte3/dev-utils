@@ -486,8 +486,14 @@ Compare::calculateAgeInYears('20/05/1989');
 //terceiro parâmetro opcional, false para não comparar caseSensitive, default true
 Compare::checkDataEquality('AçaFrão', 'Açafrão');
 
-//Compara se o conteudo desejado existe na String, retorna booleano
+//Compara se o conteúdo desejado existe na String, retorna booleano
 Compare::contains('AçaFrão', 'çaF');
+
+//Compara se a URL correspondente com o segundo parâmetro, inicia com a cadeia inserida no primeiro parâmetro. Retorna booleano.
+$result = Compare::beginUrlWith('/teste', '/teste/variavel');
+
+//Compara se a URL correspondente com o segundo parâmetro, finaliza com a cadeia inserida no primeiro parâmetro. Retorna booleano.
+$result = Compare::finishUrlWith('/teste', 'sistema/teste');
 
 ```
 
