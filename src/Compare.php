@@ -118,10 +118,10 @@ class Compare
 
     public static function compareStringFrom(string $search, string $str, int $start, int $length): bool
     {
-        if ($str == $search) {
+        if ($str === $search) {
             return true;
         }
-        if (substr($str, $start, $length) == $search) {
+        if (substr($str, $start, $length) === $search) {
             return true;
         }
         return false;
