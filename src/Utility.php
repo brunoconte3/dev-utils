@@ -48,4 +48,16 @@ class Utility
         }
         return $result;
     }
+
+    /*
+    * @return string -> Cadeia URL completa
+    * @param string $host -> Dominio do sistema
+    * @param string $absolutePath -> Caminho absoluto
+    * @param string $https -> 'on' para gerar url https, outro valor, gera url http
+    */
+    public static function buildUrl(string $host, string $absolutePath = '', string $https = null): string
+    {
+        $protocol = ((isset($https) && ($https === 'on')) ? 'https' : 'http');
+        return $protocol . '://' . $host . $absolutePath;
+    }
 }

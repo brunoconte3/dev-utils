@@ -490,13 +490,13 @@ Compare::checkDataEquality('AçaFrão', 'Açafrão');
 Compare::contains('AçaFrão', 'çaF');
 
 //Compara se a URL correspondente com o segundo parâmetro, inicia com a cadeia inserida no primeiro parâmetro. Retorna booleano.
-$result = Compare::beginUrlWith('/teste', '/teste/variavel');
+Compare::beginUrlWith('/teste', '/teste/variavel');
 
 //Compara se a URL correspondente com o segundo parâmetro, finaliza com a cadeia inserida no primeiro parâmetro. Retorna booleano.
-$result = Compare::finishUrlWith('/teste', 'sistema/teste');
+Compare::finishUrlWith('/teste', 'sistema/teste');
 
 //Compara se a cadeia correspondente com o primeiro parâmetro e igual a subcadeia obtida a partir do segundo parâmetro. Extraindo para comparar 7 catacteres do segundo parâmetro iniciando na posição 0. Retorna booleano.
-$result = Compare::compareStringFrom('sistema', 'sistema/teste', 0, 7);
+Compare::compareStringFrom('sistema', 'sistema/teste', 0, 7);
 
 ```
 
@@ -612,6 +612,14 @@ bool $numbers   ==> Se vai ter números
 bool $symbols   ==> Se vai ter simbolos
 */
 Utility::generatePassword(10);
+
+/*
+* @return string -> Cadeia URL completa
+* @param string $host -> Dominio do sistema
+* @param string $absolutePath -> Caminho absoluto
+* @param string $https -> 'on' para gerar url https, null ou outro valor, gera url http
+*/
+Utility::buildUrl('localhost', '/Framework-Cooper/testando', 'on'); // Retorna a URL
 
 ```
 
