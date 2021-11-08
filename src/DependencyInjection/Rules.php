@@ -89,7 +89,11 @@ class Rules
         if (is_array($value) && (count($value) <= 0)) {
             return $this->errors[$field] = !empty($message) ? $message : "O campo $field é obrigatório!";
         }
-        if (empty(trim($value)) && (strval($value) !== '0')) {
+        if (
+            !isset($value)
+            ||  $value === false
+            || (is_string($value) && empty(trim($value))) && strval($value) !== '0'
+        ) {
             return $this->errors[$field] = !empty($message) ? $message : "O campo $field é obrigatório!";
         }
     }
