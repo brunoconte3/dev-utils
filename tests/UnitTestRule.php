@@ -41,18 +41,18 @@ class UnitTestRule extends TestCase
         $validator->set($array, $rules);
         self::assertCount(1, $validator->getErros());
         $array = [
-            'dadosArray' => 11,
+            'dadosArrayErro' => 11,
+            'arrayVazioErro' => [],
             'dadosArrayRequired' => ['empresa' => 'cooper'],
-            'arrayVazio' => [],
         ];
         $rules = [
-            'dadosArray' => 'array',
+            'dadosArrayErro' => 'array',
+            'arrayVazioErro' => 'required',
             'dadosArrayRequired' => 'required|array',
-            'arrayVazio' => 'required',
         ];
         $expected = [
-            'dadosArray' => 'A variável dadosArray não é um array!',
-            'arrayVazio' => 'O campo arrayVazio é obrigatório!',
+            'dadosArrayErro' => 'A variável dadosArrayErro não é um array!',
+            'arrayVazioErro' => 'O campo arrayVazioErro é obrigatório!',
         ];
         $validator = new Validator();
         $validator->set($array, $rules);
