@@ -13,7 +13,6 @@ require_once '../conf/conf.php';
 require_once 'AutoInstall.php';
 require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';
 ?>
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 
@@ -21,7 +20,6 @@ require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPAR
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>brunoconte3/dev-utils</title>
-
     <link rel="stylesheet" href="static/css/index.min.css">
 </head>
 
@@ -31,66 +29,57 @@ require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPAR
             <h1>brunoconte3/dev-utils</h1>
             <small>Espaço para fazer seus testes</small>
         </header>
-
         <section class="body-section-class">
             <div class="item-section-class">
                 <div>
                     <?php
-
                     echo '<p>Aqui vem os seus testes!</p>';
-
-                    $array = ['cpfOuCnpj' => '04764334879'];
-                    $rules = ['cpfOuCnpj' => 'identifierOrCompany'];
-
+                    $array = [
+                        'cpfOuCnpj' => '04764334879',
+                        'nomePais' => 'Brasil',
+                        'nomeEmpresa' => ['empresa' => 'cooper'],
+                    ];
+                    $rules = [
+                        'cpfOuCnpj' => 'identifierOrCompany',
+                        'nomePais' => 'required|alpha',
+                        'nomeEmpresa' => 'required|array',
+                    ];
                     $validator = new Validator();
                     $validator->set($array, $rules);
-
                     echo '<pre>';
                     print_r($validator->getErros());
                     ?>
                     <hr />
                 </div>
-
                 <div>
                     <?php
-
                     if (filter_input(INPUT_SERVER, 'REQUEST_METHOD') === 'POST') {
                         $fileUploadSingle = $_FILES['fileUploadSingle'];
                         $fileUploadMultiple = $_FILES['fileUploadMultiple'];
-
                         $array = [
                             'fileUploadSingle' => $fileUploadSingle,
                             'fileUploadMultiple' => $fileUploadMultiple
                         ];
-
                         $ruleSingle = 'requiredFile|fileName|mimeType:jpeg;png;jpg;txt;docx;xlsx;pdf|minUploadSize:10|';
                         $ruleSingle .= 'maxUploadSize:30000|maxFile:1|minWidth:200|maxWidth:200|minHeight:200|';
                         $ruleSingle .= 'maxHeight:200';
-
                         $ruleMultiple = 'fileName|mimeType:jpeg;png|minFile:1|maxFile:3|minUploadSize:10';
                         $ruleMultiple .= '|minWidth:200|maxWidth:200|minHeight:200|maxHeight:200|';
                         $ruleMultiple .= 'maxUploadSize:30000, Mensagem personalizada aqui!';
-
                         $rules = [
                             'fileUploadSingle' => $ruleSingle,
                             'fileUploadMultiple' => $ruleMultiple
                         ];
-
                         $validator = new Validator();
                         $validator->set($array, $rules);
-
                         echo '<pre>';
                         print_r($validator->getErros());
-
                         echo '<hr>';
-
                         echo '<pre>';
                         print_r(Format::restructFileArray($fileUploadSingle));
                         print_r(Format::restructFileArray($fileUploadMultiple));
                     }
-
                     ?>
-
                     <div id="bd-form-upload">
                         <form method="POST" enctype="multipart/form-data">
                             <!-- Upload de um único arquivo. -->

@@ -25,4 +25,38 @@ class UnitTestUtility extends TestCase
         self::assertTrue(boolval(preg_match('@[0-9]@', $passWordFull)));
         self::assertTrue(boolval(preg_match("/(?=.*[^A-Za-zd])/", $passWordFull)));
     }
+
+    public function testBuildUrl(): void
+    {
+        self::assertSame(
+            'https://localhost/Framework-Cooper/testando',
+            Utility::buildUrl('localhost', '/Framework-Cooper/testando', 'on'),
+            'Erro ao executar a função buildUrl!'
+        );
+        self::assertSame(
+            'http://localhost/Framework-Cooper/testando',
+            Utility::buildUrl('localhost', '/Framework-Cooper/testando'),
+            'Erro ao executar a função testBuildUrl!'
+        );
+        self::assertNotSame(
+            'https://localhost/Framework-Cooper/testando',
+            Utility::buildUrl('localhost', '/Framework-Cooper/testando'),
+            'Erro ao executar a função testBuildUrl!'
+        );
+        self::assertNotSame(
+            'http://localhost/Framework-Cooper/testando',
+            Utility::buildUrl('localhost', '/Framework-Cooper/testando', 'on'),
+            'Erro ao executar a função testBuildUrl!'
+        );
+        self::assertNotSame(
+            'http://localhost/Framework-Cooper/teste',
+            Utility::buildUrl('localhost', '/Framework-Cooper/testando'),
+            'Erro ao executar a função testBuildUrl!'
+        );
+        self::assertNotSame(
+            'https://localhost/Framework-Cooper/teste',
+            Utility::buildUrl('localhost', '/Framework-Cooper/testando', 'on'),
+            'Erro ao executar a função testBuildUrl!'
+        );
+    }
 }
