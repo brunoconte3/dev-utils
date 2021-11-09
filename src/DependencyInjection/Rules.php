@@ -222,30 +222,62 @@ class Rules
                     if (in_array(trim(strtolower($key)), self::RULES_WITHOUT_FUNCS)) {
                         continue;
                     }
-                    if (
-                        !empty($this->errors[$field])
-                        && Compare::contains($this->errors[$field], 'obrigatório!')
-                    ) {
-                        $this->errors[$field] = "O campo {$field} é obrigatório!";
-                    } else {
-                        $method = trim(Rules::functionsValidation()[trim($key)] ?? 'invalidRule');
-
-                        $call = [$this, $method];
-                        //chama a função de validação, de cada parametro json
-
-                        if (is_callable($call, true, $method)) {
+                    $auxValue = $this->errors[$field] ?? '';
+                    if (is_array($auxValue)) {
+                        foreach ($this->errors[$field] as $chaveErro => $valueErro) {
+                            $auxValue = $this->errors[$field][$chaveErro];
                             if (
-                                in_array(substr($method, 20), $this->methodsNoRuleValue())
-                                || in_array($method, $this->methodsNoRuleValue())
+                                !empty($auxValue)
+                                && (is_string($auxValue) && Compare::contains($auxValue, 'obrigatório!'))
                             ) {
-                                call_user_func_array($call, [$field, $value, $msgCustomized]);
-                            } elseif (substr($method, 20) === 'validateEquals') {
-                                call_user_func_array($call, [$val, $field, $value, $msgCustomized, $data]);
+                                $this->errors[$field][$chaveErro] = "O campo {$field} é obrigatório!";
                             } else {
-                                call_user_func_array($call, [$val, $field, $value, $msgCustomized]);
+                                $method = trim(Rules::functionsValidation()[trim($key)] ?? 'invalidRule');
+                                $call = [$this, $method];
+                                //chama a função de validação, de cada parametro json
+                                if (is_callable($call, true, $method)) {
+                                    if (
+                                        in_array(substr($method, 20), $this->methodsNoRuleValue())
+                                        || in_array($method, $this->methodsNoRuleValue())
+                                    ) {
+                                        call_user_func_array($call, [$field, $value, $msgCustomized]);
+                                    } elseif (substr($method, 20) === 'validateEquals') {
+                                        call_user_func_array($call, [$val, $field, $value, $msgCustomized, $data]);
+                                    } else {
+                                        call_user_func_array($call, [$val, $field, $value, $msgCustomized]);
+                                    }
+                                } else {
+                                    $this->errors[$field][$chaveErro] = "Há regras de validação não implementadas" .
+                                        "no campo $field!";
+                                }
                             }
+                        }
+                    }
+
+                    if (is_string($auxValue)) {
+                        if (
+                            !empty($this->errors[$field])
+                            && (is_string($auxValue) && Compare::contains($auxValue, 'obrigatório!'))
+                        ) {
+                            $this->errors[$field] = "O campo {$field} é obrigatório!";
                         } else {
-                            $this->errors[$field] = "Há regras de validação não implementadas no campo $field!";
+                            $method = trim(Rules::functionsValidation()[trim($key)] ?? 'invalidRule');
+                            $call = [$this, $method];
+                            //chama a função de validação, de cada parametro json
+                            if (is_callable($call, true, $method)) {
+                                if (
+                                    in_array(substr($method, 20), $this->methodsNoRuleValue())
+                                    || in_array($method, $this->methodsNoRuleValue())
+                                ) {
+                                    call_user_func_array($call, [$field, $value, $msgCustomized]);
+                                } elseif (substr($method, 20) === 'validateEquals') {
+                                    call_user_func_array($call, [$val, $field, $value, $msgCustomized, $data]);
+                                } else {
+                                    call_user_func_array($call, [$val, $field, $value, $msgCustomized]);
+                                }
+                            } else {
+                                $this->errors[$field] = "Há regras de validação não implementadas no campo $field!";
+                            }
                         }
                     }
                 }
