@@ -37,12 +37,12 @@ require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPAR
                     $array = [
                         'cpfOuCnpj' => '04764334879',
                         'nomePais' => 'Brasil',
-                        'nomeEmpresa' => ['empresa' => 'cooper'],
+                        'dadoEmpresa' => ['empresa' => 'cooper'],
                     ];
                     $rules = [
                         'cpfOuCnpj' => 'identifierOrCompany',
                         'nomePais' => 'required|alpha',
-                        'nomeEmpresa' => 'required|array',
+                        'dadoEmpresa' => 'required|array',
                     ];
                     $validator = new Validator();
                     $validator->set($array, $rules);
