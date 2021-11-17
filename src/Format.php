@@ -182,11 +182,11 @@ class Format extends FormatAux
     public static function emptyToNull(array $array, string $exception = null): array
     {
         return array_map(function ($value) use ($exception) {
-            return (isset($value)
-                && empty(trim($value))
-                && $value !== $exception
-                || $value === 'null')
-                ? null : $value;
+            if (isset($value) && is_array($value)) {
+                return count($value) > 0 ? $value : null;
+            }
+            return (isset($value) && empty(trim($value))
+                && $value !== $exception || $value === 'null') ? null : $value;
         }, $array);
     }
 
