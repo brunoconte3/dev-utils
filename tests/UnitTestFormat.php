@@ -145,9 +145,11 @@ class UnitTestFormat extends TestCase
             'c' => null,
             'd' => null,
             'e' => '0',
+            'f' => null,
+            'g' => [1, 2,],
         ];
 
-        self::assertEquals($array, Format::emptyToNull(
+        self::assertSame($array, Format::emptyToNull(
             [
                 0 => '1',
                 'a' => '222',
@@ -155,6 +157,8 @@ class UnitTestFormat extends TestCase
                 'c' => '',
                 'd' => 'null',
                 'e' => '0',
+                'f' => [],
+                'g' => [1, 2,],
             ],
             '0'
         ));
