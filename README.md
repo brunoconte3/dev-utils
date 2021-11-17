@@ -14,7 +14,7 @@ Uma biblioteca completa, com padrão das PSR e garantia de todos os métodos ter
 via composer.json
 
 ```
-"brunoconte3/dev-utils": "1.6.3"
+"brunoconte3/dev-utils": "1.9.0"
 ```
 
 via composer.
@@ -223,7 +223,8 @@ maxWidth e requiredFile, será possível definir o tamanho (bytes) mínimo e má
 - hour: `Valida se a hora é valida.`
 - identifier: `Valida se o CPF é válido, passando CPF com ou sem mascara`
 - identifierOrCompany: `Valida se o CPF ou CNPJ é válido, passando CPF ou CNPJ com ou sem mascara`
-- int: `Verifica se o valor é do tipo inteiro.`
+- int: `Verifica se o valor é do tipo inteiro (Se vier String o formato, ele tenta fazer o parse).`
+- integer: `Verifica se o valor é do tipo inteiro (aqui verifica a tipagem exata).`
 - ip: `Verifica se o valor é um endereço de IP válido.`
 - json: `Verifica se o valor é um json válido.`
 - lower: `Verifica se todos os caracteres são minúsculos.`
@@ -243,7 +244,7 @@ maxWidth e requiredFile, será possível definir o tamanho (bytes) mínimo e má
 - minUploadSize: `Define o tamanho (bytes) mínimo do arquivo.`
 - numeric: `Verifica se o valor contém apenas valores numéricos (Aceita zero a esquerda).`
 - numMax: `Define um valor máximo.`
-- numMin: `Define um valor mínimo.`
+- numMin: `Define um valor mínimo, sendo o mínimo o valor zero.`
 - numMonth: `Verifica se o valor é um mês válido (1 a 12).`
 - notSpace: `Verifica se a string contém espaços.`
 - noWeekend: `Verifica se a data (Brasileira ou Americada não é um Final de Semana).`
@@ -285,12 +286,10 @@ require 'vendor/autoload.php';
 use DevUtils\Format;
 
 Format::companyIdentification('39678379000129') . '<br>'; //CNPJ ==> 39.678.379/0001-29
-Format::convertTypes($datas, $rules); //Converte o valor para o tipo correto dele ['bool', 'float', 'int', 'numeric',]
 Format::convertTimestampBrazilToAmerican('15/04/2021 19:50:25'); //Converte formato Timestamp Brasil para Americana
 Format::currency('113', 'R$ ') . '<br>'; //Moeda padrão BR ==>  123,00 - o 2º parâmetro escolhe o label da Moeda
 Format::currencyUsd('1123.45') . '<br>'; //Moeda padrão USD ==> 1,123.45 - o 2º parâmetro escolhe o label da Moeda
 Format::dateAmerican('12-05-2020') . '<br>'; //Data ==>  2020-05-12
-Format::emptyToNull(['test' => 'null']) . '<br>'; //['test' => null] - o 2º parâmetro opcional, passando a excessão
 Format::dateBrazil('2020-05-12') . '<br>'; //Data ==>  12/05/2020
 Format::identifier('73381209000') . '<br>';  //CPF ==>  733.812.090-00
 Format::identifierOrCompany('30720870089') . '<br>'; //CPF/CNPJ ==> 307.208.700-89
@@ -315,6 +314,28 @@ Format::zipCode('87030585') . '<br>'; //CEP ==>  87030-585
 Format::writeDateExtensive('06/11/2020') . '<br>'; //Data por Extenso ==> sexta-feira, 06 de novembro de 2020
 Format::writeCurrencyExtensive(1.97) . '<br>'; //Moeda por Extenso ==> um real e noventa e sete centavos
 
+$data = [
+    'tratandoTipoInt' => '12',
+    'tratandoTipoFloat' => '9.63',
+    'tratandoTipoBoolean' => 'true',
+    'tratandoTipoNumeric' => '11',
+];
+$rules = [
+    'tratandoTipoInt' => 'convert|int',
+    'tratandoTipoFloat' => 'convert|float',
+    'tratandoTipoBoolean' => 'convert|bool',
+    'tratandoTipoNumeric' => 'convert|numeric',
+];
+Format::convertTypes($data, $rules); //Converte o valor para o tipo correto dele ['bool', 'float', 'int', 'numeric',]
+/*** RETORNO
+[
+  'tratandoTipoInt' => int 12
+  'tratandoTipoFloat' => float 9.63
+  'tratandoTipoBoolean' => boolean true
+  'tratandoTipoNumeric' => float 11
+]
+***/
+
 $array = [
     0 => '1',
     1 => '123',
@@ -322,8 +343,8 @@ $array = [
     'b' => 333,
     'c' => '',
 ];
-
-$arrayComNull = Format::emptyToNull($array); //Converte vazio para null
+Format::emptyToNull($array); //Converte vazio para null, - o 2º parâmetro é opcional, passando a excessão desejada
+/*** RETORNO
 [
   0 => 1,
   1 => 123,
@@ -331,6 +352,7 @@ $arrayComNull = Format::emptyToNull($array); //Converte vazio para null
   'b' => 333,
   'c' => null,
 ];
+**/
 
 //$value = Format::arrayToInt($array); ==> Opção para sem ser por Referencia
 Format::arrayToIntReference($array); //Formata valores do array em inteiro ==>
@@ -464,8 +486,17 @@ Compare::calculateAgeInYears('20/05/1989');
 //terceiro parâmetro opcional, false para não comparar caseSensitive, default true
 Compare::checkDataEquality('AçaFrão', 'Açafrão');
 
-//Compara se o conteudo desejado existe na String, retorna booleano
+//Compara se o conteúdo desejado existe na String, retorna booleano
 Compare::contains('AçaFrão', 'çaF');
+
+//Compara se a URL correspondente com o segundo parâmetro, inicia com a cadeia inserida no primeiro parâmetro. Retorna booleano.
+Compare::beginUrlWith('/teste', '/teste/variavel');
+
+//Compara se a URL correspondente com o segundo parâmetro, finaliza com a cadeia inserida no primeiro parâmetro. Retorna booleano.
+Compare::finishUrlWith('/teste', 'sistema/teste');
+
+//Compara se a cadeia correspondente com o primeiro parâmetro e igual a subcadeia obtida a partir do segundo parâmetro. Extraindo para comparar 7 catacteres do segundo parâmetro iniciando na posição 0. Retorna booleano.
+Compare::compareStringFrom('sistema', 'sistema/teste', 0, 7);
 
 ```
 
@@ -581,6 +612,14 @@ bool $numbers   ==> Se vai ter números
 bool $symbols   ==> Se vai ter simbolos
 */
 Utility::generatePassword(10);
+
+/*
+* @return string -> Cadeia URL completa
+* @param string $host -> Dominio do sistema
+* @param string $absolutePath -> Caminho absoluto
+* @param string $https -> 'on' para gerar url https, null ou outro valor, gera url http
+*/
+Utility::buildUrl('localhost', '/Framework-Cooper/testando', 'on'); // Retorna a URL
 
 ```
 

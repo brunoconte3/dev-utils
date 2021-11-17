@@ -15,7 +15,6 @@ class UnitTestRule extends TestCase
         $archive = substr(realpath(dirname(__FILE__)), 0, -5) . 'public_html' . $l . 'static' . $l . 'img'
             . $l . 'iconTest.png';
         $archive = str_replace("\\", "\\/", $archive);
-
         return [
             'name'     => 'fileUpload ',
             'type'     => 'image/jpeg',
@@ -29,7 +28,6 @@ class UnitTestRule extends TestCase
     {
         $array = ['testError' => 'a', 'testValid' => ['a' => 1, 'b' => 2]];
         $rules = ['testError' => 'array', 'testValid' => 'array'];
-
         $validator = new Validator();
         $validator->set($array, $rules);
         self::assertCount(1, $validator->getErros());
@@ -37,19 +35,35 @@ class UnitTestRule extends TestCase
 
     public function testArrayValues(): void
     {
-        $array = ['testError' => 'M', 'testValid' => 'S'];
-        $rules = ['testError' => 'arrayValues:S-N-T', 'testValid' => 'arrayValues:S-N-T'];
-
+        $array = ['testError' => 'M', 'testValid' => 'S',];
+        $rules = ['testError' => 'arrayValues:S-N-T', 'testValid' => 'arrayValues:S-N-T',];
         $validator = new Validator();
         $validator->set($array, $rules);
         self::assertCount(1, $validator->getErros());
+        $array = [
+            'dadosArrayErro' => 11,
+            'arrayVazioErro' => [],
+            'dadosArrayRequired' => ['empresa' => 'cooper'],
+        ];
+        $rules = [
+            'dadosArrayErro' => 'array',
+            'arrayVazioErro' => 'required',
+            'dadosArrayRequired' => 'required|array',
+        ];
+        $expected = [
+            'dadosArrayErro' => 'A variável dadosArrayErro não é um array!',
+            'arrayVazioErro' => 'O campo arrayVazioErro é obrigatório!',
+        ];
+        $validator = new Validator();
+        $validator->set($array, $rules);
+        self::assertCount(2, $validator->getErros());
+        self::assertSame($validator->getErros(), $expected, 'Erro');
     }
 
     public function testBool(): void
     {
-        $array = ['testError' => 'a123', 'testValid' => true];
-        $rules = ['testError' => 'int', 'testValid' => 'bool'];
-
+        $array = ['testError' => 'a123', 'testValid' => true,];
+        $rules = ['testError' => 'int', 'testValid' => 'bool',];
         $validator = new Validator();
         $validator->set($array, $rules);
         self::assertCount(1, $validator->getErros());
@@ -62,17 +76,15 @@ class UnitTestRule extends TestCase
             'testErrorEmpty' => '',
             'testValid' => '21111527000163',
             'testExceptionError' => '12123456000712',
-            'testExceptionValid' => '00000000000000'
+            'testExceptionValid' => '00000000000000',
         ];
-
         $rules = [
             'testError' => 'companyIdentification',
             'testErrorEmpty' => 'companyIdentification',
             'testValid' => 'companyIdentification',
             'testExceptionError' => 'companyIdentification:12123456000712',
-            'testExceptionValid' => 'companyIdentification:00000000000000;22222222222222'
+            'testExceptionValid' => 'companyIdentification:00000000000000;22222222222222',
         ];
-
         $validator = new Validator();
         $validator->set($array, $rules);
         self::assertCount(3, $validator->getErros());
@@ -80,9 +92,8 @@ class UnitTestRule extends TestCase
 
     public function testDateAmerican(): void
     {
-        $array = ['testError' => '1990-04-31', 'testErrorEmpty' => '', 'testValid' => '1990-04-30'];
-        $rules = ['testError' => 'dateAmerican', 'testErrorEmpty' => 'dateAmerican', 'testValid' => 'dateAmerican'];
-
+        $array = ['testError' => '1990-04-31', 'testErrorEmpty' => '', 'testValid' => '1990-04-30',];
+        $rules = ['testError' => 'dateAmerican', 'testErrorEmpty' => 'dateAmerican', 'testValid' => 'dateAmerican',];
         $validator = new Validator();
         $validator->set($array, $rules);
         self::assertCount(2, $validator->getErros());
@@ -90,8 +101,8 @@ class UnitTestRule extends TestCase
 
     public function testDateBrazil(): void
     {
-        $array = ['testError' => '31042020', 'testErrorEmpty' => '', 'testValid' => '31052020'];
-        $rules = ['testError' => 'dateBrazil', 'testErrorEmpty' => 'dateBrazil', 'testValid' => 'dateBrazil'];
+        $array = ['testError' => '31042020', 'testErrorEmpty' => '', 'testValid' => '31052020',];
+        $rules = ['testError' => 'dateBrazil', 'testErrorEmpty' => 'dateBrazil', 'testValid' => 'dateBrazil',];
 
         $validator = new Validator();
         $validator->set($array, $rules);
@@ -100,9 +111,8 @@ class UnitTestRule extends TestCase
 
     public function testEmail(): void
     {
-        $array = ['testError' => 'bruno.com', 'testValid' => 'brunoconte3@gmail.com'];
-        $rules = ['testError' => 'email', 'testValid' => 'email'];
-
+        $array = ['testError' => 'bruno.com', 'testValid' => 'brunoconte3@gmail.com',];
+        $rules = ['testError' => 'email', 'testValid' => 'email',];
         $validator = new Validator();
         $validator->set($array, $rules);
         self::assertCount(1, $validator->getErros());
@@ -110,9 +120,8 @@ class UnitTestRule extends TestCase
 
     public function testIdentifier(): void
     {
-        $array = ['testError' => '06669987788', 'testValid' => '55634405831'];
-        $rules = ['testError' => 'identifier', 'testValid' => 'identifier'];
-
+        $array = ['testError' => '06669987788', 'testValid' => '55634405831',];
+        $rules = ['testError' => 'identifier', 'testValid' => 'identifier',];
         $validator = new Validator();
         $validator->set($array, $rules);
         self::assertCount(1, $validator->getErros());
@@ -120,9 +129,8 @@ class UnitTestRule extends TestCase
 
     public function testInt(): void
     {
-        $array = ['testError' => 'a123', 'testValid' => 123];
-        $rules = ['testError' => 'int', 'testValid' => 'int'];
-
+        $array = ['testError' => 'a123', 'testValid' => 123,];
+        $rules = ['testError' => 'int', 'testValid' => 'int',];
         $validator = new Validator();
         $validator->set($array, $rules);
         self::assertCount(1, $validator->getErros());
@@ -130,9 +138,8 @@ class UnitTestRule extends TestCase
 
     public function testIp(): void
     {
-        $array = ['testError' => '1.1.0', 'testValid' => '10.202.0.58'];
-        $rules = ['testError' => 'ip', 'testValid' => 'ip'];
-
+        $array = ['testError' => '1.1.0', 'testValid' => '10.202.0.58',];
+        $rules = ['testError' => 'ip', 'testValid' => 'ip',];
         $validator = new Validator();
         $validator->set($array, $rules);
         self::assertCount(1, $validator->getErros());
@@ -140,9 +147,8 @@ class UnitTestRule extends TestCase
 
     public function testFloat(): void
     {
-        $array = ['testError' => 'a1', 'testValid' => '10.125'];
-        $rules = ['testError' => 'float', 'testValid' => 'float'];
-
+        $array = ['testError' => 'a1', 'testValid' => '10.125',];
+        $rules = ['testError' => 'float', 'testValid' => 'float',];
         $validator = new Validator();
         $validator->set($array, $rules);
         self::assertCount(1, $validator->getErros());
@@ -150,9 +156,8 @@ class UnitTestRule extends TestCase
 
     public function testHour(): void
     {
-        $array = ['testError' => '24:03', 'testValid' => '21:03'];
-        $rules = ['testError' => '{"type":"hour"}', 'testValid' => '{"type":"hour"}'];
-
+        $array = ['testError' => '24:03', 'testValid' => '21:03',];
+        $rules = ['testError' => '{"type":"hour"}', 'testValid' => '{"type":"hour"}',];
         $validator = new Validator();
         $validator->set($array, $rules);
         self::assertCount(1, $validator->getErros());
@@ -160,9 +165,8 @@ class UnitTestRule extends TestCase
 
     public function testLower(): void
     {
-        $array = ['testError' => 'Abcdção', 'testValid' => 'abcdção'];
-        $rules = ['testError' => '{"type":"lower"}', 'testValid' => '{"type":"lower"}'];
-
+        $array = ['testError' => 'Abcdção', 'testValid' => 'abcdção',];
+        $rules = ['testError' => '{"type":"lower"}', 'testValid' => '{"type":"lower"}',];
         $validator = new Validator();
         $validator->set($array, $rules);
         self::assertCount(1, $validator->getErros());
@@ -170,9 +174,8 @@ class UnitTestRule extends TestCase
 
     public function testMac(): void
     {
-        $array = ['testError' => '00:00', 'testValid' => '00-D0-56-F2-B5-12'];
-        $rules = ['testError' => 'mac', 'testValid' => 'mac'];
-
+        $array = ['testError' => '00:00', 'testValid' => '00-D0-56-F2-B5-12',];
+        $rules = ['testError' => 'mac', 'testValid' => 'mac',];
         $validator = new Validator();
         $validator->set($array, $rules);
         self::assertCount(1, $validator->getErros());
@@ -180,9 +183,8 @@ class UnitTestRule extends TestCase
 
     public function testMax(): void
     {
-        $array = ['testError' => 123, 'testValid' => "Avenida Pedra D'Água"];
-        $rules = ['testError' => 'max:2', 'testValid' => 'max:20'];
-
+        $array = ['testError' => 123, 'testValid' => "Avenida Pedra D'Água",];
+        $rules = ['testError' => 'max:2', 'testValid' => 'max:20',];
         $validator = new Validator();
         $validator->set($array, $rules);
         self::assertCount(1, $validator->getErros());
@@ -190,9 +192,8 @@ class UnitTestRule extends TestCase
 
     public function testMaxWords(): void
     {
-        $array = ['testError' => 'Jorge da Silva', 'testValid' => 'Bruno Conte'];
-        $rules = ['testError' => 'maxWords:2', 'testValid' => 'maxWords:2'];
-
+        $array = ['testError' => 'Jorge da Silva', 'testValid' => 'Bruno Conte',];
+        $rules = ['testError' => 'maxWords:2', 'testValid' => 'maxWords:2',];
         $validator = new Validator();
         $validator->set($array, $rules);
         self::assertCount(1, $validator->getErros());
@@ -200,9 +201,8 @@ class UnitTestRule extends TestCase
 
     public function testMin(): void
     {
-        $array = ['testError' => '123', 'testValid' => "Avenida Pedra D'Água"];
-        $rules = ['testError' => 'min:5', 'testValid' => 'min:20'];
-
+        $array = ['testError' => '123', 'testValid' => "Avenida Pedra D'Água",];
+        $rules = ['testError' => 'min:5', 'testValid' => 'min:20',];
         $validator = new Validator();
         $validator->set($array, $rules);
         self::assertCount(1, $validator->getErros());
@@ -210,9 +210,8 @@ class UnitTestRule extends TestCase
 
     public function testMinWords(): void
     {
-        $array = ['testError' => 'Jorge da Silva', 'testValid' => 'Bruno Conte'];
-        $rules = ['testError' => 'minWords:4', 'testValid' => 'minWords:2'];
-
+        $array = ['testError' => 'Jorge da Silva', 'testValid' => 'Bruno Conte',];
+        $rules = ['testError' => 'minWords:4', 'testValid' => 'minWords:2',];
         $validator = new Validator();
         $validator->set($array, $rules);
         self::assertCount(1, $validator->getErros());
@@ -220,9 +219,8 @@ class UnitTestRule extends TestCase
 
     public function testNoWeekend(): void
     {
-        $array = ['testError' => '10/10/2020', 'testValid' => '16/10/2020'];
-        $rules = ['testError' => 'noWeekend', 'testValid' => 'noWeekend'];
-
+        $array = ['testError' => '10/10/2020', 'testValid' => '16/10/2020',];
+        $rules = ['testError' => 'noWeekend', 'testValid' => 'noWeekend',];
         $validator = new Validator();
         $validator->set($array, $rules);
         self::assertCount(1, $validator->getErros());
@@ -230,9 +228,8 @@ class UnitTestRule extends TestCase
 
     public function testNumeric(): void
     {
-        $array = ['testError' => 'a', 'testValid' => 123];
-        $rules = ['testError' => 'numeric', 'testValid' => 'numeric'];
-
+        $array = ['testError' => 'a', 'testValid' => 123,];
+        $rules = ['testError' => 'numeric', 'testValid' => 'numeric',];
         $validator = new Validator();
         $validator->set($array, $rules);
         self::assertCount(1, $validator->getErros());
@@ -240,9 +237,8 @@ class UnitTestRule extends TestCase
 
     public function testNumMax(): void
     {
-        $array = ['testError' => 32, 'testValid' => 31, 'testErrorMaxZero' => '2'];
-        $rules = ['testError' => 'numMax:31', 'testValid' => 'numMax:31', 'testErrorMaxZero' => 'numMax:0'];
-
+        $array = ['testError' => 32, 'testValid' => 31, 'testErrorMaxZero' => '2',];
+        $rules = ['testError' => 'numMax:31', 'testValid' => 'numMax:31', 'testErrorMaxZero' => 'numMax:0',];
         $validator = new Validator();
         $validator->set($array, $rules);
         self::assertCount(2, $validator->getErros());
@@ -250,18 +246,29 @@ class UnitTestRule extends TestCase
 
     public function testNumMin(): void
     {
-        $array = ['testError' => 2, 'testeErrorNoInt' => 'a', 'testValid' => 8];
-        $rules = ['testError' => 'numMin:5', 'testeErrorNoInt' => 'numMin:5', 'testValid' => 'numMin:5'];
-
+        $array = [
+            'testError' => 2,
+            'testeErrorNoInt' => 'a',
+            'testeErrorNegative' => '-2',
+            'testValid' => 8,
+            'testValidZero' => '0',
+        ];
+        $rules = [
+            'testError' => 'numMin:5',
+            'testeErrorNoInt' => 'numMin:5',
+            'testeErrorNegative' => 'numMin:-2',
+            'testValid' => 'numMin:5',
+            'testValidZero' => 'numMin:0',
+        ];
         $validator = new Validator();
         $validator->set($array, $rules);
-        self::assertCount(1, $validator->getErros());
+        self::assertCount(2, $validator->getErros());
     }
 
     public function testOptional(): void
     {
         $validator = new Validator();
-        $validator->set(['test' => null], ['test' => 'optional|min:2|int']);
+        $validator->set(['test' => null,], ['test' => 'optional|min:2|int',]);
         self::assertFalse($validator->getErros());
     }
 
@@ -269,13 +276,12 @@ class UnitTestRule extends TestCase
     {
         $array = [
             'testError' => '@&451',
-            'testValid' => 123
+            'testValid' => 123,
         ];
         $rules = [
             'testError' => '{"required":"true","type":"alpha"}',
-            'testValid' => '{"required":"true","type":"int"}'
+            'testValid' => '{"required":"true","type":"int"}',
         ];
-
         $validator = new Validator();
         $validator->set($array, $rules);
         self::assertCount(1, $validator->getErros());
@@ -283,9 +289,8 @@ class UnitTestRule extends TestCase
 
     public function testPhone(): void
     {
-        $array = ['testError' => '444569874', 'testValid' => '4433467847', 'testMask' => '(44) 99932-5847'];
-        $rules = ['testError' => 'phone', 'testValid' => 'phone', 'testMask' => 'phone'];
-
+        $array = ['testError' => '444569874', 'testValid' => '4433467847', 'testMask' => '(44) 99932-5847',];
+        $rules = ['testError' => 'phone', 'testValid' => 'phone', 'testMask' => 'phone',];
         $validator = new Validator();
         $validator->set($array, $rules);
         self::assertCount(1, $validator->getErros());
@@ -293,9 +298,8 @@ class UnitTestRule extends TestCase
 
     public function testPlate(): void
     {
-        $array = ['testError' => 'aXI3668', 'testValid' => 'AXI-3668'];
-        $rules = ['testError' => 'plate', 'testValid' => 'plate'];
-
+        $array = ['testError' => 'aXI3668', 'testValid' => 'AXI-3668',];
+        $rules = ['testError' => 'plate', 'testValid' => 'plate',];
         $validator = new Validator();
         $validator->set($array, $rules);
         self::assertCount(1, $validator->getErros());
@@ -303,9 +307,8 @@ class UnitTestRule extends TestCase
 
     public function testRegEx(): void
     {
-        $array = ['testError' => 'bruno_conte3', 'testValid' => 'Bruno Conte'];
-        $rules = ['testError' => 'regex:/^[a-zA-Z\s]+$/', 'testValid' => 'regex:/^[a-zA-Z\s]+$/'];
-
+        $array = ['testError' => 'bruno_conte3', 'testValid' => 'Bruno Conte',];
+        $rules = ['testError' => 'regex:/^[a-zA-Z\s]+$/', 'testValid' => 'regex:/^[a-zA-Z\s]+$/',];
         $validator = new Validator();
         $validator->set($array, $rules);
         self::assertCount(1, $validator->getErros());
@@ -322,7 +325,7 @@ class UnitTestRule extends TestCase
             'f' => 'abc',
             'g' => 123,
             'h' => '0',
-            'i' => 0
+            'i' => 0,
         ];
         $rules = [
             'a' => 'required',
@@ -333,7 +336,7 @@ class UnitTestRule extends TestCase
             'f' => 'required',
             'g' => 'required',
             'h' => 'required',
-            'i' => 'required'
+            'i' => 'required',
         ];
 
         $validator = new Validator();
@@ -351,7 +354,7 @@ class UnitTestRule extends TestCase
             'testAlphaValid'             => 'Ele usa um dicionário com mais de X palavras',
             'testAlphaNoSpecialValid'    => 'Ele usa um dicionario com mais de X palavras',
             'testAlphaNumValid'          => 'Ele usa um dicionário com mais de 200 palavras',
-            'testAlphaNumNoSpecialValid' => 'Ele usa um dicionario com mais de 200 palavras'
+            'testAlphaNumNoSpecialValid' => 'Ele usa um dicionario com mais de 200 palavras',
         ];
         $rules = [
             'testAlphaError'             => 'type:alpha',
@@ -361,9 +364,8 @@ class UnitTestRule extends TestCase
             'testAlphaValid'             => 'type:alpha',
             'testAlphaNoSpecialValid'    => 'type:alphaNoSpecial',
             'testAlphaNumValid'          => 'type:alphaNum',
-            'testAlphaNumNoSpecialValid' => 'type:alphaNumNoSpecial'
+            'testAlphaNumNoSpecialValid' => 'type:alphaNumNoSpecial',
         ];
-
         $validator = new Validator();
         $validator->set($array, $rules);
         self::assertCount(4, $validator->getErros());
@@ -371,9 +373,8 @@ class UnitTestRule extends TestCase
 
     public function testUpper(): void
     {
-        $array = ['testError' => 'AbcDçÃo', 'testValid' => 'ABCDÇÃO'];
-        $rules = ['testError' => 'upper', 'testValid' => 'upper'];
-
+        $array = ['testError' => 'AbcDçÃo', 'testValid' => 'ABCDÇÃO',];
+        $rules = ['testError' => 'upper', 'testValid' => 'upper',];
         $validator = new Validator();
         $validator->set($array, $rules);
         self::assertCount(1, $validator->getErros());
@@ -381,9 +382,8 @@ class UnitTestRule extends TestCase
 
     public function testUrl(): void
     {
-        $array = ['testError' => 'ww.test.c', 'testValid' => 'https://www.google.com.br'];
-        $rules = ['testError' => 'url', 'testValid' => 'url'];
-
+        $array = ['testError' => 'ww.test.c', 'testValid' => 'https://www.google.com.br',];
+        $rules = ['testError' => 'url', 'testValid' => 'url',];
         $validator = new Validator();
         $validator->set($array, $rules);
         self::assertCount(1, $validator->getErros());
@@ -391,9 +391,8 @@ class UnitTestRule extends TestCase
 
     public function testZipcode(): void
     {
-        $array = ['testError' => '870475', 'testValid' => '87047510'];
-        $rules = ['testError' => 'zipcode', 'testValid' => 'zipcode'];
-
+        $array = ['testError' => '870475', 'testValid' => '87047510',];
+        $rules = ['testError' => 'zipcode', 'testValid' => 'zipcode',];
         $validator = new Validator();
         $validator->set($array, $rules);
         self::assertCount(1, $validator->getErros());
@@ -404,50 +403,42 @@ class UnitTestRule extends TestCase
         $msg = 'Mensagem customizada aqui, devendo conter no mínimo uma vírgula!';
         $array = [
             'textoError' => 'abc',
-            'textoValid' => 'abcde'
+            'textoValid' => 'abcde',
         ];
         $rules = [
             'textoError' => 'required|min:5, ' . $msg . '|max:20',
-            'textoValid' => 'required|min:5, ' . $msg . '|max:20'
+            'textoValid' => 'required|min:5, ' . $msg . '|max:20',
         ];
-
         $validator = new Validator();
         $validator->set($array, $rules);
-
         self::assertCount(1, $validator->getErros());
         self::assertEquals($msg, $validator->getErros()['textoError']);
     }
 
     public function testNotSpace(): void
     {
-        $array = ['validarEspacoError' => 'BRU C', 'validarEspacoValid' => 'BRUC'];
-        $rules = ['validarEspacoError' => 'notSpace', 'validarEspacoValid' => 'notSpace'];
-
+        $array = ['validarEspacoError' => 'BRU C', 'validarEspacoValid' => 'BRUC',];
+        $rules = ['validarEspacoError' => 'notSpace', 'validarEspacoValid' => 'notSpace',];
         $validator = new Validator();
         $validator->set($array, $rules);
-
         self::assertCount(1, $validator->getErros());
     }
 
     public function testJson(): void
     {
-        $array = ['validaJsonError' => '"nome": "Bruno"}', 'validaJsonValid' => '{"nome": "Bruno"}'];
-        $rules = ['validaJsonError' => 'type:json', 'validaJsonValid' => 'type:json'];
-
+        $array = ['validaJsonError' => '"nome": "Bruno"}', 'validaJsonValid' => '{"nome": "Bruno"}',];
+        $rules = ['validaJsonError' => 'type:json', 'validaJsonValid' => 'type:json',];
         $validator = new Validator();
         $validator->set($array, $rules);
-
         self::assertCount(1, $validator->getErros());
     }
 
     public function testNumMonth(): void
     {
-        $array = ['validaMesError' => 13, 'validaMesValid' => 10];
-        $rules = ['validaMesError' => 'numMonth', 'validaMesValid' => 'numMonth'];
-
+        $array = ['validaMesError' => 13, 'validaMesValid' => 10,];
+        $rules = ['validaMesError' => 'numMonth', 'validaMesValid' => 'numMonth',];
         $validator = new Validator();
         $validator->set($array, $rules);
-
         self::assertCount(1, $validator->getErros());
     }
 
@@ -460,7 +451,6 @@ class UnitTestRule extends TestCase
             'cpfOuCnpjExceptionValid' => '00.000.000/0000-00',
             'cpfOuCnpjInvalid' => '0966894790',
         ];
-
         $rules = [
             'cpfOuCnpjerror' => 'identifierOrCompany',
             'cpfOuCnpjValid' => 'identifierOrCompany',
@@ -468,10 +458,8 @@ class UnitTestRule extends TestCase
             'cpfOuCnpjExceptionValid' => 'identifierOrCompany:00000000000000;22222222222222',
             'cpfOuCnpjInvalid' => 'identifierOrCompany',
         ];
-
         $validator = new Validator();
         $validator->set($array, $rules);
-
         self::assertCount(3, $validator->getErros());
     }
 
@@ -484,25 +472,21 @@ class UnitTestRule extends TestCase
             'error' => 0,
             'size' => 8488,
         ];
-
         $fileUploadMultiple = [
-            'name'     => ['0' => 'JPG - Validação upload v.1.jpg', '1' => 'PDF - Validação upload v.1.pdf'],
-            'type'     => ['0' => 'image/jpeg', '1' => 'application/pdf'],
-            'tmp_name' => ['0' => '/tmp/phpODnLGo', '1' => '/tmp/phpfmb0tL'],
-            'error'    => ['0' => 0, '1' => 0],
-            'size'     => ['0' => 8488, '1' => 818465],
+            'name'     => ['0' => 'JPG - Validação upload v.1.jpg', '1' => 'PDF - Validação upload v.1.pdf',],
+            'type'     => ['0' => 'image/jpeg', '1' => 'application/pdf',],
+            'tmp_name' => ['0' => '/tmp/phpODnLGo', '1' => '/tmp/phpfmb0tL',],
+            'error'    => ['0' => 0, '1' => 0,],
+            'size'     => ['0' => 8488, '1' => 818465,],
         ];
-
         $array = [
             'fileUploadSingle' => $fileUploadSingle,
             'fileUploadMultiple' => $fileUploadMultiple,
         ];
-
         $rules = [
             'fileUploadSingle' => 'maxUploadSize:5550',
             'fileUploadMultiple' => 'maxUploadSize:5550',
         ];
-
         $validator = new Validator();
         $validator->set($array, $rules);
         self::assertCount(2, $validator->getErros());
@@ -517,25 +501,21 @@ class UnitTestRule extends TestCase
             'error' => 0,
             'size' => 3589,
         ];
-
         $fileUploadMultiple = [
-            'name'     => ['0' => 'JPG - Validação upload v.1.jpg', '1' => 'PDF - Validação upload v.1.pdf'],
-            'type'     => ['0' => 'image/jpeg', '1' => 'application/pdf'],
-            'tmp_name' => ['0' => '/tmp/phpODnLGo', '1' => '/tmp/phpfmb0tL'],
-            'error'    => ['0' => 0, '1' => 0],
-            'size'     => ['0' => 4450, '1' => 4980],
+            'name'     => ['0' => 'JPG - Validação upload v.1.jpg', '1' => 'PDF - Validação upload v.1.pdf',],
+            'type'     => ['0' => 'image/jpeg', '1' => 'application/pdf',],
+            'tmp_name' => ['0' => '/tmp/phpODnLGo', '1' => '/tmp/phpfmb0tL',],
+            'error'    => ['0' => 0, '1' => 0,],
+            'size'     => ['0' => 4450, '1' => 4980,],
         ];
-
         $array = [
             'fileUploadSingle' => $fileUploadSingle,
             'fileUploadMultiple' => $fileUploadMultiple,
         ];
-
         $rules = [
             'fileUploadSingle' => 'minUploadSize:5550',
             'fileUploadMultiple' => 'minUploadSize:5550',
         ];
-
         $validator = new Validator();
         $validator->set($array, $rules);
         self::assertCount(2, $validator->getErros());
@@ -550,25 +530,21 @@ class UnitTestRule extends TestCase
             'error' => 0,
             'size' => 8488,
         ];
-
         $fileUploadMultiple = [
-            'name'     => ['0' => 'JPG - Validação upload v.1.jpg', '1' => 'PDF - Validação upload v.1.pdf'],
-            'type'     => ['0' => 'image/jpeg', '1' => 'application/pdf'],
-            'tmp_name' => ['0' => '/tmp/phpODnLGo', '1' => '/tmp/phpfmb0tL'],
-            'error'    => ['0' => 0, '1' => 0],
-            'size'     => ['0' => 8488, '1' => 818465],
+            'name'     => ['0' => 'JPG - Validação upload v.1.jpg', '1' => 'PDF - Validação upload v.1.pdf',],
+            'type'     => ['0' => 'image/jpeg', '1' => 'application/pdf',],
+            'tmp_name' => ['0' => '/tmp/phpODnLGo', '1' => '/tmp/phpfmb0tL',],
+            'error'    => ['0' => 0, '1' => 0,],
+            'size'     => ['0' => 8488, '1' => 818465,],
         ];
-
         $array = [
             'fileUploadSingle' => $fileUploadSingle,
             'fileUploadMultiple' => $fileUploadMultiple,
         ];
-
         $rules = [
             'fileUploadSingle' => 'mimeType:jpeg;png',
             'fileUploadMultiple' => 'mimeType:png;svg',
         ];
-
         $validator = new Validator();
         $validator->set($array, $rules);
         self::assertCount(2, $validator->getErros());
@@ -583,25 +559,21 @@ class UnitTestRule extends TestCase
             'error' => 0,
             'size' => 8488,
         ];
-
         $fileUploadMultiple = [
-            'name'     => ['0' => 'JPG - Validação upload v.1.jpg', '1' => 'PDF - Validação upload v.1.pdf'],
-            'type'     => ['0' => 'image/jpeg', '1' => 'application/pdf'],
-            'tmp_name' => ['0' => '/tmp/phpODnLGo', '1' => '/tmp/phpfmb0tL'],
-            'error'    => ['0' => 0, '1' => 0],
-            'size'     => ['0' => 8488, '1' => 818465],
+            'name'     => ['0' => 'JPG - Validação upload v.1.jpg', '1' => 'PDF - Validação upload v.1.pdf',],
+            'type'     => ['0' => 'image/jpeg', '1' => 'application/pdf',],
+            'tmp_name' => ['0' => '/tmp/phpODnLGo', '1' => '/tmp/phpfmb0tL',],
+            'error'    => ['0' => 0, '1' => 0,],
+            'size'     => ['0' => 8488, '1' => 818465,],
         ];
-
         $array = [
             'fileUploadSingle' => $fileUploadSingle,
             'fileUploadMultiple' => $fileUploadMultiple,
         ];
-
         $rules = [
             'fileUploadSingle' => 'fileName',
             'fileUploadMultiple' => 'fileName',
         ];
-
         $validator = new Validator();
         $validator->set($array, $rules);
         self::assertFalse($validator->getErros());
@@ -616,25 +588,21 @@ class UnitTestRule extends TestCase
             'error' => 4,
             'size' => 0,
         ];
-
         $fileUploadMultiple = [
-            'name'     => ['0' => ''],
-            'type'     => ['0' => ''],
-            'tmp_name' => ['0' => ''],
-            'error'    => ['0' => 4],
-            'size'     => ['0' => 0],
+            'name'     => ['0' => '',],
+            'type'     => ['0' => '',],
+            'tmp_name' => ['0' => '',],
+            'error'    => ['0' => 4,],
+            'size'     => ['0' => 0,],
         ];
-
         $array = [
             'fileUploadSingle' => $fileUploadSingle,
             'fileUploadMultiple' => $fileUploadMultiple,
         ];
-
         $rules = [
             'fileUploadSingle' => 'requiredFile',
             'fileUploadMultiple' => 'requiredFile',
         ];
-
         $validator = new Validator();
         $validator->set($array, $rules);
         self::assertCount(2, $validator->getErros());
@@ -643,16 +611,14 @@ class UnitTestRule extends TestCase
     public function testMaxFile(): void
     {
         $fileUploadMultiple = [
-            'name'     => ['0' => 'JPG - Validação upload v.1.jpg', '1' => 'PDF - Validação upload v.1.pdf'],
-            'type'     => ['0' => 'image/jpeg', '1' => 'application/pdf'],
-            'tmp_name' => ['0' => '/tmp/phpODnLGo', '1' => '/tmp/phpfmb0tL'],
-            'error'    => ['0' => 0, '1' => 0],
-            'size'     => ['0' => 8488, '1' => 818465],
+            'name'     => ['0' => 'JPG - Validação upload v.1.jpg', '1' => 'PDF - Validação upload v.1.pdf',],
+            'type'     => ['0' => 'image/jpeg', '1' => 'application/pdf',],
+            'tmp_name' => ['0' => '/tmp/phpODnLGo', '1' => '/tmp/phpfmb0tL',],
+            'error'    => ['0' => 0, '1' => 0,],
+            'size'     => ['0' => 8488, '1' => 818465,],
         ];
-
-        $array = ['fileUploadMultiple' => $fileUploadMultiple];
-        $rules = ['fileUploadMultiple' => 'maxFile:1'];
-
+        $array = ['fileUploadMultiple' => $fileUploadMultiple,];
+        $rules = ['fileUploadMultiple' => 'maxFile:1',];
         $validator = new Validator();
         $validator->set($array, $rules);
         self::assertCount(1, $validator->getErros());
@@ -667,25 +633,21 @@ class UnitTestRule extends TestCase
             'error' => 4,
             'size' => 0,
         ];
-
         $fileUploadMultiple = [
-            'name'     => ['0' => 'JPG - Validação upload v.1.jpg'],
-            'type'     => ['0' => 'image/jpeg'],
-            'tmp_name' => ['0' => '/tmp/phpODnLGo'],
-            'error'    => ['0' => 0],
-            'size'     => ['0' => 8488],
+            'name'     => ['0' => 'JPG - Validação upload v.1.jpg',],
+            'type'     => ['0' => 'image/jpeg',],
+            'tmp_name' => ['0' => '/tmp/phpODnLGo',],
+            'error'    => ['0' => 0,],
+            'size'     => ['0' => 8488,],
         ];
-
         $array = [
             'fileUploadSingle' => $fileUploadSingle,
             'fileUploadMultiple' => $fileUploadMultiple,
         ];
-
         $rules = [
             'fileUploadSingle' => 'minFile:1',
             'fileUploadMultiple' => 'minFile:2',
         ];
-
         $validator = new Validator();
         $validator->set($array, $rules);
         self::assertCount(2, $validator->getErros());
@@ -699,17 +661,14 @@ class UnitTestRule extends TestCase
             'dateHourBrasilError' => '15/04/2021 21:01',
             'dateHourBrasilValid' => '15/04/2021 21:01:04',
         ];
-
         $rules = [
             'dateHourAmericanError' => 'timestamp',
             'dateHourAmericanValid' => 'timestamp',
             'dateHourBrasilError' => 'timestamp',
             'dateHourBrasilValid' => 'timestamp',
         ];
-
         $validator = new Validator();
         $validator->set($array, $rules);
-
         self::assertCount(2, $validator->getErros());
     }
 
@@ -725,17 +684,14 @@ class UnitTestRule extends TestCase
             'confirmarSenha' => 'min:3|max:5|alpha|equals:senha',
             'regraInvalida' => 'equals',
         ];
-
         $validator = new Validator();
         $validator->set($array, $rules);
-
         self::assertCount(2, $validator->getErros());
     }
 
     public function testMaxWidth(): void
     {
         $_FILES = $this->mountFileSingle();
-
         $array = [
             'fileUploadError' => $_FILES,
             'fileUploadValid' => $_FILES,
@@ -744,17 +700,14 @@ class UnitTestRule extends TestCase
             'fileUploadError' => 'maxWidth:100',
             'fileUploadValid' => 'maxWidth:200',
         ];
-
         $validator = new Validator();
         $validator->set($array, $rules);
-
         self::assertCount(1, $validator->getErros());
     }
 
     public function testMaxHeight(): void
     {
         $_FILES = $this->mountFileSingle();
-
         $array = [
             'fileUploadError' => $_FILES,
             'fileUploadValid' => $_FILES,
@@ -763,7 +716,6 @@ class UnitTestRule extends TestCase
             'fileUploadError' => 'maxHeight:100',
             'fileUploadValid' => 'maxHeight:200',
         ];
-
         $validator = new Validator();
         $validator->set($array, $rules);
 
@@ -773,7 +725,6 @@ class UnitTestRule extends TestCase
     public function testMinWidth(): void
     {
         $_FILES = $this->mountFileSingle();
-
         $array = [
             'fileUploadError' => $_FILES,
             'fileUploadValid' => $_FILES,
@@ -782,17 +733,14 @@ class UnitTestRule extends TestCase
             'fileUploadError' => 'minWidth:500',
             'fileUploadValid' => 'minWidth:200',
         ];
-
         $validator = new Validator();
         $validator->set($array, $rules);
-
         self::assertCount(1, $validator->getErros());
     }
 
     public function testMinHeight(): void
     {
         $_FILES = $this->mountFileSingle();
-
         $array = [
             'fileUploadError' => $_FILES,
             'fileUploadValid' => $_FILES,
@@ -801,10 +749,8 @@ class UnitTestRule extends TestCase
             'fileUploadError' => 'minHeight:500',
             'fileUploadValid' => 'minHeight:200',
         ];
-
         $validator = new Validator();
         $validator->set($array, $rules);
-
         self::assertCount(1, $validator->getErros());
     }
 }

@@ -11,9 +11,9 @@ trait TraitRule
             'validateAlphaNumerics', 'validateEmail', 'validateIdentifier', 'validateIp',
             'validateLower', 'validateMac', 'validatePlate', 'validatePhone', 'validateRgbColor',
             'validateSpace', 'validateUpper', 'validateUrl', 'validateZipCode', 'validateInteger',
-            'validateNumeric', 'validateNumMonth', 'validateFileName', 'validateFileUploadMandatory',
-            'validateDateBrazil', 'validateDateAmerican', 'validateHour', 'validateTimestamp',
-            'validateWeekend', 'validateArray', 'validateFieldMandatory', 'validateBoolean',
+            'validateIntegerTyped', 'validateNumeric', 'validateNumMonth', 'validateFileName',
+            'validateFileUploadMandatory', 'validateDateBrazil', 'validateDateAmerican', 'validateHour',
+            'validateTimestamp', 'validateWeekend', 'validateArray', 'validateFieldMandatory', 'validateBoolean',
             'validateFloating', 'validateJson',
         ];
     }
@@ -39,6 +39,7 @@ trait TraitRule
             'identifier' => 'validateIdentifier',
             'identifierOrCompany' => 'validateIdentifierOrCompany',
             'int' => 'validateInteger',
+            'integer' => 'validateIntegerTyped',
             'ip' => 'validateIp',
             'json' => 'validateJson',
             'lower' => 'validateLower',

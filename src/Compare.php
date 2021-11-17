@@ -115,4 +115,34 @@ class Compare
     {
         return strpos($value, $search) !== false;
     }
+
+    public static function compareStringFrom(string $search, string $str, int $start, int $length): bool
+    {
+        if ($str === $search) {
+            return true;
+        }
+        if (substr($str, $start, $length) === $search) {
+            return true;
+        }
+        return false;
+    }
+
+    public static function beginUrlWith(string $search, string $url): bool
+    {
+        $newSearch = strtoupper(str_replace('/', '', $search));
+        $urlLessDivideBar = strtoupper(str_replace('/', '', $url));
+        return self::compareStringFrom($newSearch, $urlLessDivideBar, 0, strlen($newSearch));
+    }
+
+    public static function finishUrlWith(string $search, string $url): bool
+    {
+        $newSearch = strtoupper(str_replace('/', '', $search));
+        $urlLessDivideBar = strtoupper(str_replace('/', '', $url));
+        return self::compareStringFrom(
+            $newSearch,
+            $urlLessDivideBar,
+            (strlen($urlLessDivideBar) - strlen($newSearch)),
+            strlen($urlLessDivideBar)
+        );
+    }
 }
