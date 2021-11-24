@@ -14,7 +14,7 @@ Uma biblioteca completa, com padrão das PSR e garantia de todos os métodos ter
 via composer.json
 
 ```
-"brunoconte3/dev-utils": "1.9.1"
+"brunoconte3/dev-utils": "1.10.0"
 ```
 
 via composer.
@@ -313,7 +313,7 @@ Format::upper('Moto') . '<br>'; //Mauiusculo ==> MOTO - o 2º parâmetro escolhe
 Format::zipCode('87030585') . '<br>'; //CEP ==>  87030-585
 Format::writeDateExtensive('06/11/2020') . '<br>'; //Data por Extenso ==> sexta-feira, 06 de novembro de 2020
 Format::writeCurrencyExtensive(1.97) . '<br>'; //Moeda por Extenso ==> um real e noventa e sete centavos
-
+Format::convertStringToBinary('amor') . '<br>'; //String para binário ==> 1100001 1101101 1101111 1110010
 $data = [
     'tratandoTipoInt' => '12',
     'tratandoTipoFloat' => '9.63',

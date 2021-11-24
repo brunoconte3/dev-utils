@@ -342,4 +342,15 @@ class Format extends FormatAux
         $dateTime = \DateTime::createFromFormat('d/m/Y H:i:s', $dt);
         return $dateTime->format('Y-m-d H:i:s');
     }
+
+    public static function convertStringToBinary (string $string): string
+    {
+        $characters = str_split($string);
+        $binario = [];
+        foreach ($characters as $character) {
+            $data = unpack('H*', $character);
+            $binario[] = base_convert($data[1], 16, 2);
+        }
+        return implode(' ', $binario);
+    }
 }
