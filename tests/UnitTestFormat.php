@@ -259,4 +259,10 @@ class UnitTestFormat extends TestCase
     {
         self::assertEquals('2021-04-15 19:50:25', Format::convertTimestampBrazilToAmerican('15/04/2021 19:50:25'));
     }
+
+    public function testConvertStringToBinary(): void
+    {
+        self::assertEquals('1100001 1101101 1101111 1110010', Format::convertStringToBinary('amor'));
+        self::assertNotSame('1100001 1101101 1101111 1110010', Format::convertStringToBinary('casa'));
+    }
 }
