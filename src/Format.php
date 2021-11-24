@@ -343,7 +343,7 @@ class Format extends FormatAux
         return $dateTime->format('Y-m-d H:i:s');
     }
 
-    public static function converterStringParaBinario(string $string): string
+    public static function convertStringToBinary (string $string): string
     {
         $characters = str_split($string);
         $binario = [];
