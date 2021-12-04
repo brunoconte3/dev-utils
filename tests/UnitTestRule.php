@@ -317,27 +317,21 @@ class UnitTestRule extends TestCase
     public function testRequired(): void
     {
         $array = [
-            'a' => '',
-            'b' => null,
-            'c' => false,
-            'd' => [],
-            'e' => '   ',
-            'f' => 'abc',
-            'g' => 123,
-            'h' => '0',
-            'i' => 0,
+            '',
+            null,
+            false,
+            [],
+            '   ',
+            'abc',
+            123,
+            '0',
+            0,
+            '<p>Texto com HTML <span style="color: #3598db;">sadasdasdasd</span></p>',
         ];
-        $rules = [
-            'a' => 'required',
-            'b' => 'required',
-            'c' => 'required',
-            'd' => 'required',
-            'e' => 'required',
-            'f' => 'required',
-            'g' => 'required',
-            'h' => 'required',
-            'i' => 'required',
-        ];
+        $rules = [];
+        foreach ($array as $key => $valor) {
+            $rules[$key] = 'required';
+        }
 
         $validator = new Validator();
         $validator->set($array, $rules);

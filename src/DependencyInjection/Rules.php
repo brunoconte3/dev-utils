@@ -137,7 +137,7 @@ class Rules
             if (is_array($val)) {
                 $data[$key] = $this->levelSubLevelsArrayReturnJson($val, true);
             } elseif (is_string($val)) {
-                $data[$key] = $this->prepareCharset(addslashes($val), 'UTF-8');
+                $data[$key] = $this->prepareCharset(addslashes(strip_tags($val)), 'UTF-8');
             }
         }
         if ($recursive) {
@@ -147,7 +147,7 @@ class Rules
         return strtr(json_encode(
             $data,
             JSON_UNESCAPED_UNICODE
-        ), ["\r" => '', "\n" => '', "\t" => '', "\\" => ""]);
+        ), ["\r" => '', "\n" => '', "\t" => '', "\\" => '']);
     }
 
     protected function validateSubLevelData(
