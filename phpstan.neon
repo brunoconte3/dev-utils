@@ -4,3 +4,4 @@ parameters:
         - conf/confDefine.php
     paths:
         - src
+    checkMissingIterableValueType: false

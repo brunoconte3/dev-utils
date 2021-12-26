@@ -289,11 +289,21 @@ class UnitTestRule extends TestCase
 
     public function testPhone(): void
     {
-        $array = ['testError' => '444569874', 'testValid' => '4433467847', 'testMask' => '(44) 99932-5847',];
-        $rules = ['testError' => 'phone', 'testValid' => 'phone', 'testMask' => 'phone',];
+        $array = [
+            'testError' => '444569874',
+            'testValid' => '4433467847',
+            'testMask' => '(44) 99932-5847',
+            'testInvalidRule' => 'br',
+        ];
+        $rules = [
+            'testError' => 'phone',
+            'testValid' => 'phone',
+            'testMask' => 'phone',
+            'testInvalidRule' => 'naoExisteEssaRegra',
+        ];
         $validator = new Validator();
         $validator->set($array, $rules);
-        self::assertCount(1, $validator->getErros());
+        self::assertCount(2, $validator->getErros());
     }
 
     public function testPlate(): void

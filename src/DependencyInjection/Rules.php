@@ -200,12 +200,7 @@ class Rules
                             if (array_key_exists(1, $conf) && !empty($conf[1])) {
                                 $rulesArray['mensagem'] = trim(strip_tags($conf[1]));
                             }
-                            if (!empty($ruleArrayConf)) {
-                                $rulesArray[$ruleArrayConf[0] ?? (count($rulesArray) + 1)] = $ruleArrayConf[1] ?? true;
-                            }
-                        }
-                        if (empty($rulesArray)) {
-                            $this->errors[$field] = "Há errors no json de regras de validação do campo $field!";
+                            $rulesArray[$ruleArrayConf[0] ?? (count($rulesArray) + 1)] = $ruleArrayConf[1] ?? true;
                         }
                     }
                 }
@@ -295,12 +290,7 @@ class Rules
                     $rulesConf = explode('|', trim($rules));
                     foreach ($rulesConf as $valueRuleConf) {
                         $ruleArrayConf =  explode(':', trim($valueRuleConf));
-                        if (!empty($ruleArrayConf)) {
-                            $rulesArray[$ruleArrayConf[0] ?? (count($rulesArray) + 1)] = $ruleArrayConf[1] ?? true;
-                        }
-                    }
-                    if (empty($rulesArray)) {
-                        $this->errors[$field] = "Há errors no json de regras de validação do campo $field!";
+                        $rulesArray[$ruleArrayConf[0] ?? (count($rulesArray) + 1)] = $ruleArrayConf[1] ?? true;
                     }
                     //$this->errors[$field] = "Há regras de validação não implementadas no campo $field!";
                 }
