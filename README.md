@@ -470,16 +470,16 @@ require 'vendor/autoload.php';
 use DevUtils\Compare;
 
 //Retorna +30 (+30 dias de diferença)
-Compare::daysDifferenceBetweenData('31/05/2020', '30/06/2020') . '<br>'; //Aceita data Americana também
+Compare::daysDifferenceBetweenData('31/05/2020', '30/06/2020'); //Aceita data Americana também
 
 //Compara se a data inicial é menor que a data final => Retorna [bool]
-Compare::startDateLessThanEnd('30/07/2020', '30/06/2020') . '<br>'; //Aceita data Americana também
+Compare::startDateLessThanEnd('30/07/2020', '30/06/2020'); //Aceita data Americana também
 
 //Diferença entre horas ==> 01:36:28 [Horas exibe negativo e positivo a diferença]
-Compare::differenceBetweenHours('10:41:55', '12:18:23') . '<br>';
+Compare::differenceBetweenHours('10:41:55', '12:18:23');
 
 //Compara se a hora inicial é menor que a hora final (3º parâmetro, aceita mensagem customizada)
-Compare::startHourLessThanEnd('12:05:01', '10:20:01') . '<br>';
+Compare::startHourLessThanEnd('12:05:01', '10:20:01');
 
 //Compara a data com a data atual, e retorna a idade da pessoa
 Compare::calculateAgeInYears('20/05/1989');
