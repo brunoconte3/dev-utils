@@ -285,37 +285,37 @@ require 'vendor/autoload.php';
 
 use DevUtils\Format;
 
-Format::companyIdentification('39678379000129') . '<br>'; //CNPJ ==> 39.678.379/0001-29
+Format::companyIdentification('39678379000129'); //CNPJ ==> 39.678.379/0001-29
 Format::convertTimestampBrazilToAmerican('15/04/2021 19:50:25'); //Converte formato Timestamp Brasil para Americana
-Format::currency('113', 'R$ ') . '<br>'; //Moeda padrão BR ==>  123,00 - o 2º parâmetro escolhe o label da Moeda
-Format::currencyUsd('1123.45') . '<br>'; //Moeda padrão USD ==> 1,123.45 - o 2º parâmetro escolhe o label da Moeda
-Format::dateAmerican('12-05-2020') . '<br>'; //Data ==>  2020-05-12
-Format::dateBrazil('2020-05-12') . '<br>'; //Data ==>  12/05/2020
-Format::identifier('73381209000') . '<br>';  //CPF ==>  733.812.090-00
-Format::identifierOrCompany('30720870089') . '<br>'; //CPF/CNPJ ==> 307.208.700-89
-Format::falseToNull(false) . '<br>'; //Retorna ==> null
-Format::lower('CArrO') . '<br>'; //Minusculo ==> carro - o 2º parâmetro escolhe o charset, UTF-8 default
+Format::currency('113', 'R$ '); //Moeda padrão BR ==>  123,00 - o 2º parâmetro escolhe o label da Moeda
+Format::currencyUsd('1123.45'); //Moeda padrão USD ==> 1,123.45 - o 2º parâmetro escolhe o label da Moeda
+Format::dateAmerican('12-05-2020'); //Data ==>  2020-05-12
+Format::dateBrazil('2020-05-12'); //Data ==>  12/05/2020
+Format::identifier('73381209000');  //CPF ==>  733.812.090-00
+Format::identifierOrCompany('30720870089'); //CPF/CNPJ ==> 307.208.700-89
+Format::falseToNull(false); //Retorna ==> null
+Format::lower('CArrO'); //Minusculo ==> carro - o 2º parâmetro escolhe o charset, UTF-8 default
 //[Aplicar qualquer tipo de Mascara, aceita espaço, pontos e outros]
-Format::mask('#### #### #### ####', '1234567890123456') . '<br>'; //Mascara ==> 1234 5678 9012 3456
+Format::mask('#### #### #### ####', '1234567890123456'); //Mascara ==> 1234 5678 9012 3456
 Format::maskStringHidden('065.775.009.96', 3, 4, '*'); //Marcarar uma string ==> 065.***.009.96
-Format::onlyNumbers('548Abc87@') . '<br>'; //Retorna apenas números ==> 54887;
-Format::onlyLettersNumbers('548Abc87@') . '<br>'; //Retorna apenas letras e números ==> 548Abc87;
-Format::pointOnlyValue('1.350,45') . '<br>'; //Moeda para gravação no BD ==>  1350.45
-Format::removeAccent('Açafrão') . '<br>'; //Remove acentos e o caracter 'ç' ==> Acafrao
+Format::onlyNumbers('548Abc87@'); //Retorna apenas números ==> 54887;
+Format::onlyLettersNumbers('548Abc87@'); //Retorna apenas letras e números ==> 548Abc87;
+Format::pointOnlyValue('1.350,45'); //Moeda para gravação no BD ==>  1350.45
+Format::removeAccent('Açafrão'); //Remove acentos e o caracter 'ç' ==> Acafrao
 //Remove todos os caracteres especiais ==> "Acafrao com Espaco ", 2º parâmetro escolhe se permite espaço, default true
-Format::removeSpecialCharacters('Açafrão com Espaco %$#@!', true) . '<br>';
-Format::returnPhoneOrAreaCode('44999998888', false) . '<br>'; //Retorna apenas o número do telefone ==> 999998888
-Format::returnPhoneOrAreaCode('44999998888', true) . '<br>'; //Retorna apenas o DDD do telefone ==> 44
-Format::reverse('Abacaxi') . '<br>'; //Retorna string invertida ==> ixacabA
-Format::telephone('44999998888') . '<br>';  //Telefone ==> (44) 99999-8888
-Format::ucwordsCharset('aÇafrÃo maCaRRão') . '<br>'; //Primeira letra maiuscula ==> Açafrão Macarrão
-Format::upper('Moto') . '<br>'; //Mauiusculo ==> MOTO - o 2º parâmetro escolhe o charset, UTF-8 default
-Format::zipCode('87030585') . '<br>'; //CEP ==>  87030-585
-Format::writeDateExtensive('06/11/2020') . '<br>'; //Data por Extenso ==> sexta-feira, 06 de novembro de 2020
-Format::writeCurrencyExtensive(1.97) . '<br>'; //Moeda por Extenso ==> um real e noventa e sete centavos
-Format::convertStringToBinary('amor') . '<br>'; //String para binário ==> 1100001 1101101 1101111 1110010
+Format::removeSpecialCharacters('Açafrão com Espaco %$#@!', true);
+Format::returnPhoneOrAreaCode('44999998888', false); //Retorna apenas o número do telefone ==> 999998888
+Format::returnPhoneOrAreaCode('44999998888', true); //Retorna apenas o DDD do telefone ==> 44
+Format::reverse('Abacaxi'); //Retorna string invertida ==> ixacabA
+Format::telephone('44999998888');  //Telefone ==> (44) 99999-8888
+Format::ucwordsCharset('aÇafrÃo maCaRRão'); //Primeira letra maiuscula ==> Açafrão Macarrão
+Format::upper('Moto'); //Mauiusculo ==> MOTO - o 2º parâmetro escolhe o charset, UTF-8 default
+Format::zipCode('87030585'); //CEP ==>  87030-585
+Format::writeDateExtensive('06/11/2020'); //Data por Extenso ==> sexta-feira, 06 de novembro de 2020
+Format::writeCurrencyExtensive(1.97); //Moeda por Extenso ==> um real e noventa e sete centavos
+Format::convertStringToBinary('amor'); //String para binário ==> 1100001 1101101 1101111 1110010
  //Retorna uma slug a partir de uma string ==> polenta-frita-com-bacon-e-parmesao
-Format::slugfy('Polenta frita com Bacon e Parmesão') . '<br>';
+Format::slugfy('Polenta frita com Bacon e Parmesão');
 $data = [
     'tratandoTipoInt' => '12',
     'tratandoTipoFloat' => '9.63',
