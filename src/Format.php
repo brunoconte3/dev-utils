@@ -353,4 +353,9 @@ class Format extends FormatAux
         }
         return implode(' ', $binario);
     }
+
+    public static function slugfy(string $text): string
+    {
+        return str_replace(' ', '-', self::lower(self::removeSpecialCharacters(str_replace('-', ' ', $text))));
+    }
 }
