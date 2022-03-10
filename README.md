@@ -314,6 +314,8 @@ Format::zipCode('87030585') . '<br>'; //CEP ==>  87030-585
 Format::writeDateExtensive('06/11/2020') . '<br>'; //Data por Extenso ==> sexta-feira, 06 de novembro de 2020
 Format::writeCurrencyExtensive(1.97) . '<br>'; //Moeda por Extenso ==> um real e noventa e sete centavos
 Format::convertStringToBinary('amor') . '<br>'; //String para binário ==> 1100001 1101101 1101111 1110010
+ //Retorna uma slug a partir de uma string ==> polenta-frita-com-bacon-e-parmesao
+Format::slugfy('Polenta frita com Bacon e Parmesão') . '<br>';
 $data = [
     'tratandoTipoInt' => '12',
     'tratandoTipoFloat' => '9.63',

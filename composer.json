@@ -47,6 +47,11 @@
             "name": "Caio Brioli",
             "email": "caiobrioli777@hotmail.com",
             "role": "Developer"
+        },
+        {
+            "name": "Willian Joaquim Barros Lúcio",
+            "email": "willian_jbl@hotmail.com",
+            "role": "Developer"
         }
     ],
     "suggest": {

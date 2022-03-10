@@ -265,4 +265,9 @@ class UnitTestFormat extends TestCase
         self::assertEquals('1100001 1101101 1101111 1110010', Format::convertStringToBinary('amor'));
         self::assertNotSame('1100001 1101101 1101111 1110010', Format::convertStringToBinary('casa'));
     }
+
+    public static function testSlugfy(): void
+    {
+        self::assertEquals('polenta-frita-com-bacon-e-parmesao', Format::slugfy('Polenta frita com Bacon e Parmesão'));
+    }
 }
