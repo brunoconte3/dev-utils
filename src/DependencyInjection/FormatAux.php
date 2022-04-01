@@ -11,6 +11,16 @@ abstract class FormatAux
         'numeric'
     ];
 
+    /**
+     * @param mixed $val
+     */
+    private static function returnTypeBool(mixed $val, bool $returnNull = false): bool
+    {
+        $boolVal = (is_string($val) ?
+            filter_var($val, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) : (bool) $val);
+        return ($boolVal === null && !$returnNull ? false : $boolVal);
+    }
+
     protected static function returnTypeToConvert(array $rules): ?string
     {
         foreach (self::DATA_TYPE_TO_CONVERT as $type) {
@@ -25,7 +35,7 @@ abstract class FormatAux
     {
         switch ($type) {
             case 'bool':
-                return filter_var($value, FILTER_VALIDATE_BOOLEAN) ? boolval($value) : $value;
+                return self::returnTypeBool($value);
             case 'int':
                 if (is_int($value)) {
                     return intval($value);
