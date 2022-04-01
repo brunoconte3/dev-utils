@@ -6,10 +6,15 @@ namespace DevUtils\Test;
 
 use DevUtils\Format;
 use PHPUnit\Framework\TestCase;
-use stdClass;
+use DevUtils\Test\DataConvertTypesBool;
 
 class UnitTestFormat extends TestCase
 {
+    public static function setUpBeforeClass(): void
+    {
+        require_once './tests/data/DataConvertTypesBool.php';
+    }
+
     public function testCompanyIdentification(): void
     {
         self::assertEquals('76.027.484/0001-24', Format::companyIdentification('76027484000124'));
@@ -42,54 +47,11 @@ class UnitTestFormat extends TestCase
         self::assertIsNumeric($data['tratandoTipoNumeric']);
     }
 
-    public function arrayData(): array
-    {
-        return [
-            'tratandoClasse' => new stdClass(), //true
-            'tratandoArray' => [1, 2], //true
-            'tratandoInteiroPositivo' => 42, //true
-            'tratandoInteiroNegativo' => -42, //true
-            'tratandoStringTrue' => 'true', //true
-            'tratandoStringOn' => 'on', //true
-            'tratandoStringOff' => 'off', //true
-            'tratandoStringYes' => 'yes', //true
-            'tratandoStringNo' => 'no', //false
-            'tratandoStringUm' => '1', // true
-            'tratandoNull' => null, // false
-            'tratandoInteiroZero' => 0, // false
-            'tratandoStringFalse' => 'false', //false
-            'tratandoQualquerString' => 'string', //false
-            'tratandoStringZero' => '0', // false
-            'tratandoStringVazio' => '', // false
-        ];
-    }
-
-    public function arrayRule(): array
-    {
-        return [
-            'tratandoClasse' => 'convert|bool',
-            'tratandoArray' => 'convert|bool',
-            'tratandoInteiroPositivo' => 'convert|bool',
-            'tratandoInteiroNegativo' => 'convert|bool',
-            'tratandoStringTrue' => 'convert|bool',
-            'tratandoStringOn' => 'convert|bool',
-            'tratandoStringOff' => 'convert|bool',
-            'tratandoStringYes' => 'convert|bool',
-            'tratandoStringNo' => 'convert|bool',
-            'tratandoStringUm' => 'convert|bool',
-            'tratandoNull' => 'convert|bool',
-            'tratandoInteiroZero' => 'convert|bool',
-            'tratandoStringFalse' => 'convert|bool',
-            'tratandoQualquerString' => 'convert|bool',
-            'tratandoStringZero' => 'convert|bool',
-            'tratandoStringVazio' => 'convert|bool',
-        ];
-    }
-
     public function testConvertTypesBool(): void
     {
-        $data = $this->arrayData();
-        $rules = $this->arrayRule();
+        $convertTypesBool = new DataConvertTypesBool();
+        $data = $convertTypesBool->arrayData();
+        $rules = $convertTypesBool->arrayRule();
 
         Format::convertTypes($data, $rules);
         self::assertIsBool($data['tratandoClasse']);

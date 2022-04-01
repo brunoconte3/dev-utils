@@ -4,5 +4,7 @@ parameters:
         - conf/confDefine.php
     paths:
         - src
+        - tests
     checkMissingIterableValueType: false
     checkGenericClassInNonGenericObjectType: false
+    phpVersion: 70400
