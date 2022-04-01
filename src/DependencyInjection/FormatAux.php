@@ -11,7 +11,10 @@ abstract class FormatAux
         'numeric'
     ];
 
-    private static function returnTypeBool(string $val, bool $returnNull = false): bool
+    /**
+     * @param mixed $val
+     */
+    private static function returnTypeBool(mixed $val, bool $returnNull = false): bool
     {
         $boolVal = (is_string($val) ?
             filter_var($val, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) : (bool) $val);
