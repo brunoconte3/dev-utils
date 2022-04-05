@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace DevUtils\Test;
+namespace DevUtils\Test\data;
 
 use stdClass;
 

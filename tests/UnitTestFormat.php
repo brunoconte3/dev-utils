@@ -6,7 +6,7 @@ namespace DevUtils\Test;
 
 use DevUtils\Format;
 use PHPUnit\Framework\TestCase;
-use DevUtils\Test\DataConvertTypesBool;
+use DevUtils\Test\data\DataConvertTypesBool;
 
 class UnitTestFormat extends TestCase
 {
