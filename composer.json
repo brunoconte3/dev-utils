@@ -59,7 +59,7 @@
         "ext-mbstring": "to use Format::lower() etc..."
 	},
     "require": {
-        "php": ">=7.3"
+        "php": ">=7.4"
     },
     "autoload": {
         "psr-4": {
