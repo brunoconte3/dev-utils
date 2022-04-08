@@ -6,9 +6,15 @@ namespace DevUtils\Test;
 
 use DevUtils\Format;
 use PHPUnit\Framework\TestCase;
+use DevUtils\Test\data\DataConvertTypesBool;
 
 class UnitTestFormat extends TestCase
 {
+    public static function setUpBeforeClass(): void
+    {
+        require_once './tests/data/DataConvertTypesBool.php';
+    }
+
     public function testCompanyIdentification(): void
     {
         self::assertEquals('76.027.484/0001-24', Format::companyIdentification('76027484000124'));
@@ -39,6 +45,31 @@ class UnitTestFormat extends TestCase
         self::assertIsFloat($data['tratandoTipoFloat']);
         self::assertIsBool($data['tratandoTipoBoolean']);
         self::assertIsNumeric($data['tratandoTipoNumeric']);
+    }
+
+    public function testConvertTypesBool(): void
+    {
+        $convertTypesBool = new DataConvertTypesBool();
+        $data = $convertTypesBool->arrayData();
+        $rules = $convertTypesBool->arrayRule();
+
+        Format::convertTypes($data, $rules);
+        self::assertIsBool($data['tratandoClasse']);
+        self::assertIsBool($data['tratandoArray']);
+        self::assertIsBool($data['tratandoInteiroPositivo']);
+        self::assertIsBool($data['tratandoInteiroNegativo']);
+        self::assertIsBool($data['tratandoStringTrue']);
+        self::assertIsBool($data['tratandoStringOn']);
+        self::assertIsBool($data['tratandoStringOff']);
+        self::assertIsBool($data['tratandoStringYes']);
+        self::assertIsBool($data['tratandoStringNo']);
+        self::assertIsBool($data['tratandoStringUm']);
+        self::assertIsBool($data['tratandoNull']);
+        self::assertIsBool($data['tratandoInteiroZero']);
+        self::assertIsBool($data['tratandoStringFalse']);
+        self::assertIsBool($data['tratandoQualquerString']);
+        self::assertIsBool($data['tratandoStringZero']);
+        self::assertIsBool($data['tratandoStringVazio']);
     }
 
     public function testIdentifier(): void
@@ -264,5 +295,10 @@ class UnitTestFormat extends TestCase
     {
         self::assertEquals('1100001 1101101 1101111 1110010', Format::convertStringToBinary('amor'));
         self::assertNotSame('1100001 1101101 1101111 1110010', Format::convertStringToBinary('casa'));
+    }
+
+    public static function testSlugfy(): void
+    {
+        self::assertEquals('polenta-frita-com-bacon-e-parmesao', Format::slugfy('Polenta frita com Bacon e Parmesão'));
     }
 }

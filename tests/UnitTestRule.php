@@ -289,11 +289,21 @@ class UnitTestRule extends TestCase
 
     public function testPhone(): void
     {
-        $array = ['testError' => '444569874', 'testValid' => '4433467847', 'testMask' => '(44) 99932-5847',];
-        $rules = ['testError' => 'phone', 'testValid' => 'phone', 'testMask' => 'phone',];
+        $array = [
+            'testError' => '444569874',
+            'testValid' => '4433467847',
+            'testMask' => '(44) 99932-5847',
+            'testInvalidRule' => 'br',
+        ];
+        $rules = [
+            'testError' => 'phone',
+            'testValid' => 'phone',
+            'testMask' => 'phone',
+            'testInvalidRule' => 'naoExisteEssaRegra',
+        ];
         $validator = new Validator();
         $validator->set($array, $rules);
-        self::assertCount(1, $validator->getErros());
+        self::assertCount(2, $validator->getErros());
     }
 
     public function testPlate(): void
@@ -317,27 +327,21 @@ class UnitTestRule extends TestCase
     public function testRequired(): void
     {
         $array = [
-            'a' => '',
-            'b' => null,
-            'c' => false,
-            'd' => [],
-            'e' => '   ',
-            'f' => 'abc',
-            'g' => 123,
-            'h' => '0',
-            'i' => 0,
+            '',
+            null,
+            false,
+            [],
+            '   ',
+            'abc',
+            123,
+            '0',
+            0,
+            '<p>Texto com HTML <span style="color: #3598db;">sadasdasdasd</span></p>',
         ];
-        $rules = [
-            'a' => 'required',
-            'b' => 'required',
-            'c' => 'required',
-            'd' => 'required',
-            'e' => 'required',
-            'f' => 'required',
-            'g' => 'required',
-            'h' => 'required',
-            'i' => 'required',
-        ];
+        $rules = [];
+        foreach ($array as $key => $valor) {
+            $rules[$key] = 'required';
+        }
 
         $validator = new Validator();
         $validator->set($array, $rules);

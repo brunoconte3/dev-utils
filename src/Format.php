@@ -343,7 +343,7 @@ class Format extends FormatAux
         return $dateTime->format('Y-m-d H:i:s');
     }
 
-    public static function convertStringToBinary (string $string): string
+    public static function convertStringToBinary(string $string): string
     {
         $characters = str_split($string);
         $binario = [];
@@ -352,5 +352,10 @@ class Format extends FormatAux
             $binario[] = base_convert($data[1], 16, 2);
         }
         return implode(' ', $binario);
+    }
+
+    public static function slugfy(string $text): string
+    {
+        return str_replace(' ', '-', self::lower(self::removeSpecialCharacters(str_replace('-', ' ', $text))));
     }
 }
