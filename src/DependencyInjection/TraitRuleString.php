@@ -10,7 +10,7 @@ use DevUtils\{
     ValidateString,
 };
 use DevUtils\DependencyInjection\data\DataDdds;
-use DevUtils\resource\Commum;
+use DevUtils\resource\Common;
 
 trait TraitRuleString
 {
@@ -70,7 +70,7 @@ trait TraitRuleString
     protected function validateDdd($rule = '', $field = '', $value = null, $message = null)
     {
         if (strlen($value) === 3 || strlen($value) === 2) {
-            $arrayDdd = DataDdds::retornaDddBrasil();
+            $arrayDdd = DataDdds::returnDddBrazil();
             if (strlen($value) === 3) {
                 $arrayDdd = array_map(function ($value) {
                     if (is_array($value)) {
@@ -88,8 +88,8 @@ trait TraitRuleString
                 $this->errors[$field] = !empty($message) ? $message : 'O campo ' . $field .
                     ' não é válido para a sigla ' . $rule;
             }
-            $achou = Commum::buscaUltimaCamadaRecursivo($arrayDdd, $value);
-            if (!$achou) {
+            $find = Common::searchLastLayerRecursive($arrayDdd, $value);
+            if (!$find) {
                 $this->errors[$field] = !empty($message) ?
                     $message : "O campo $field é um ddd inexistente ou inválido";
             }

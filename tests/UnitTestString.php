@@ -61,16 +61,21 @@ class UnitTestString extends TestCase
 
     public function testValidateDdd(): void
     {
-        $array = ['testError' => '60', 'testValid' => '61'];
-        $rules = ['testError' => 'ddd', 'testValid' => 'ddd'];
+        $array = [
+            'testErrorDddTwoDigits' => '60',
+            'testValidTwoDigits' => '61',
+            'testErrorDddTwoDigitsState' => '11',
+            'testValidTwoDigitsState' => '44',
+        ];
+        $rules = [
+            'testErrorDddTwoDigits' => 'ddd',
+            'testValidTwoDigits' => 'ddd',
+            'testErrorDddTwoDigitsState' => 'ddd:pr',
+            'testValidTwoDigitsState' => 'ddd:pr',
+        ];
 
         $validator = new Validator();
         $validator->set($array, $rules);
-        self::assertCount(1, $validator->getErros());
-        $array = ['testError' => '60', 'testValid' => '61'];
-        $rules = ['testError' => 'ddd:df', 'testValid' => 'ddd:df'];
-        $validator2 = new Validator();
-        $validator2->set($array, $rules);
-        self::assertCount(1, $validator->getErros());
+        self::assertCount(2, $validator->getErros());
     }
 }

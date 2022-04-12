@@ -216,7 +216,7 @@ maxWidth e requiredFile, será possível definir o tamanho (bytes) mínimo e má
 - companyIdentification: `Valida se o CNPJ é válido, passando CNPJ com ou sem mascara`
 - dateAmerican: `Valida se a data americana é valida.`
 - dateBrazil: `Valida se a data brasileira é valida.`
-- ddd: `valida o ddd informado no formato xxx ou xx, por estado ou de forma geral` `Ex: ddd:pr, ddd do paraná`
+- ddd: `Valida ddd informado no formato YYY ou YY, por UF ou de forma geral` `Ex: ddd:pr, ddd do paraná, ou apenas ddd`
 - email: `Verifica se é um email válido.`
 - equals: `Verifica se o campo é igual a outro campo, acima na documentação tem exemplo de uso no campo novaSenha`
 - fileName: `Verifica se o nome do arquivo é um nome válido, e formata o nome removendo caracteres especiais`
@@ -627,6 +627,8 @@ Utility::buildUrl('localhost', '/Framework-Cooper/testando', 'on'); // Retorna a
 ```
 
 # Rodar os testes unitários
+
+# PHPStan ativado até o nível 5
 
 vendor/bin/phpunit
 
