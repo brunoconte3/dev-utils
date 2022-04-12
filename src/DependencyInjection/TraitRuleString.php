@@ -9,6 +9,8 @@ use DevUtils\{
     ValidatePhone,
     ValidateString,
 };
+use DevUtils\DependencyInjection\data\DataDdds;
+use DevUtils\resource\Commum;
 
 trait TraitRuleString
 {
@@ -62,6 +64,38 @@ trait TraitRuleString
         if (empty($value) || !ValidateCnpj::validateCnpj($value, $rule)) {
             $this->errors[$field] = !empty($message) ?
                 $message : "O campo $field é inválido!";
+        }
+    }
+
+    protected function validateDdd($rule = '', $field = '', $value = null, $message = null)
+    {
+        if (strlen($value) === 3 || strlen($value) === 2) {
+            $arrayDdd = DataDdds::retornaDddBrasil();
+            if (strlen($value) === 3) {
+                $arrayDdd = array_map(function ($value) {
+                    if (is_array($value)) {
+                        return array_map(function ($value) {
+                            return '0' . $value;
+                        }, $value);
+                    }
+                }, $arrayDdd);
+            }
+
+            if ($rule !== '' && array_key_exists($rule, $arrayDdd)) {
+                if (in_array($value, $arrayDdd[$rule])) {
+                    return;
+                }
+                $this->errors[$field] = !empty($message) ? $message : 'O campo ' . $field .
+                    ' não é válido para a sigla ' . $rule;
+            }
+            $achou = Commum::buscaUltimaCamadaRecursivo($arrayDdd, $value);
+            if (!$achou) {
+                $this->errors[$field] = !empty($message) ?
+                    $message : "O campo $field é um ddd inexistente ou inválido";
+            }
+        } else {
+            $this->errors[$field] = !empty($message) ?
+                $message : "O campo $field deve conter dois ou três dígitos";
         }
     }
 
