@@ -244,7 +244,7 @@ maxWidth e requiredFile, será possível definir o tamanho (bytes) mínimo e má
 - mimeType: `Define a(s) extensão(ões) permitida(s) para upload.`
 - minUploadSize: `Define o tamanho (bytes) mínimo do arquivo.`
 - numeric: `Verifica se o valor contém apenas valores numéricos (Aceita zero a esquerda).`
-- numMax: `Define um valor máximo.`
+- numMax: `Define um valor máximo, sendo o mínimo o valor zero.`
 - numMin: `Define um valor mínimo, sendo o mínimo o valor zero.`
 - numMonth: `Verifica se o valor é um mês válido (1 a 12).`
 - notSpace: `Verifica se a string contém espaços.`
