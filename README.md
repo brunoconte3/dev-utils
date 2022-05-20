@@ -245,7 +245,7 @@ maxWidth e requiredFile, será possível definir o tamanho (bytes) mínimo e má
 - minUploadSize: `Define o tamanho (bytes) mínimo do arquivo.`
 - numeric: `Verifica se o valor contém apenas valores numéricos (Aceita zero a esquerda).`
 - numMax: `Define um valor máximo.`
-- numMin: `Define um valor mínimo, sendo o mínimo o valor zero.`
+- numMin: `Define um valor mínimo, sendo o mínimo o valor zero. (Campo do tipo inteiro)`
 - numMonth: `Verifica se o valor é um mês válido (1 a 12).`
 - notSpace: `Verifica se a string contém espaços.`
 - noWeekend: `Verifica se a data (Brasileira ou Americada não é um Final de Semana).`
