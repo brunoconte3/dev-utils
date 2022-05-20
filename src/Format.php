@@ -55,7 +55,9 @@ class Format extends FormatAux
             $type = parent::returnTypeToConvert($arrRules);
             if (in_array('convert', $arrRules) && !empty($type)) {
                 try {
-                    $data[$key] = parent::executeConvert($type, $data[$key]);
+                    if (in_array($key, array_keys($data))) {
+                        $data[$key] = parent::executeConvert($type, $data[$key]);
+                    }
                 } catch (\Exception $ex) {
                     $error[] = "falhar ao tentar converter {$data[$key]} para $type";
                 }
