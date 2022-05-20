@@ -27,6 +27,10 @@ trait TraitRuleInteger
 
     protected function validateNumMax($rule = '', $field = '', $value = null, $message = null)
     {
+        if ($value < 0) {
+            $this->errors[$field] = !empty($message) ?
+                $message : "O campo $field deve ter o valor mínimo de zero!";
+        }
         if ($value > $rule) {
             $this->errors[$field] = !empty($message) ?
                 $message : "O campo $field é permitido até o valor máximo de $rule!";
