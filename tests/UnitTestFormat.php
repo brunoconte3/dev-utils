@@ -37,6 +37,7 @@ class UnitTestFormat extends TestCase
             'tratandoTipoFloat' => 'convert|float',
             'tratandoTipoBoolean' => 'convert|bool',
             'tratandoTipoNumeric' => 'convert|numeric',
+            'tratandoInexistente' => 'convert|bool',
         ];
         Format::convertTypes($data, $rules);
         self::assertIsInt($data['tratandoTipoInt']);
@@ -45,6 +46,7 @@ class UnitTestFormat extends TestCase
         self::assertIsFloat($data['tratandoTipoFloat']);
         self::assertIsBool($data['tratandoTipoBoolean']);
         self::assertIsNumeric($data['tratandoTipoNumeric']);
+        self::assertArrayNotHasKey('tratandoInexistente', $data);
     }
 
     public function testConvertTypesBool(): void
