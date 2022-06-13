@@ -346,7 +346,7 @@ $array = [
     'b' => 333,
     'c' => '',
 ];
-Format::emptyToNull($array); //Converte vazio para null, - o 2º parâmetro é opcional, passando a excessão desejada
+$newArray = Format::emptyToNull($array); //Converte vazio para null, - o 2º parâmetro é opcional, passando a excessão desejada
 /*** RETORNO
 [
   0 => 1,
