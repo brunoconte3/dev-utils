@@ -42,7 +42,10 @@ final class ComposerInstall
 
         header('Content-Type: application/json');
 
-        echo json_encode(['erro' => !$this->verificarAutoload(), 'log' => $retorno]);
+        echo json_encode([
+            'erro' => !$this->verificarAutoload(),
+            'log' => $retorno,
+        ]);
         exit();
     }
 }

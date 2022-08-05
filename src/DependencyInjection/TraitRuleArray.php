@@ -4,15 +4,19 @@ namespace DevUtils\DependencyInjection;
 
 trait TraitRuleArray
 {
-    protected function validateArray($field = '', $value = null, $message = null)
+    protected function validateArray(string $field = '', mixed $value = null, ?string $message = ''): void
     {
         if (!is_array($value)) {
             $this->errors[$field] = !empty($message) ? $message : "A variável $field não é um array!";
         }
     }
 
-    protected function validateArrayValues($rule = '', $field = '', $value = null, $message = null)
-    {
+    protected function validateArrayValues(
+        string $rule = '',
+        string $field = '',
+        mixed $value = null,
+        ?string $message = '',
+    ): void {
         $ruleArray = explode('-', $rule);
 
         if (!in_array(trim($value), $ruleArray)) {

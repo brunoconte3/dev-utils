@@ -62,12 +62,12 @@ class UnitTestCompare extends TestCase
     {
         self::assertTrue(
             Compare::beginUrlWith('/teste', '/teste/variavel'),
-            'Erro ao executar a função testBeginUrlWith!'
+            'Erro ao executar a função testBeginUrlWith!',
         );
         self::assertTrue(Compare::beginUrlWith('/teste', '/teste1234'), 'Erro ao executar a função testBeginUrlWith!');
         self::assertNotTrue(
             Compare::beginUrlWith('/teste123', '/testeasc'),
-            'Erro ao executar a função testBeginUrlWith!'
+            'Erro ao executar a função testBeginUrlWith!',
         );
     }
 
@@ -75,15 +75,15 @@ class UnitTestCompare extends TestCase
     {
         self::assertTrue(
             Compare::finishUrlWith('/teste', 'asd/teste'),
-            'Erro ao executar a função testFinishUrlWith!'
+            'Erro ao executar a função testFinishUrlWith!',
         );
         self::assertTrue(
             Compare::finishUrlWith('/teste', 'sistema/teste'),
-            'Erro ao executar a função testFinishUrlWith!'
+            'Erro ao executar a função testFinishUrlWith!',
         );
         self::assertNotTrue(
             Compare::finishUrlWith('/test', 'sistema/teste1'),
-            'Erro ao executar a função testFinishUrlWith!'
+            'Erro ao executar a função testFinishUrlWith!',
         );
     }
 
@@ -91,7 +91,7 @@ class UnitTestCompare extends TestCase
     {
         self::assertTrue(
             Compare::compareStringFrom('sistema', 'sistema/teste', 0, 7),
-            'Erro ao executar a função compareStringFrom!'
+            'Erro ao executar a função compareStringFrom!',
         );
     }
 }

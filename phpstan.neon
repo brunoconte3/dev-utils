@@ -3,8 +3,9 @@ parameters:
         - conf/conf.php
         - conf/confDefine.php
     paths:
+        - config
         - src
         - tests
     checkMissingIterableValueType: false
     checkGenericClassInNonGenericObjectType: false
-    phpVersion: 70400
+    phpVersion: 80013

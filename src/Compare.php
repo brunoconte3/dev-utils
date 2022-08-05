@@ -3,6 +3,7 @@
 namespace DevUtils;
 
 use DateTime;
+use DateTimeZone;
 
 class Compare
 {
@@ -22,10 +23,8 @@ class Compare
         return $interval->format('%R%a');
     }
 
-    public static function startDateLessThanEnd(
-        ?string $dtIni,
-        ?string $dtFin
-    ): bool {
+    public static function startDateLessThanEnd(?string $dtIni, ?string $dtFin): bool
+    {
         if (!empty($dtIni) && !empty($dtFin)) {
             if (str_replace('+', '', self::daysDifferenceBetweenData($dtIni, $dtFin)) < '0') {
                 return false;
@@ -39,7 +38,7 @@ class Compare
     public static function startHourLessThanEnd(
         string $hourIni,
         string $hourFin,
-        string $msg = 'Hora Inicial não pode ser maior que a Hora Final!'
+        string $msg = 'Hora Inicial não pode ser maior que a Hora Final!',
     ): ?string {
         if (!empty($hourIni) && !empty($hourFin)) {
             $diff = self::differenceBetweenHours($hourIni, $hourFin);
@@ -57,8 +56,8 @@ class Compare
         if (strpos($date, '/') > -1) {
             $date = implode('-', array_reverse(explode('/', $date)));
         }
-        $dateBirth = new \DateTime($date, new \DateTimeZone('America/Sao_Paulo'));
-        $dataNow = new \DateTime("now", new \DateTimeZone('America/Sao_Paulo'));
+        $dateBirth = new DateTime($date, new DateTimeZone('America/Sao_Paulo'));
+        $dataNow = new DateTime("now", new DateTimeZone('America/Sao_Paulo'));
         $diff = $dataNow->diff($dateBirth);
         return intval($diff->format("%y"));
     }
@@ -97,7 +96,7 @@ class Compare
     public static function checkDataEquality(
         string $firstValue,
         string $secoundValue,
-        bool $caseSensitive = true
+        bool $caseSensitive = true,
     ): bool {
         if ($caseSensitive) {
             if ($firstValue !== $secoundValue) {

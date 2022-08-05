@@ -13,11 +13,15 @@ class Rules
     use TraitRuleFile;
     use TraitRuleString;
 
-    protected $errors = false;
+    protected mixed $errors = false;
     public const RULES_WITHOUT_FUNCS = ['convert'];
 
-    private function invalidRule($rule = '', $field = '', $value = null, $message = null)
-    {
+    private function invalidRule(
+        string $rule = '',
+        string $field = '',
+        mixed $value = null,
+        ?string $message = '',
+    ) {
         $msg = '';
         if (!empty($rule)) {
             $msg .= $rule;
@@ -84,7 +88,7 @@ class Rules
         return true;
     }
 
-    protected function validateFieldMandatory($field = '', $value = null, string $message = null)
+    protected function validateFieldMandatory(string $field = '', mixed $value = null, string $message = null)
     {
         if (is_array($value) && (count($value) <= 0)) {
             return $this->errors[$field] = !empty($message) ? $message : "O campo $field é obrigatório!";
@@ -98,8 +102,12 @@ class Rules
         }
     }
 
-    protected function validateFieldType($rule = '', $field = '', $value = null, $message = null)
-    {
+    protected function validateFieldType(
+        string $rule = '',
+        string $field = '',
+        mixed $value = null,
+        ?string $message = null,
+    ) {
         if (in_array(trim(strtolower($rule)), self::RULES_WITHOUT_FUNCS)) {
             return;
         }
@@ -212,7 +220,7 @@ class Rules
                 unset($rulesArray['mensagem']);
             }
             foreach ($rulesArray as $key => $val) {
-                $ruleValue = (!empty($val) || (intval($val) == 0)) ? true : false;
+                $ruleValue = (!empty($val) || (intval($val) === 0)) ? true : false;
                 if (!in_array('optional', $rulesArray) || (in_array('optional', $rulesArray) && $ruleValue)) {
                     if (in_array(trim(strtolower($key)), self::RULES_WITHOUT_FUNCS)) {
                         continue;

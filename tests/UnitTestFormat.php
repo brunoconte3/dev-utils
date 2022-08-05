@@ -112,14 +112,14 @@ class UnitTestFormat extends TestCase
             1 => 123,
             'a' => 222,
             'b' => 333,
-            'c' => 0
+            'c' => 0,
         ];
         self::assertEquals($arrayProcessed, Format::arrayToInt([
             0 => '1',
             1 => '123',
             'a' => '222',
             'b' => 333,
-            'c' => ''
+            'c' => '',
         ]));
     }
 
@@ -130,14 +130,14 @@ class UnitTestFormat extends TestCase
             1 => 123,
             'a' => 222,
             'b' => 333,
-            'c' => 0
+            'c' => 0,
         ];
         self::assertEquals($arrayProcessed, Format::arrayToInt([
             0 => '1',
             1 => '123',
             'a' => '222',
             'b' => 333,
-            'c' => ''
+            'c' => '',
         ]));
     }
 
@@ -193,7 +193,7 @@ class UnitTestFormat extends TestCase
                 'f' => [],
                 'g' => [1, 2,],
             ],
-            '0'
+            '0',
         ));
     }
 
@@ -282,7 +282,6 @@ class UnitTestFormat extends TestCase
             'error'    => ['0' => 0, '1' => 0],
             'size'     => ['0' => 8488, '1' => 818465],
         ];
-
         self::assertArrayHasKey('name', Format::restructFileArray($fileUploadSingle)[0]);
         self::assertArrayHasKey('name', Format::restructFileArray($fileUploadMultiple)[0]);
         self::assertArrayHasKey('name', Format::restructFileArray($fileUploadMultiple)[1]);
