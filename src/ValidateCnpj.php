@@ -45,7 +45,7 @@ class ValidateCnpj
 
         for ($i = 0, $j = 5, $sum = 0; $i < 12; $i++) {
             $sum += intval($cnpj[$i]) * $j;
-            $j = ($j === 2) ? 9 : $j - 1;
+            $j = ($j == 2) ? 9 : $j - 1;
         }
         $rest = $sum % 11;
         if ($cnpj[12] != ($rest < 2 ? 0 : 11 - $rest)) {
@@ -53,10 +53,10 @@ class ValidateCnpj
         }
         for ($i = 0, $j = 6, $sum = 0; $i < 13; $i++) {
             $sum += intval($cnpj[$i]) * $j;
-            $j = ($j === 2) ? 9 : $j - 1;
+            $j = ($j == 2) ? 9 : $j - 1;
         }
         $rest = $sum % 11;
-        $res = $cnpj[13] === ($rest < 2 ? 0 : 11 - $rest);
+        $res = $cnpj[13] == ($rest < 2 ? 0 : 11 - $rest);
         return $res;
     }
 

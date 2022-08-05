@@ -7,7 +7,7 @@ class ValidateCpf
     private static function validateRuleCpf(string $cpf): bool
     {
         $cpf = preg_replace('/[^0-9]/', '', strval($cpf));
-        if (strlen($cpf) != 11) {
+        if (strlen($cpf) !== 11) {
             return false;
         }
         for ($i = 0, $j = 10, $sum = 0; $i < 9; $i++, $j--) {
@@ -21,7 +21,7 @@ class ValidateCpf
             $sum += intval($cpf[$i]) * $j;
         }
         $rest = $sum % 11;
-        $res = $cpf[10] === ($rest < 2 ? 0 : 11 - $rest);
+        $res = $cpf[10] == ($rest < 2 ? 0 : 11 - $rest);
 
         return $res;
     }
