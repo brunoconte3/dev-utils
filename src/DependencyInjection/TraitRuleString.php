@@ -75,13 +75,14 @@ trait TraitRuleString
     }
 
     protected function validateDdd(
-        string $rule = '',
-        string $field = '',
-        ?string $value = '',
+        int | string $rule = '',
+        int | string $field = '',
+        string | int $value = '',
         ?string $message = '',
     ): void {
         if (strlen($value) === 3 || strlen($value) === 2) {
             $arrayDdd = DataDdds::returnDddBrazil();
+
             if (strlen($value) === 3) {
                 $arrayDdd = array_map(function ($value) {
                     if (is_array($value)) {
@@ -92,7 +93,7 @@ trait TraitRuleString
                 }, $arrayDdd);
             }
 
-            if ($rule !== '' && array_key_exists($rule, $arrayDdd)) {
+            if (!empty($rule) && array_key_exists($rule, $arrayDdd)) {
                 if (in_array($value, $arrayDdd[$rule])) {
                     return;
                 }

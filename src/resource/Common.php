@@ -15,7 +15,7 @@ final class Common
             if (is_array($value)) {
                 $ultTeste = Common::searchLastLayerRecursive($value, $param, $ultTeste);
             } else {
-                if (intval($value) === $param) {
+                if (intval($value) === intval($param)) {
                     $ultTeste = true;
                 }
             }
