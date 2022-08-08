@@ -62,7 +62,7 @@ class ValidateFile
     public static function validateMaxUploadSize(
         int $rule = 0,
         array $file = [],
-        string $message = '',
+        ?string $message = '',
     ): array {
         $arrayFileError = [];
 
@@ -218,7 +218,7 @@ class ValidateFile
     public static function validateMimeType(
         string | array $rule = '',
         array $file = [],
-        string $message = '',
+        ?string $message = '',
     ): array {
         $arrayFileError = [];
 

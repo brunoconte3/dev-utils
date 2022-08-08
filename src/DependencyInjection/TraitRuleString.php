@@ -60,7 +60,7 @@ trait TraitRuleString
     }
 
     protected function validateCompanyIdentification(
-        string $rule = '',
+        string | array $rule = '',
         string $field = '',
         ?string $value = '',
         ?string $message = '',
@@ -146,7 +146,7 @@ trait TraitRuleString
     }
 
     protected function validateIdentifierOrCompany(
-        string $rule = '',
+        string | array $rule = '',
         string $field = '',
         string $value = '',
         ?string $message = '',

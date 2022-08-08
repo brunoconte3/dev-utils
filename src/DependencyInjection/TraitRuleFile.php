@@ -59,7 +59,7 @@ trait TraitRuleFile
     }
 
     protected function validateFileMimeType(
-        string $rule = '',
+        string | array $rule = '',
         string $field = '',
         ?array $value = [],
         ?string $message = '',
