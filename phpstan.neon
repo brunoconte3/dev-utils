@@ -1,9 +1,9 @@
 parameters:
     bootstrapFiles:
-        - conf/conf.php
-        - conf/confDefine.php
+        - vendor/autoload.php
+        - src/resource/ConstantPhpStan.php
     paths:
-        - config
+        - conf
         - src
         - tests
     checkMissingIterableValueType: false

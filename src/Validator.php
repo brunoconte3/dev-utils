@@ -27,8 +27,11 @@ class Validator extends Rules
         return true;
     }
 
-    public function getErros(): mixed
+    public function getErros(): array | bool
     {
+        if (empty($this->errors)) {
+            return false;
+        }
         return $this->errors;
     }
 }

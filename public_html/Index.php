@@ -5,16 +5,16 @@ declare(strict_types=1);
 namespace DevUtils\Test;
 
 use DevUtils\{
-    Config,
     Validator,
     Format,
 };
+use DevUtils\conf\Conf;
 
 require_once '../conf/Conf.php';
 require_once 'AutoInstall.php';
 require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';
 
-(new Config());
+(new Conf());
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">

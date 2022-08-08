@@ -94,7 +94,7 @@ abstract class FormatAux
 
             $rc = (($value > 100) && ($value < 200)) ? 'cento' : $hundred[$value[0]];
             $rd = ($value[1] < 2) ? '' : $ten[$value[1]];
-            $ru = ($value > 0) ? (($value[1] === 1) ? $ten10[$value[2]] : $unitary[$value[2]]) : '';
+            $ru = ($value > 0) ? (($value[1] == 1) ? $ten10[$value[2]] : $unitary[$value[2]]) : '';
             $r = $rc . (($rc && ($rd || $ru)) ? ' e ' : '') . $rd . (($rd && $ru) ? ' e ' : '') . $ru;
             $t = count($integer) - 1 - $i;
             $r .= $r ? ' ' . ($value > 1 ? $plural[$t] : $singular[$t]) : "";

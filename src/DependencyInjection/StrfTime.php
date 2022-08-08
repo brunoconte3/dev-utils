@@ -24,8 +24,6 @@ class StrfTime
             a valid date-time string or a DateTime object.', 0, $e);
             }
         }
-        $timestamp->setTimezone(new DateTimeZone(date_default_timezone_get()));
-
         if (empty($locale)) {
             $locale = setlocale(LC_TIME, '0');
         }
@@ -70,7 +68,7 @@ class StrfTime
             return (new IntlDateFormatter($locale, $dateType, $timeType, $tz, $calendar, $pattern))->format($timestamp);
         };
 
-        $translationTable = [
+        $translateTable = [
             // Day
             '%a' => $intlFormatter,
             '%A' => $intlFormatter,
@@ -146,40 +144,44 @@ class StrfTime
             '%x' => $intlFormatter,
         ];
 
-        $out = preg_replace_callback('/(?<!%)%([_#-]?)([a-zA-Z])/', function ($match) use ($translationTable, $timestamp) {
-            $prefix = $match[1];
-            $char = $match[2];
-            $pattern = '%' . $char;
-            if ($pattern == '%n') {
-                return "\n";
-            } elseif ($pattern == '%t') {
-                return "\t";
-            }
+        $out = preg_replace_callback(
+            '/(?<!%)%([_#-]?)([a-zA-Z])/',
+            function ($match) use ($translateTable, $timestamp) {
+                $prefix = $match[1];
+                $char = $match[2];
+                $pattern = '%' . $char;
+                if ($pattern == '%n') {
+                    return "\n";
+                } elseif ($pattern == '%t') {
+                    return "\t";
+                }
 
-            if (!isset($translationTable[$pattern])) {
-                throw new InvalidArgumentException(sprintf('Format "%s" is unknown in time format', $pattern));
-            }
+                if (!isset($translateTable[$pattern])) {
+                    throw new InvalidArgumentException(sprintf('Format "%s" is unknown in time format', $pattern));
+                }
 
-            $replace = $translationTable[$pattern];
+                $replace = $translateTable[$pattern];
 
-            if (is_string($replace)) {
-                $result = $timestamp->format($replace);
-            } else {
-                $result = $replace($timestamp, $pattern);
-            }
+                if (is_string($replace)) {
+                    $result = $timestamp->format($replace);
+                } else {
+                    $result = $replace($timestamp, $pattern);
+                }
 
-            switch ($prefix) {
-                case '_':
-                    // replace leading zeros with spaces but keep last char if also zero
-                    return preg_replace('/\G0(?=.)/', ' ', $result);
-                case '#':
-                case '-':
-                    // remove leading zeros but keep last char if also zero
-                    return preg_replace('/^0+(?=.)/', '', $result);
-            }
+                switch ($prefix) {
+                    case '_':
+                        // replace leading zeros with spaces but keep last char if also zero
+                        return preg_replace('/\G0(?=.)/', ' ', $result);
+                    case '#':
+                    case '-':
+                        // remove leading zeros but keep last char if also zero
+                        return preg_replace('/^0+(?=.)/', '', $result);
+                }
 
-            return $result;
-        }, $format);
+                return $result;
+            },
+            $format
+        );
 
         $out = str_replace('%%', '%', $out);
         return $out;

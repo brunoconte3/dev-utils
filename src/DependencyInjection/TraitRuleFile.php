@@ -6,7 +6,7 @@ use DevUtils\ValidateFile;
 
 trait TraitRuleFile
 {
-    private function validateRuleFile(string $rule, string $field, ?string $label): void
+    private function validateRuleFile(int | string $rule, string $field, ?string $label): void
     {
         if (!is_numeric($rule) || ($rule <= 0)) {
             $text = "O parâmetro do validador '$label', deve ser numérico e maior ou igual a zero!";
@@ -47,7 +47,7 @@ trait TraitRuleFile
 
     protected function validateFileName(string $field = '', ?array $value = null, ?string $message = ''): void
     {
-        if (empty($value) || (count($value) <= 0)) {
+        if (count($value) <= 0) {
             $this->errors[$field][0] = !empty($message) ? $message : "O campo $field não pode ser vazio!";
             return;
         }
@@ -79,7 +79,7 @@ trait TraitRuleFile
     }
 
     protected function validateMaximumFileNumbers(
-        string $rule = '',
+        int | string $rule = '',
         string $field = '',
         ?array $value = [],
         ?string $message = '',

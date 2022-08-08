@@ -11,7 +11,7 @@ trait TraitRuleInteger
         }
     }
 
-    protected function validateIntegerTyped(string $field = '', string $value = null, ?string $message = ''): void
+    protected function validateIntegerTyped(string $field = '', string | int $value = null, ?string $message = ''): void
     {
         if (!is_int($value)) {
             $this->errors[$field] = !empty($message) ? $message : "O campo $field deve ser do tipado como inteiro!";

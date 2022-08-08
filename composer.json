@@ -64,8 +64,9 @@
     },
     "autoload": {
         "psr-4": {
-            "DevUtils\\": "src/",
-            "DevUtils\\Test\\": "tests/"
+            "DevUtils\\conf\\": "conf/",
+            "DevUtils\\Test\\": "tests/",
+            "DevUtils\\": "src/"
         }
     },
     "require-dev": {

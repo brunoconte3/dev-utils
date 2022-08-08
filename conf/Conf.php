@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace DevUtils;
+namespace DevUtils\conf;
 
-final class Config
+final class Conf
 {
     public function __construct()
     {
