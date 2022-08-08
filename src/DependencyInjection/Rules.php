@@ -13,7 +13,7 @@ class Rules
     use TraitRuleFile;
     use TraitRuleString;
 
-    protected mixed $errors = false;
+    protected mixed $errors;
     public const RULES_WITHOUT_FUNCS = ['convert'];
 
     private function invalidRule(
