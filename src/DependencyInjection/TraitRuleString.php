@@ -164,7 +164,7 @@ trait TraitRuleString
             }
         }
         if (strlen($value) === 18) {
-            if (empty($value) || !ValidateCnpj::validateCnpj($value, $rule)) {
+            if (!ValidateCnpj::validateCnpj($value, $rule)) {
                 $this->errors[$field] = !empty($message) ? $message : "O campo $field é inválido!";
             }
         }
@@ -209,9 +209,9 @@ trait TraitRuleString
     }
 
     protected function validateMinimumWords(
-        string $rule = '',
+        int | string $rule = '',
         string $field = '',
-        ?string $value = '',
+        int | string $value = '',
         ?string $message = '',
     ): void {
         if (!ValidateString::minWords($value, $rule)) {
@@ -221,9 +221,9 @@ trait TraitRuleString
     }
 
     protected function validateMaximumWords(
-        string $rule = '',
+        int | string $rule = '',
         string $field = '',
-        ?string $value = '',
+        int | string $value = '',
         ?string $message = '',
     ): void {
         if (!ValidateString::maxWords($value, $rule)) {
