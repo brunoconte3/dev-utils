@@ -177,7 +177,6 @@ class StrfTime
                         // remove leading zeros but keep last char if also zero
                         return preg_replace('/^0+(?=.)/', '', $result);
                 }
-
                 return $result;
             },
             $format
