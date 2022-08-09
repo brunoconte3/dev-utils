@@ -8,12 +8,12 @@ use DevUtils\Format;
 
 class Arrays
 {
-    public static function searchKey(array $array, $key): ?int
+    public static function searchKey(array $array, string $key): ?int
     {
         return Format::falseToNull(array_search(key([$key => null]), array_keys($array), true));
     }
 
-    public static function renameKey(array &$array, $oldKey, $newKey): bool
+    public static function renameKey(array &$array, string $oldKey, string $newKey): bool
     {
         $offset = self::searchKey($array, $oldKey);
         if ($offset === null) {
@@ -30,7 +30,7 @@ class Arrays
     public static function checkExistIndexByValue(array $arrayCollection, string $search): bool
     {
         foreach ($arrayCollection as $array) {
-            $indice = (!is_array($array) && ((string) $search == (string) $array)) ? true : false;
+            $indice = (!is_array($array) && ($search === strval($array))) ? true : false;
             if ((is_array($array) && self::checkExistIndexByValue($array, $search)) || $indice) {
                 unset($indice);
                 return true;
@@ -43,7 +43,7 @@ class Arrays
     {
         $retorno = [];
         foreach ($array as $key => $value) {
-            if ((string) strtolower($key) === strtolower($searchKey)) {
+            if (strval(strtolower($key)) === strtolower($searchKey)) {
                 $retorno[$key] = $value;
             } else {
                 if (is_array($value)) {
@@ -54,10 +54,7 @@ class Arrays
         return array_filter($retorno);
     }
 
-    /**
-     * @param string|int|boolean $searchValue
-     */
-    public static function findIndexByValue(array $array, $searchValue): array
+    public static function findIndexByValue(array $array, string | int | bool $searchValue): array
     {
         $retorno = [];
         foreach ($array as $key => $value) {
@@ -106,9 +103,9 @@ class Arrays
     }
 
     public static function checkExistIndexArrayRecursive(
-        array $array = [],
-        string $needle = '',
-        bool &$aux = false
+        ?array $array,
+        ?string $needle,
+        bool &$aux = false,
     ): bool {
         foreach ($array as $key => $value) {
             if ($key === $needle) {

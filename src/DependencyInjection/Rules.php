@@ -13,11 +13,15 @@ class Rules
     use TraitRuleFile;
     use TraitRuleString;
 
-    protected $errors = false;
+    protected array $errors = [];
     public const RULES_WITHOUT_FUNCS = ['convert'];
 
-    private function invalidRule($rule = '', $field = '', $value = null, $message = null)
-    {
+    private function invalidRule(
+        string $rule = '',
+        string $field = '',
+        mixed $value = null,
+        ?string $message = '',
+    ): void {
         $msg = '';
         if (!empty($rule)) {
             $msg .= $rule;
@@ -84,8 +88,11 @@ class Rules
         return true;
     }
 
-    protected function validateFieldMandatory($field = '', $value = null, string $message = null)
-    {
+    protected function validateFieldMandatory(
+        string $field = '',
+        mixed $value = null,
+        string $message = null,
+    ): array | string {
         if (is_array($value) && (count($value) <= 0)) {
             return $this->errors[$field] = !empty($message) ? $message : "O campo $field é obrigatório!";
         }
@@ -96,10 +103,15 @@ class Rules
         ) {
             return $this->errors[$field] = !empty($message) ? $message : "O campo $field é obrigatório!";
         }
+        return [];
     }
 
-    protected function validateFieldType($rule = '', $field = '', $value = null, $message = null)
-    {
+    protected function validateFieldType(
+        string $rule = '',
+        string $field = '',
+        mixed $value = null,
+        ?string $message = null,
+    ): void {
         if (in_array(trim(strtolower($rule)), self::RULES_WITHOUT_FUNCS)) {
             return;
         }
@@ -122,7 +134,7 @@ class Rules
         }
     }
 
-    protected function levelSubLevelsArrayReturnJson(array $data, bool $recursive = false)
+    protected function levelSubLevelsArrayReturnJson(array $data, bool $recursive = false): mixed
     {
         //funcao recurssiva para tratar array e retornar json valido
         //essa função serve para validar dados com json_encode múltiplos, e indices quebrados na estrutura
@@ -152,8 +164,8 @@ class Rules
 
     protected function validateSubLevelData(
         array $data,
-        array $rules
-    ) {
+        array $rules,
+    ): array | bool {
         //percorre o array de validação para não rodar recurssivamente atoa
         foreach ($rules as $key => $val) {
             //se for um objeto no primeiro nivel, valida recurssivo
@@ -173,8 +185,13 @@ class Rules
         return $rules;
     }
 
-    protected function validateRuleField($field, $value, $rules, $valid = false, $data = [])
-    {
+    protected function validateRuleField(
+        mixed $field,
+        mixed $value,
+        mixed $rules,
+        bool $valid = false,
+        array $data = [],
+    ): array {
         //se o campo é valido, ele existe no json de dados, no mesmo nivel que a regra
         if ($valid) {
             //transforma a string json de validação em array para validação
@@ -212,7 +229,7 @@ class Rules
                 unset($rulesArray['mensagem']);
             }
             foreach ($rulesArray as $key => $val) {
-                $ruleValue = (!empty($val) || (intval($val) == 0)) ? true : false;
+                $ruleValue = (!empty($val) || (intval($val) === 0)) ? true : false;
                 if (!in_array('optional', $rulesArray) || (in_array('optional', $rulesArray) && $ruleValue)) {
                     if (in_array(trim(strtolower($key)), self::RULES_WITHOUT_FUNCS)) {
                         continue;
@@ -277,6 +294,7 @@ class Rules
                     }
                 }
             }
+            return [];
         } else {
             //se o campo é invalido, ele não existe no json de dados no mesmo nivel que a regra
             //aqui valida se na regra há filhos obrigatorios para esse campo
@@ -309,7 +327,7 @@ class Rules
         }
     }
 
-    protected function validateBoolean($field = '', $value = null, $message = null)
+    protected function validateBoolean(string $field = '', string $value = null, ?string $message = null): void
     {
         if (!filter_var($value, FILTER_VALIDATE_BOOLEAN)) {
             $this->errors[$field] = !empty($message) ?
@@ -317,7 +335,7 @@ class Rules
         }
     }
 
-    protected function validateFloating($field = '', $value = null, $message = null)
+    protected function validateFloating(string $field = '', string $value = null, ?string $message = null): void
     {
         if (!filter_var($value, FILTER_VALIDATE_FLOAT)) {
             $this->errors[$field] = !empty($message) ?
@@ -325,7 +343,7 @@ class Rules
         }
     }
 
-    protected function validateJson($field = '', $value = null, $message = null)
+    protected function validateJson(string $field, mixed $value, ?string $message = null): void
     {
         $value = is_array($value) ? json_encode($value) : $value;
         if (is_string($value)) {

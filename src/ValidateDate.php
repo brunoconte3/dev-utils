@@ -51,7 +51,7 @@ class ValidateDate
         }
     }
 
-    public static function validateTimeStamp($date): bool
+    public static function validateTimeStamp(string $date): bool
     {
         $format = 'Y-m-d H:i:s';
         $d = DateTime::createFromFormat($format, $date);

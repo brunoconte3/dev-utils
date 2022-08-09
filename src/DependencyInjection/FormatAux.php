@@ -2,19 +2,18 @@
 
 namespace DevUtils\DependencyInjection;
 
+use Exception;
+
 abstract class FormatAux
 {
     private const DATA_TYPE_TO_CONVERT = [
         'bool',
         'float',
         'int',
-        'numeric'
+        'numeric',
     ];
 
-    /**
-     * @param mixed $val
-     */
-    private static function returnTypeBool($val, bool $returnNull = false): bool
+    private static function returnTypeBool(mixed $val, bool $returnNull = false): bool
     {
         $boolVal = (is_string($val) ?
             filter_var($val, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) : (bool) $val);
@@ -31,7 +30,7 @@ abstract class FormatAux
         return null;
     }
 
-    protected static function executeConvert(string $type, $value)
+    protected static function executeConvert(string $type, mixed $value): mixed
     {
         switch ($type) {
             case 'bool':
@@ -54,30 +53,27 @@ abstract class FormatAux
         }
     }
 
-    /**
-     * @param string|int $value
-     */
-    protected static function validateForFormatting(string $nome, int $tamanho, $value): void
+    protected static function validateForFormatting(string $nome, int $tamanho, string | int $value): void
     {
         if (strlen($value) !== $tamanho) {
-            throw new \Exception("$nome precisa ter $tamanho números!");
+            throw new Exception("$nome precisa ter $tamanho números!");
         }
         if (!is_numeric($value)) {
-            throw new \Exception($nome . ' precisa conter apenas números!');
+            throw new Exception($nome . ' precisa conter apenas números!');
         }
     }
 
     protected static function extensive(float $value = 0): string
     {
-        $singular = ['centavo', 'real', 'mil', 'milhão', 'bilhão', 'trilhão', 'quatrilhão'];
-        $plural = ['centavos', 'reais', 'mil', 'milhões', 'bilhões', 'trilhões', 'quatrilhões'];
+        $singular = ['centavo', 'real', 'mil', 'milhão', 'bilhão', 'trilhão', 'quatrilhão',];
+        $plural = ['centavos', 'reais', 'mil', 'milhões', 'bilhões', 'trilhões', 'quatrilhões',];
         $hundred = [
             '', 'cem', 'duzentos', 'trezentos', 'quatrocentos', 'quinhentos', 'seiscentos', 'setecentos',
-            'oitocentos', 'novecentos'
+            'oitocentos', 'novecentos',
         ];
-        $ten = ['', 'dez', 'vinte', 'trinta', 'quarenta', 'cinquenta', 'sessenta', 'setenta', 'oitenta', 'noventa'];
+        $ten = ['', 'dez', 'vinte', 'trinta', 'quarenta', 'cinquenta', 'sessenta', 'setenta', 'oitenta', 'noventa',];
         $ten10 = ['dez', 'onze', 'doze', 'treze', 'quatorze', 'quinze', 'dezesseis', 'dezesete', 'dezoito', 'dezenove'];
-        $unitary = ['', 'um', 'dois', 'três', 'quatro', 'cinco', 'seis', 'sete', 'oito', 'nove'];
+        $unitary = ['', 'um', 'dois', 'três', 'quatro', 'cinco', 'seis', 'sete', 'oito', 'nove',];
 
         $z = 0;
         $value = number_format($value, 2, '.', '.');
@@ -109,7 +105,7 @@ abstract class FormatAux
                 $z--;
             }
 
-            if (($t == 1) && ($z > 0) && ($integer[0] > 0)) {
+            if (($t === 1) && ($z > 0) && ($integer[0] > 0)) {
                 $r .= (($z > 1) ? ' de ' : ' ') . $plural[$t];
             }
             if ($r) {

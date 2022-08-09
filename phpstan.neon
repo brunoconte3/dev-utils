@@ -1,10 +1,14 @@
 parameters:
     bootstrapFiles:
-        - conf/conf.php
-        - conf/confDefine.php
+        - vendor/autoload.php
+        - src/resource/ConstantPhpStan.php
     paths:
+        - conf
         - src
         - tests
+    excludePaths:
+        analyse:
+           - src/DependencyInjection/StrfTime.php
     checkMissingIterableValueType: false
     checkGenericClassInNonGenericObjectType: false
-    phpVersion: 70400
+    phpVersion: 80013

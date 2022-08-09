@@ -10,7 +10,9 @@
     processIsolation            = "false"
     stopOnFailure               = "false"
     stderr                      = "true">
-
+    <php>
+        <env name="PHP_UNIT_DEFINE" value="true"/>
+    </php>
     <testsuites>
         <testsuite name="Tests">
             <directory suffix=".php">./tests/</directory>

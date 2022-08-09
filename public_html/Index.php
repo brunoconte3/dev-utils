@@ -8,10 +8,13 @@ use DevUtils\{
     Validator,
     Format,
 };
+use DevUtils\conf\Conf;
 
-require_once '../conf/conf.php';
+require_once '../conf/Conf.php';
 require_once 'AutoInstall.php';
 require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';
+
+(new Conf());
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
