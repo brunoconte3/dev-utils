@@ -6,10 +6,9 @@ parameters:
         - conf
         - src
         - tests
-    ignoreErrors:
-        -
-           message: "#Callable \\(Closure\\(mixed\\)#"
-           path: src/DependencyInjection/StrfTime.php
+    excludePaths:
+        analyse:
+           - src/DependencyInjection/StrfTime.php
     checkMissingIterableValueType: false
     checkGenericClassInNonGenericObjectType: false
     phpVersion: 80013

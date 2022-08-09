@@ -48,7 +48,7 @@ class Format extends FormatAux
         return date("d-m-Y_s_") . uniqid(rand() . rand() . rand() . time()) . '_' . $nameFile;
     }
 
-    public static function convertTypes(array &$data, array $rules)
+    public static function convertTypes(array &$data, array $rules): void
     {
         $error = [];
         foreach ($rules as $key => $value) {
@@ -59,13 +59,10 @@ class Format extends FormatAux
                     if (in_array($key, array_keys($data))) {
                         $data[$key] = parent::executeConvert($type, $data[$key]);
                     }
-                } catch (\Exception $ex) {
+                } catch (Exception) {
                     $error[] = "falhar ao tentar converter {$data[$key]} para $type";
                 }
             }
-        }
-        if (!empty($error)) {
-            return $error;
         }
     }
 

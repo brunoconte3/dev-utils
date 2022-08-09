@@ -272,8 +272,8 @@ class ValidateFile
     }
 
     public static function validateMaximumFileNumbers(
-        $rule = 0,
-        $field = '',
+        int | string $rule = 0,
+        int | string $field = '',
         array $file = [],
         ?string $message = '',
     ): array {
@@ -287,8 +287,8 @@ class ValidateFile
     }
 
     public static function validateMinimumFileNumbers(
-        $rule = 0,
-        $field = '',
+        int | string $rule = 0,
+        int | string $field = '',
         array $file = [],
         ?string $message = '',
     ): array {
