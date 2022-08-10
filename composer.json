@@ -1,7 +1,7 @@
 {
     "name": "brunoconte3/dev-utils",
-    "description": "O dev-utils é completo, valida, formata, compara dados, além de utilitários!",
-    "keywords": ["validation", "utils", "format", "array", "dev", "utility", "testing", "compare"],
+    "description": "Dev-utils is complete, validates, formats, compares data, plus utilities!",
+    "keywords": ["validation", "utils", "format", "array", "dev", "utility", "compare"],
     "license": "MIT",
     "authors": [{
             "name": "Bruno Conte",
