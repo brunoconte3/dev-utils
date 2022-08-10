@@ -64,7 +64,7 @@ class ValidateCnpj
     {
         $newCnpj = preg_match('/[0-9]/', $cnpj) ?
             str_replace(['-', '.', '/'], '', str_pad($cnpj, 14, '0', STR_PAD_LEFT), $cnpj) : 0;
-        return $newCnpj;
+        return strval($newCnpj);
     }
 
     public static function validateCnpj(string $cnpj, string | array | bool $cnpjException = ''): bool

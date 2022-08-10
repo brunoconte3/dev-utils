@@ -14,13 +14,13 @@ final class ComposerInstall
         }
     }
 
-    private function executarComposer(): string
+    private function executarComposer(): string | bool
     {
         putenv('COMPOSER_HOME=/root/.composer');
         return shell_exec('cd .. && composer install 2>&1') ?? '';
     }
 
-    private function executarDump(): string
+    private function executarDump(): string | bool
     {
         putenv('COMPOSER_HOME=/root/.composer');
         return shell_exec('cd .. && composer dump-autoload 2>&1') ?? false;

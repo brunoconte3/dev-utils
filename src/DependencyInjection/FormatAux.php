@@ -53,7 +53,7 @@ abstract class FormatAux
         }
     }
 
-    protected static function validateForFormatting(string $nome, int $tamanho, string | int $value): void
+    protected static function validateForFormatting(string $nome, int $tamanho, string $value): void
     {
         if (strlen($value) !== $tamanho) {
             throw new Exception("$nome precisa ter $tamanho números!");

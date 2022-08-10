@@ -64,7 +64,7 @@ class Rules
         $charsetType = mb_detect_encoding($string);
         foreach ($enclist as $item) {
             $converted = iconv($item, $item . '//IGNORE', $string);
-            if (md5($converted) == md5($string)) {
+            if (md5(strval($converted)) == md5(strval($string))) {
                 $charsetType = $item;
                 break;
             }
@@ -173,7 +173,7 @@ class Rules
                 $this->validateSubLevelData($data[$key], $rules[$key]);
             }
             //valida campos filhos required, porém não existe no array de dados
-            if (empty($data) && is_array($val) && (strpos(trim(strtolower(json_encode($val))), 'required'))) {
+            if (empty($data) && is_array($val) && (strpos(trim(strtolower(strval(json_encode($val)))), 'required'))) {
                 $this->errors[$key] = "Não foi encontrado o indice $key, campos filhos são obrigatórios!";
                 return false;
             }

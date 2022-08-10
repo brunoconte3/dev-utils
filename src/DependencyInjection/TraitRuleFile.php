@@ -79,7 +79,7 @@ trait TraitRuleFile
     }
 
     protected function validateMaximumFileNumbers(
-        int | string $rule = '',
+        string $rule = '',
         string $field = '',
         ?array $value = [],
         ?string $message = '',

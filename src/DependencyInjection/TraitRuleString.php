@@ -77,7 +77,7 @@ trait TraitRuleString
     protected function validateDdd(
         int | string $rule = '',
         int | string $field = '',
-        string | int $value = '',
+        string $value = '',
         ?string $message = '',
     ): void {
         if (strlen($value) === 3 || strlen($value) === 2) {
@@ -209,9 +209,9 @@ trait TraitRuleString
     }
 
     protected function validateMinimumWords(
-        int | string $rule = '',
+        int $rule,
         string $field = '',
-        int | string $value = '',
+        string $value = '',
         ?string $message = '',
     ): void {
         if (!ValidateString::minWords($value, $rule)) {
@@ -221,7 +221,7 @@ trait TraitRuleString
     }
 
     protected function validateMaximumWords(
-        int | string $rule = '',
+        int $rule,
         string $field = '',
         int | string $value = '',
         ?string $message = '',

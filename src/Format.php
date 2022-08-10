@@ -89,7 +89,7 @@ class Format extends FormatAux
         }
     }
 
-    public static function telephone(string | int $number): string
+    public static function telephone(string $number): string
     {
         if (strlen($number) < 10 || strlen($number) > 11) {
             throw new Exception('telephone precisa ter 10 ou 11 números!');

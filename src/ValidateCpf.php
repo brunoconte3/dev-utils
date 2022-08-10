@@ -42,7 +42,7 @@ class ValidateCpf
     {
         $newCpf = preg_match('/[0-9]/', $cpf) ?
             str_replace('-', '', str_replace('.', '', str_pad($cpf, 11, '0', STR_PAD_LEFT), $cpf), $cpf) : 0;
-        return $newCpf;
+        return strval($newCpf);
     }
 
     public static function validateCpf(string $cpf): bool

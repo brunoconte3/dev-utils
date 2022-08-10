@@ -12,7 +12,7 @@ class UnitTestRule extends TestCase
     private function mountFileSingle(): array
     {
         $l = DIRECTORY_SEPARATOR;
-        $archive = substr(realpath(dirname(__FILE__)), 0, -5) . 'public_html' . $l . 'static' . $l . 'img'
+        $archive = substr(strval(realpath(dirname(__FILE__))), 0, -5) . 'public_html' . $l . 'static' . $l . 'img'
             . $l . 'iconTest.png';
         $archive = str_replace("\\", "\\/", $archive);
         return [
