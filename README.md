@@ -110,7 +110,7 @@ maxWidth and requiredFile, you can set the minimum and maximum size (bytes) of t
             'fileUploadSingle' => 'requiredFile|fileName|mimeType:jpeg;png;jpg;txt;docx;xlsx;pdf|minUploadSize:10|
             maxUploadSize:100|minWidth:200|maxWidth:200',
             'fileUploadMultiple' => 'fileName|mimeType:jpeg|minFile:1|maxFile:3|minUploadSize:10|
-            minWidth:200|maxWidth:200|maxUploadSize:100, Mensagem personalizada aqui!',
+            minWidth:200|maxWidth:200|maxUploadSize:100, Mensagem personalizada aqui',
         ];
 
         $validator = new DevUtils\Validator();
