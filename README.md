@@ -548,9 +548,9 @@ Utility::buildUrl('localhost', '/Framework-Cooper/testando', 'on'); // Return to
 
 ```
 
-## Will perform pull request, please run unit tests, and phpstan level 6
+## Will perform pull request, please execute unit tests, and phpstan level 6
 
-`If you don't know how to run phpstan, I run and adjust whatever is necessaryendor/bin/phpunit`
+`If you don't know how to run phpstan, I execute and adjust whatever is necessary`
 
 # License
 
