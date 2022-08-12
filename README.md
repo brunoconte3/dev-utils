@@ -545,12 +545,11 @@ Utility::generatePassword(10);
 * @param string $https -> 'on' to generate https url, null or other value, generate http url
 */
 Utility::buildUrl('localhost', '/Framework-Cooper/testando', 'on'); // Return to URL
-
 ```
 
-##Check the minimum coverage of CI/CD unit tests using PHPUnit
+## Check the minimum coverage of CI/CD unit tests using PHPUnit
 
-```
+```php
 file: .gitlab-ci.yml
 Add Lines:
 
