@@ -19,14 +19,16 @@
         </testsuite>
     </testsuites>
 
- <!--
-     <coverage includeUncoveredFiles="true" processUncoveredFiles="true">
+    <coverage includeUncoveredFiles="true" processUncoveredFiles="true">
         <include>
-            <directory suffix=".php">./src</directory>
+            <directory suffix=".php">src</directory>
+            <directory suffix=".php">tests</directory>
         </include>
+        <exclude>
+            <directory>src/CI.php</directory>
+        </exclude>
         <report>
-            <text outputFile="coverage.txt"/>
-            <html outputDirectory="coverage"></html>
+            <clover outputFile="clover.xml"/>
         </report>
-    </coverage>-->
+    </coverage>
 </phpunit>

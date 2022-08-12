@@ -548,8 +548,25 @@ Utility::buildUrl('localhost', '/Framework-Cooper/testando', 'on'); // Return to
 
 ```
 
+##Check the minimum coverage of CI/CD unit tests using PHPUnit
+
+```
+file: .gitlab-ci.yml
+Add Lines:
+
+script:
+    - composer install
+    - ./vendor/bin/phpunit --coverage-xml coverage #Here generates the coverage file
+    - php ./vendor/brunoconte3/dev-utils/src/CI.php  coverage/index.xml 80 #Change the value 80 to your value
+
+
+file: .gitignore
+Add Line: /coverage/
+```
+
 ## Will perform pull request, please execute unit tests, and phpstan level 6
 
+`./vendor/bin/phpunit --coverage-xml coverage`
 `If you don't know how to run phpstan, I execute and adjust whatever is necessary`
 
 # License
