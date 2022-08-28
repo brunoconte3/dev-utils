@@ -1,0 +1,22 @@
+name: PHP Code Sniffer
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Composer Install
+      uses: php-actions/composer@v6
+      with:
+        php_extensions: sockets gd mbstring intl
+
+    - name: PHPCS
+      run: composer run phpcs
