@@ -1,12 +1,16 @@
 name: "PHPStan - CI"
 
-on: [push, pull_request]
+on:
+  push:
+    paths:
+      - ".github/workflows/phpstan.yml"
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
   steps:
+    - name: Checkout project
     - uses: actions/checkout@v2
     - uses: php-actions/composer@v6
     - uses: php-actions/phpstan@v3
