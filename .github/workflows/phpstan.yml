@@ -1,0 +1,10 @@
+name: "PHPStan - CI"
+
+on: [push]
+
+jobs:
+  phpstan:
+    - name: PHPStan Static Analysis
+      uses: php-actions/phpstan@v2
+      with:
+        configuration: phpstan.neon
