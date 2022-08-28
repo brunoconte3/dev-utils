@@ -6,9 +6,13 @@ jobs:
   build-test:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - uses: php-actions/composer@v5 # or alternative dependency management
-    - uses: php-actions/phpunit@v3
-    with:
-      configuration: phpunit.xml
-      version: 9.5.21
+      - name: Checkout Code
+        uses: actions/checkout@v2
+      - name: Install composer and dependencies
+        uses: php-actions/composer@v6
+      - name: PHPUnit Tests
+        uses: php-actions/phpunit@v3
+        with:
+          bootstrap: vendor/autoload.php
+          configuration: phpunit.xml
+          version: 9.5.21
