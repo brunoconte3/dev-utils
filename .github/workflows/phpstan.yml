@@ -1,18 +1,20 @@
-name: "PHPStan - CI"
-
-on:
-  push:
-    paths:
-      - ".github/workflows/phpstan.yml"
+on: [push]
+name: "PHPSTAN - CI"
 
 jobs:
-  build:
+  phpstan:
+    name: phpstan
     runs-on: ubuntu-latest
-
-  steps:
-    - name: Checkout project
-    - uses: actions/checkout@v2
-    - uses: php-actions/composer@v6
-    - uses: php-actions/phpstan@v3
-      with:
-        configuration: phpstan.neon
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v2
+      - name: Run phpstan
+        uses: actions-x/phpstan@v1
+        with:
+          installComposer: 0
+          phpstanVersion: 1.8.2
+          level: 6
+          paths: conf src tests
+          configPath: phpstan.neon
+          useBundled: 1
+          arguments: --autoload-file src/resource/ConstantPhpStan.php
