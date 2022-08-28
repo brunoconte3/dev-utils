@@ -16,3 +16,5 @@ jobs:
           bootstrap: vendor/autoload.php
           configuration: phpunit.xml
           version: 9.5.21
+          php_extensions: xdebug
+          args: tests --coverage-clover ./coverage.xml
