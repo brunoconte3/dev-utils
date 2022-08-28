@@ -11,7 +11,7 @@ jobs:
       - name: Run phpstan
         uses: actions-x/phpstan@v1
         with:
-          installComposer: 0
+          installComposer: 1
           phpstanVersion: 1.8.2
           level: 6
           paths: conf src tests
