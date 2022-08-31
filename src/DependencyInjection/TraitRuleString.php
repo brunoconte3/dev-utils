@@ -223,7 +223,7 @@ trait TraitRuleString
     protected function validateMaximumWords(
         int $rule,
         string $field = '',
-        int | string $value = '',
+        string $value = '',
         ?string $message = '',
     ): void {
         if (!ValidateString::maxWords($value, $rule)) {

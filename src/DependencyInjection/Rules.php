@@ -156,10 +156,11 @@ class Rules
             return $data;
         }
         //se for raiz retorna json
-        return strtr(json_encode(
+        $json = json_encode(
             $data,
             JSON_UNESCAPED_UNICODE
-        ), ["\r" => '', "\n" => '', "\t" => '', "\\" => '']);
+        );
+        return strtr(($json ?: ''), ["\r" => '', "\n" => '', "\t" => '', "\\" => '']);
     }
 
     protected function validateSubLevelData(
@@ -208,16 +209,17 @@ class Rules
                     ) {
                         foreach ($rulesConf as $valueRuleConf) {
                             $conf = preg_split('/[\,]/', trim($valueRuleConf), 2);
-                            $ruleArrayConf = explode(':', $conf[0] ?? '');
+                            $ruleArrayConf = explode(':', is_array($conf) ? $conf[0] : '');
                             $regEx = (trim(strtolower($ruleArrayConf[0])) == 'regex') ? true : false;
 
                             if (isset($ruleArrayConf[1]) && (strpos($valueRuleConf, ';') > 0) && !$regEx) {
                                 $ruleArrayConf[1] = explode(';', $ruleArrayConf[1]);
                             }
-                            if (array_key_exists(1, $conf) && !empty($conf[1])) {
+                            if (is_array($conf) && array_key_exists(1, $conf) && !empty($conf[1])) {
                                 $rulesArray['mensagem'] = trim(strip_tags($conf[1]));
                             }
-                            $rulesArray[$ruleArrayConf[0] ?? (count($rulesArray) + 1)] = $ruleArrayConf[1] ?? true;
+                            $keyConf = $ruleArrayConf[0] ?? (count($rulesArray) + 1);
+                            $rulesArray[strval($keyConf)] = $ruleArrayConf[1] ?? true;
                         }
                     }
                 }

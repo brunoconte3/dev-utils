@@ -52,7 +52,7 @@ trait TraitRuleDate
         if (strpos($value, '/') > -1) {
             $value = Format::dateAmerican($value);
         }
-        $day = date('w', strtotime($value));
+        $day = date('w', (strtotime($value) ?: null));
         if (in_array($day, [0, 6])) {
             $this->errors[$field] = !empty($message) ? $message : "O campo $field não pode ser um Final de Semana!";
         }

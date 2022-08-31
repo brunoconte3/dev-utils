@@ -14,7 +14,7 @@ A complete library, with PSR standard and guarantee of all methods unit tested b
 composer.json
 
 ```
-"brunoconte3/dev-utils": "2.0.1"
+"brunoconte3/dev-utils": "2.2.0"
 ```
 
 With composer, require
@@ -563,7 +563,7 @@ file: .gitignore
 Add Line: /coverage/
 ```
 
-## Will perform pull request, please execute unit tests, and phpstan level 6
+## Will perform pull request, please execute unit tests, and phpstan level 7
 
 `./vendor/bin/phpunit --coverage-xml coverage`
 `If you don't know how to run phpstan, I execute and adjust whatever is necessary`
