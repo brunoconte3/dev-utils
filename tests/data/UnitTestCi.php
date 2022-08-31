@@ -6,7 +6,7 @@ namespace DevUtils\Test\data;
 
 use PHPUnit\Framework\TestCase;
 
-class UnitTestCI extends TestCase
+class UnitTestCi extends TestCase
 {
     public function testCi(): void
     {
