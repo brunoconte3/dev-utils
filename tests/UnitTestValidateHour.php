@@ -11,7 +11,7 @@ class UnitTestValidateHour extends TestCase
 {
     public function testValidateHour(): void
     {
-        self::assertEquals(true, ValidateHour::validateHour('08:50'));
-        self::assertEquals(false, ValidateHour::validateHour('08:5'));
+        self::assertTrue(ValidateHour::validateHour('08:50'));
+        self::assertFalse(ValidateHour::validateHour('08:5'));
     }
 }

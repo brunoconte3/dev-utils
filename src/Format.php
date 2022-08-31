@@ -112,7 +112,7 @@ class Format extends FormatAux
         if (strlen($date) < 8 || strlen($date) > 10) {
             throw new Exception('dateBrazil precisa conter 8 à 10 dígitos!');
         }
-        return date('d/m/Y', strtotime($date));
+        return date('d/m/Y', (strtotime($date) ?: null));
     }
 
     public static function dateAmerican(string $date): string
@@ -123,7 +123,7 @@ class Format extends FormatAux
         if (strpos($date, '/') > -1) {
             return implode('-', array_reverse(explode('/', $date)));
         }
-        return date('Y-m-d', strtotime($date));
+        return date('Y-m-d', (strtotime($date) ?: null));
     }
 
     public static function arrayToIntReference(array &$array): void
@@ -184,7 +184,7 @@ class Format extends FormatAux
         for ($i = 0; $i < strlen($str); $i++) {
             $mask[strpos($mask, "#")] = $str[$i];
         }
-        return $mask;
+        return strval($mask);
     }
 
     public static function onlyNumbers(string $str): string
@@ -231,7 +231,7 @@ class Format extends FormatAux
         if (!extension_loaded('iconv')) {
             throw new Exception(__METHOD__ . '() requires ICONV extension that is not loaded.');
         }
-        return iconv('UTF-32LE', $charSet, strrev(iconv($charSet, 'UTF-32BE', $string)));
+        return iconv('UTF-32LE', $charSet, strrev(iconv($charSet, 'UTF-32BE', $string) ?: '')) ?: '';
     }
 
     public static function falseToNull(mixed $value): mixed
@@ -329,7 +329,7 @@ class Format extends FormatAux
         }
 
         $dateTime = \DateTime::createFromFormat('d/m/Y H:i:s', $dt);
-        return $dateTime->format('Y-m-d H:i:s');
+        return !empty($dateTime) ? $dateTime->format('Y-m-d H:i:s') : '';
     }
 
     public static function convertStringToBinary(string $string): string
@@ -337,7 +337,7 @@ class Format extends FormatAux
         $characters = str_split($string);
         $binario = [];
         foreach ($characters as $character) {
-            $data = unpack('H*', $character);
+            $data = unpack('H*', $character) ?: [];
             $binario[] = base_convert($data[1], 16, 2);
         }
         return implode(' ', $binario);

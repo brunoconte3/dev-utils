@@ -93,7 +93,7 @@ class ValidateFile
             self::validateFileTransformSingleToMultiple($file);
 
             foreach ($file['tmp_name'] as $key => $tmpName) {
-                list($width) = getimagesize($tmpName);
+                list($width) = getimagesize($tmpName) ?: [];
 
                 if ($width < $rule) {
                     $msgMinWidth = "O campo $field não pode ser menor que $rule pexels de comprimento!";
@@ -117,7 +117,7 @@ class ValidateFile
             self::validateFileTransformSingleToMultiple($file);
 
             foreach ($file['tmp_name'] as $key => $tmpName) {
-                list(, $height) = getimagesize($tmpName);
+                list(, $height) = getimagesize($tmpName) ?: [];
 
                 if ($height < $rule) {
                     $msgMinHeight = "O campo $field não pode ser menor que $rule pexels de altura!";
@@ -141,7 +141,7 @@ class ValidateFile
             self::validateFileTransformSingleToMultiple($file);
 
             foreach ($file['tmp_name'] as $key => $tmpName) {
-                list($width) = getimagesize($tmpName);
+                list($width) = getimagesize($tmpName) ?: [];
 
                 if ($width > $rule) {
                     $msgMaxWidth = "O campo $field não pode ser maior que $rule pexels de comprimento!";
@@ -165,7 +165,7 @@ class ValidateFile
             self::validateFileTransformSingleToMultiple($file);
 
             foreach ($file['tmp_name'] as $key => $tmpName) {
-                list(, $height) = getimagesize($tmpName);
+                list(, $height) = getimagesize($tmpName) ?: [];
 
                 if ($height > $rule) {
                     $msgMaxHeight = "O campo $field não pode ser maior que $rule pexels de altura!";
