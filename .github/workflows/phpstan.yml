@@ -1,0 +1,20 @@
+on: [push]
+name: "PHPSTAN - CI"
+
+jobs:
+  phpstan:
+    name: phpstan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v2
+      - name: Run phpstan
+        uses: actions-x/phpstan@v1
+        with:
+          installComposer: 1
+          phpstanVersion: 1.8.2
+          level: 7
+          paths: conf src tests
+          configPath: phpstan.neon
+          useBundled: 1
+          arguments: --autoload-file src/resource/ConstantPhpStan.php
