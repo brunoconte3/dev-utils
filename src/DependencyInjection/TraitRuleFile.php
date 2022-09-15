@@ -18,7 +18,7 @@ trait TraitRuleFile
     protected function validateFileMaxUploadSize(
         string $rule = '',
         string $field = '',
-        ?array $value = [],
+        array $value = [],
         ?string $message = '',
     ): void {
         $rule = trim($rule);
@@ -33,7 +33,7 @@ trait TraitRuleFile
     protected function validateFileMinUploadSize(
         string $rule = '',
         string $field = '',
-        ?array $value = [],
+        array $value = [],
         ?string $message = '',
     ): void {
         $rule = trim($rule);
@@ -45,7 +45,7 @@ trait TraitRuleFile
         );
     }
 
-    protected function validateFileName(string $field = '', ?array $value = null, ?string $message = ''): void
+    protected function validateFileName(string $field = '', array $value = [], ?string $message = ''): void
     {
         if (count($value) <= 0) {
             $this->errors[$field][0] = !empty($message) ? $message : "O campo $field não pode ser vazio!";
@@ -61,7 +61,7 @@ trait TraitRuleFile
     protected function validateFileMimeType(
         string | array $rule = '',
         string $field = '',
-        ?array $value = [],
+        array $value = [],
         ?string $message = '',
     ): void {
         $this->validateHandleErrorsInArray(ValidateFile::validateMimeType($rule, $value, $message), $field);
@@ -69,7 +69,7 @@ trait TraitRuleFile
 
     protected function validateFileUploadMandatory(
         string $field = '',
-        ?array $value = [],
+        array $value = [],
         ?string $message = '',
     ): void {
         $this->validateHandleErrorsInArray(
@@ -81,7 +81,7 @@ trait TraitRuleFile
     protected function validateMaximumFileNumbers(
         string $rule = '',
         string $field = '',
-        ?array $value = [],
+        array $value = [],
         ?string $message = '',
     ): void {
         $rule = intval(trim($rule));
@@ -94,7 +94,7 @@ trait TraitRuleFile
     protected function validateMinimumFileNumbers(
         string $rule = '',
         string $field = '',
-        ?array $value = [],
+        array $value = [],
         ?string $message = '',
     ): void {
         $rule = trim($rule);
@@ -133,7 +133,7 @@ trait TraitRuleFile
     protected function validateMinWidth(
         string $rule = '',
         string $field = '',
-        ?array $value = [],
+        array $value = [],
         ?string $message = '',
     ): void {
         $rule = trim($rule);
@@ -153,7 +153,7 @@ trait TraitRuleFile
     protected function validateMinHeight(
         string $rule = '',
         string $field = '',
-        ?array $value = [],
+        array $value = [],
         ?string $message = '',
     ): void {
         $rule = trim($rule);
@@ -173,7 +173,7 @@ trait TraitRuleFile
     protected function validateMaxWidth(
         string $rule = '',
         string $field = '',
-        ?array $value = [],
+        array $value = [],
         ?string $message = '',
     ): void {
         $rule = trim($rule);
@@ -193,7 +193,7 @@ trait TraitRuleFile
     protected function validateMaxHeight(
         string $rule = '',
         string $field = '',
-        ?array $value = [],
+        array $value = [],
         ?string $message = '',
     ): void {
         $rule = trim($rule);

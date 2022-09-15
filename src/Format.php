@@ -28,7 +28,7 @@ class Format extends FormatAux
         return floatval($value);
     }
 
-    private static function formatFileName(?string $fileName): string
+    private static function formatFileName(string $fileName = ''): string
     {
         $dataName = explode('.', trim($fileName));
         $ext  = end($dataName);
@@ -38,7 +38,8 @@ class Format extends FormatAux
         }
 
         $dataName = implode('_', $dataName);
-        $dataName = preg_replace('/\W/', '_', strtolower(self::removeSpecialCharacters($dataName)));
+        $stringNoSpecial = self::removeSpecialCharacters($dataName) ?? '';
+        $dataName = preg_replace('/\W/', '_', strtolower($stringNoSpecial));
 
         return "{$dataName}.{$ext}";
     }
@@ -69,13 +70,15 @@ class Format extends FormatAux
     public static function companyIdentification(string $cnpj): string
     {
         parent::validateForFormatting('companyIdentification', 14, $cnpj);
-        return preg_replace("/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/", "\$1.\$2.\$3/\$4-\$5", $cnpj);
+        $retorno = preg_replace("/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/", "\$1.\$2.\$3/\$4-\$5", $cnpj);
+        return $retorno ?? '';
     }
 
     public static function identifier(string $cpf): string
     {
         parent::validateForFormatting('identifier', 11, $cpf);
-        return preg_replace("/(\d{3})(\d{3})(\d{3})(\d{2})/", "\$1.\$2.\$3-\$4", $cpf);
+        $retorno = preg_replace("/(\d{3})(\d{3})(\d{3})(\d{2})/", "\$1.\$2.\$3-\$4", $cpf);
+        return $retorno ?? '';
     }
 
     public static function identifierOrCompany(string $cpfCnpj): string
@@ -152,7 +155,8 @@ class Format extends FormatAux
     {
         $phone = self::onlyNumbers($phone);
         if (!empty($phone) && ValidatePhone::validate($phone)) {
-            return ($areaCode) ? preg_replace('/\A.{2}?\K[\d]+/', '', $phone) : preg_replace('/^\d{2}/', '', $phone);
+            $retorno = ($areaCode) ? preg_replace('/\A.{2}?\K[\d]+/', '', $phone) : preg_replace('/^\d{2}/', '', $phone);
+            return $retorno ?? '';
         }
         return false;
     }
@@ -164,7 +168,9 @@ class Format extends FormatAux
 
     public static function pointOnlyValue(string $str): string
     {
-        return preg_replace('/[^0-9]/', '.', preg_replace('/[^0-9,]/', '', $str));
+        $str = preg_replace('/[^0-9,]/', '', $str) ?? '';
+        $retorno = preg_replace('/[^0-9]/', '.', $str);
+        return $retorno ?? '';
     }
 
     public static function emptyToNull(array $array, ?string $exception = null): array
@@ -189,12 +195,14 @@ class Format extends FormatAux
 
     public static function onlyNumbers(string $str): string
     {
-        return preg_replace('/[^0-9]/', '', $str);
+        $retorno = preg_replace('/[^0-9]/', '', $str);
+        return $retorno ?? '';
     }
 
     public static function onlyLettersNumbers(string $str): string
     {
-        return preg_replace('/[^a-zA-Z0-9]/', '', $str);
+        $retorno = preg_replace('/[^a-zA-Z0-9]/', '', $str);
+        return $retorno ?? '';
     }
 
     public static function upper(string $string, string $charset = 'UTF-8'): string
@@ -266,12 +274,12 @@ class Format extends FormatAux
         );
     }
 
-    public static function removeSpecialCharacters(?string $string, bool $space = true): ?string
+    public static function removeSpecialCharacters(string $string, bool $space = true): ?string
     {
         if (empty($string)) {
             return null;
         }
-        $newString = self::removeAccent($string);
+        $newString = self::removeAccent($string) ?? '';
         if ($space) {
             return preg_replace("/[^a-zA-Z0-9 ]/", "", $newString);
         }
@@ -345,6 +353,7 @@ class Format extends FormatAux
 
     public static function slugfy(string $text): string
     {
-        return str_replace(' ', '-', self::lower(self::removeSpecialCharacters(str_replace('-', ' ', $text))));
+        $noSpecialCharacter = self::removeSpecialCharacters(str_replace('-', ' ', $text)) ?? '';
+        return str_replace(' ', '-', self::lower($noSpecialCharacter));
     }
 }

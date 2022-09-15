@@ -34,6 +34,7 @@ trait TraitRuleDate
 
     protected function validateHour(string $field = '', string $value = null, ?string $message = ''): void
     {
+        $value = $value ?? '';
         if (!ValidateHour::validateHour($value)) {
             $this->errors[$field] = !empty($message) ?
                 $message : "O campo $field não é uma hora válida!";

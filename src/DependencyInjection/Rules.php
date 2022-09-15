@@ -53,7 +53,8 @@ class Rules
     protected function prepareCharset(string $string = '', string $convert = 'UTF-8', bool $bom = false): string
     {
         $bomchar = pack('H*', 'EFBBBF');
-        $string = trim(preg_replace("/^$bomchar/", '', $string));
+        $regex = preg_replace("/^$bomchar/", '', $string) ?? '';
+        $string = trim($regex);
         static $enclist = [
             'UTF-8', 'ASCII',
             'ISO-8859-1', 'ISO-8859-2', 'ISO-8859-3', 'ISO-8859-4', 'ISO-8859-5',

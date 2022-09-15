@@ -252,7 +252,6 @@ class UnitTestFormat extends TestCase
         self::assertEquals('Acafrao com Espaco ', Format::removeSpecialCharacters('Açafrão com Espaço %$#@!'));
         self::assertEquals('AcafraosemEspaco', Format::removeSpecialCharacters('Açafrão sem Espaço %$#@!', false));
         self::assertNull(Format::removeSpecialCharacters(''));
-        self::assertNull(Format::removeSpecialCharacters(null));
     }
 
     public function testWriteDateExtensive(): void
