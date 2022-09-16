@@ -17,7 +17,7 @@ abstract class FormatAux
     {
         $boolVal = (is_string($val) ?
             filter_var($val, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) : (bool) $val);
-        return ($boolVal === null && !$returnNull ? false : $boolVal);
+        return ($boolVal === null && !$returnNull ? false : (bool)$boolVal);
     }
 
     protected static function returnTypeToConvert(array $rules): ?string

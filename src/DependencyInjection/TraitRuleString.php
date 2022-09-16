@@ -14,7 +14,7 @@ use DevUtils\resource\Common;
 
 trait TraitRuleString
 {
-    protected function validateAlphabets(string $field = '', string $value = null, ?string $message = ''): void
+    protected function validateAlphabets(string $field = '', string $value = '', ?string $message = ''): void
     {
         if (
             !preg_match(
@@ -27,7 +27,7 @@ trait TraitRuleString
         }
     }
 
-    protected function validateAlphaNoSpecial(string $field = '', string $value = null, ?string $message = ''): void
+    protected function validateAlphaNoSpecial(string $field = '', string $value = '', ?string $message = ''): void
     {
         if (!preg_match('/^([a-zA-Z\s])+$/', $value) !== false) {
             $this->errors[$field] = !empty($message) ?
@@ -37,7 +37,7 @@ trait TraitRuleString
 
     protected function validateAlphaNumNoSpecial(
         string $field = '',
-        ?string $value = '',
+        string $value = '',
         ?string $message = '',
     ): void {
         if (!preg_match('/^([a-zA-Z0-9\s])+$/', $value) !== false) {
@@ -199,7 +199,7 @@ trait TraitRuleString
     protected function validateMinimumField(
         string $rule = '',
         string $field = '',
-        ?string $value = '',
+        string $value = '',
         ?string $message = '',
     ): void {
         if (mb_strlen($value) < $rule) {
@@ -235,7 +235,7 @@ trait TraitRuleString
     protected function validateMaximumField(
         string $rule = '',
         string $field = '',
-        ?string $value = '',
+        string $value = '',
         ?string $message = '',
     ): void {
         if (mb_strlen($value) > $rule) {
@@ -270,7 +270,7 @@ trait TraitRuleString
     protected function validateRegex(
         string $rule = '',
         string $field = '',
-        ?string $value = '',
+        string $value = '',
         ?string $message = '',
     ): void {
         if (!preg_match($rule, $value) !== false) {

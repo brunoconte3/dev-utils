@@ -4,9 +4,9 @@ namespace DevUtils;
 
 class ValidateCpf
 {
-    private static function validateRuleCpf(string $cpf): bool
+    private static function validateRuleCpf(string $cpf = ''): bool
     {
-        $cpf = preg_replace('/[^0-9]/', '', strval($cpf));
+        $cpf = preg_replace('/[^0-9]/', '', strval($cpf)) ?? '';
         if (strlen($cpf) !== 11) {
             return false;
         }

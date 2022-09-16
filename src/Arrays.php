@@ -107,11 +107,13 @@ class Arrays
         ?string $needle,
         bool &$aux = false,
     ): bool {
-        foreach ($array as $key => $value) {
-            if ($key === $needle) {
-                $aux = true;
-            } elseif (is_array($value)) {
-                self::checkExistIndexArrayRecursive($value, $needle, $aux);
+        if (!empty($array)) {
+            foreach ($array as $key => $value) {
+                if ($key === $needle) {
+                    $aux = true;
+                } elseif (is_array($value)) {
+                    self::checkExistIndexArrayRecursive($value, $needle, $aux);
+                }
             }
         }
         return $aux ?? false;

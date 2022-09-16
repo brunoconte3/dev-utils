@@ -13,7 +13,7 @@ jobs:
         with:
           installComposer: 1
           phpstanVersion: 1.8.2
-          level: 7
+          level: 8
           paths: conf src tests
           configPath: phpstan.neon
           useBundled: 1

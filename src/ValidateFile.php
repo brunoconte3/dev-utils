@@ -84,7 +84,7 @@ class ValidateFile
     public static function validateMinWidth(
         string $field,
         ?int $rule,
-        ?array $file,
+        array $file,
         ?string $message = '',
     ): array {
         $arrayFileError = [];
@@ -108,7 +108,7 @@ class ValidateFile
     public static function validateMinHeight(
         string $field,
         ?int $rule,
-        ?array $file,
+        array $file,
         ?string $message = '',
     ): array {
         $arrayFileError = [];
@@ -132,7 +132,7 @@ class ValidateFile
     public static function validateMaxWidth(
         string $field,
         ?int $rule,
-        ?array $file,
+        array $file,
         ?string $message = '',
     ): array {
         $arrayFileError = [];
@@ -156,7 +156,7 @@ class ValidateFile
     public static function validateMaxHeight(
         string $field,
         ?int $rule,
-        ?array $file,
+        array $file,
         ?string $message = '',
     ): array {
         $arrayFileError = [];
@@ -179,7 +179,7 @@ class ValidateFile
 
     public static function validateMinUploadSize(
         ?int $rule = 0,
-        ?array $file = [],
+        array $file = [],
         ?string $message = '',
     ): array {
         $arrayFileError = [];
@@ -207,8 +207,9 @@ class ValidateFile
             self::validateFileTransformSingleToMultiple($file);
 
             foreach ($file['name'] as $key => $fileName) {
+                $noSpecialCharacter = Format::removeSpecialCharacters($fileName) ?? '';
                 $file['name'][$key] = explode('.', strtolower(trim(
-                    str_replace(' ', '', Format::removeSpecialCharacters($fileName))
+                    str_replace(' ', '', $noSpecialCharacter)
                 )));
             }
         }

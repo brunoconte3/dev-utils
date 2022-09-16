@@ -28,7 +28,7 @@ class Utility
         $alphabet = 'abcdefghijklmnopqrstuvyxwz';
         $nums = '0123456789';
         $sym = '@#$!()-+%=';
-        $password = null;
+        $password = '';
 
         if ($numbers) {
             $password .= str_shuffle($nums);
