@@ -155,7 +155,8 @@ class Format extends FormatAux
     {
         $phone = self::onlyNumbers($phone);
         if (!empty($phone) && ValidatePhone::validate($phone)) {
-            $retorno = ($areaCode) ? preg_replace('/\A.{2}?\K[\d]+/', '', $phone) : preg_replace('/^\d{2}/', '', $phone);
+            $retorno = ($areaCode) ? preg_replace('/\A.{2}?\K[\d]+/', '', $phone)
+                : preg_replace('/^\d{2}/', '', $phone);
             return $retorno ?? '';
         }
         return false;
