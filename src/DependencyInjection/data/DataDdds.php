@@ -68,7 +68,6 @@ class DataDdds
         $values += self::returnNortheastRegion();
         $values += self::returnMidwestRegion();
         $values += self::returnSoutheastRegion();
-        $values += self::returnSouthRegion();
-        return $values;
+        return $values += self::returnSouthRegion();
     }
 }

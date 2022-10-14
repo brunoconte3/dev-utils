@@ -8,7 +8,7 @@ use DevUtils\Format;
 use PHPUnit\Framework\TestCase;
 use DevUtils\Test\data\DataConvertTypesBool;
 
-class UnitTestFormat extends TestCase
+class UnitFormatTest extends TestCase
 {
     public static function setUpBeforeClass(): void
     {
@@ -114,13 +114,15 @@ class UnitTestFormat extends TestCase
             'b' => 333,
             'c' => 0,
         ];
-        self::assertEquals($arrayProcessed, Format::arrayToInt([
+        $arrayReferenced = [
             0 => '1',
             1 => '123',
             'a' => '222',
             'b' => 333,
             'c' => '',
-        ]));
+        ];
+        Format::arrayToIntReference($arrayReferenced);
+        self::assertEquals($arrayProcessed, $arrayReferenced);
     }
 
     public function testArrayToInt(): void

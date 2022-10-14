@@ -7,7 +7,7 @@ namespace DevUtils\Test;
 use DevUtils\Utility;
 use PHPUnit\Framework\TestCase;
 
-class UnitTestUtility extends TestCase
+class UnitUtilityTest extends TestCase
 {
     public function testCaptureClientIp(): void
     {

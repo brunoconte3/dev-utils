@@ -7,7 +7,7 @@ namespace DevUtils\Test;
 use DevUtils\ValidatePhone;
 use PHPUnit\Framework\TestCase;
 
-class UnitTestValidatePhone extends TestCase
+class UnitValidatePhoneTest extends TestCase
 {
     public function testValidate(): void
     {

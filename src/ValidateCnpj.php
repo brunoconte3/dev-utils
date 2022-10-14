@@ -16,10 +16,10 @@ class ValidateCnpj
         if ((empty($cnpjException) || is_bool($cnpjException)) && in_array($cnpj, $cnpjInvalidate)) {
             return false;
         }
-        if (is_string($cnpjException)) {
-            if (in_array($cnpj, $cnpjInvalidate) && in_array($cnpjException, $cnpjInvalidate)) {
-                return true;
-            }
+        if (
+            is_string($cnpjException) && in_array($cnpj, $cnpjInvalidate) && in_array($cnpjException, $cnpjInvalidate)
+        ) {
+            return true;
         }
         if (is_array($cnpjException) && (count($cnpjException) > 0)) {
             $cnpjExceptionValid = [];
@@ -56,8 +56,7 @@ class ValidateCnpj
             $j = ($j == 2) ? 9 : $j - 1;
         }
         $rest = $sum % 11;
-        $res = $cnpj[13] == ($rest < 2 ? 0 : 11 - $rest);
-        return $res;
+        return $cnpj[13] == ($rest < 2 ? 0 : 11 - $rest);
     }
 
     private static function dealCnpj(string $cnpj): string

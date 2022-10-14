@@ -17,15 +17,12 @@ class ValidateFile
 
     private static function validateFileCount(array $file = []): int
     {
-        if ((count($file) > 0) && (isset($file['name']))) {
-            switch (is_array($file['name'])) {
-                case 1:
-                    if ((count($file['name']) === 1) && empty($file['name'][0])) {
-                        return (count($file['name']) - 1);
-                    }
-                    return count($file['name']);
-                case 0:
-                    return (is_string($file['name']) && !empty($file['name'])) ? 1 : 0;
+        if (!empty($file) && isset($file['name'])) {
+            if (is_array($file['name']) == 1) {
+                return (count($file['name']) === 1) && empty($file['name'][0]) ?
+                    count($file['name']) - 1 : count($file['name']);
+            } else {
+                return (is_string($file['name']) && !empty($file['name'])) ? 1 : 0;
             }
         }
         return 0;
@@ -92,7 +89,7 @@ class ValidateFile
         if (self::validateFileCount($file) > 0) {
             self::validateFileTransformSingleToMultiple($file);
 
-            foreach ($file['tmp_name'] as $key => $tmpName) {
+            foreach ($file['tmp_name'] as $tmpName) {
                 list($width) = getimagesize($tmpName) ?: [];
 
                 if ($width < $rule) {
@@ -116,7 +113,7 @@ class ValidateFile
         if (self::validateFileCount($file) > 0) {
             self::validateFileTransformSingleToMultiple($file);
 
-            foreach ($file['tmp_name'] as $key => $tmpName) {
+            foreach ($file['tmp_name'] as $tmpName) {
                 list(, $height) = getimagesize($tmpName) ?: [];
 
                 if ($height < $rule) {
@@ -140,7 +137,7 @@ class ValidateFile
         if (self::validateFileCount($file) > 0) {
             self::validateFileTransformSingleToMultiple($file);
 
-            foreach ($file['tmp_name'] as $key => $tmpName) {
+            foreach ($file['tmp_name'] as $tmpName) {
                 list($width) = getimagesize($tmpName) ?: [];
 
                 if ($width > $rule) {
@@ -164,7 +161,7 @@ class ValidateFile
         if (self::validateFileCount($file) > 0) {
             self::validateFileTransformSingleToMultiple($file);
 
-            foreach ($file['tmp_name'] as $key => $tmpName) {
+            foreach ($file['tmp_name'] as $tmpName) {
                 list(, $height) = getimagesize($tmpName) ?: [];
 
                 if ($height > $rule) {
@@ -255,19 +252,15 @@ class ValidateFile
         $arrayFileError = [];
         $message = (!empty($message)) ? $message : "O campo {$field} é obrigatório!";
 
-        if ((count($file) > 0) && (isset($file['error']))) {
-            switch (is_array($file['error'])) {
-                case 1:
-                    if (isset($file['error'][0]) && ($file['error'][0] === UPLOAD_ERR_NO_FILE)) {
-                        array_push($arrayFileError, $message);
-                    }
-                    break;
-                case 0:
-                    if ($file['error'] === UPLOAD_ERR_NO_FILE) {
-                        array_push($arrayFileError, $message);
-                    }
-                    break;
-            }
+        if (
+            !empty($file) &&
+            (isset($file['error'])) &&
+            is_array($file['error']) == 1 &&
+            isset($file['error'][0]) &&
+            ($file['error'][0] === UPLOAD_ERR_NO_FILE) ||
+            (is_array($file['error']) == 0 && $file['error'] === UPLOAD_ERR_NO_FILE)
+        ) {
+            array_push($arrayFileError, $message);
         }
         return $arrayFileError;
     }

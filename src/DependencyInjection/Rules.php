@@ -38,8 +38,8 @@ class Rules
 
     private function validateHandleErrorsInArray(array $errorList = [], string $field = ''): void
     {
-        if (count($errorList) > 0) {
-            if ((is_array($this->errors) && array_key_exists($field, $this->errors))) {
+        if (!empty($errorList)) {
+            if (is_array($this->errors) && array_key_exists($field, $this->errors)) {
                 foreach ($errorList as $error) {
                     array_push($this->errors[$field], $error);
                 }
@@ -80,8 +80,7 @@ class Rules
     {
         $data = self::functionsValidationAtoL();
         $data += self::functionsValidationMtoN();
-        $data += self::functionsValidationOtoZ();
-        return $data;
+        return $data += self::functionsValidationOtoZ();
     }
 
     protected function validateOptional(): bool
@@ -122,7 +121,6 @@ class Rules
         $call = [$this, $method];
         //chama há função de validação, de cada parametro json
         if (is_callable($call, true, $method)) {
-            //call_user_func_array($call, [$rule, $field, $value, $message]);
             if (in_array(substr($method, 20), $this->methodsNoRuleValue())) {
                 call_user_func_array($call, [$field, $value, $message]);
             } elseif ($method === 'validateEquals') {
@@ -313,7 +311,6 @@ class Rules
                         $ruleArrayConf =  explode(':', trim($valueRuleConf));
                         $rulesArray[$ruleArrayConf[0] ?? (count($rulesArray) + 1)] = $ruleArrayConf[1] ?? true;
                     }
-                    //$this->errors[$field] = "Há regras de validação não implementadas no campo $field!";
                 }
             }
             $rulesArray = is_array($rulesArray) ? $rulesArray : [];

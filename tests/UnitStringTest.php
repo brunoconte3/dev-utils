@@ -7,7 +7,7 @@ namespace DevUtils\Test;
 use DevUtils\Validator;
 use PHPUnit\Framework\TestCase;
 
-class UnitTestString extends TestCase
+class UnitStringTest extends TestCase
 {
     public function testAlpha(): void
     {

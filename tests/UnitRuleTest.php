@@ -7,7 +7,7 @@ namespace DevUtils\Test;
 use DevUtils\Validator;
 use PHPUnit\Framework\TestCase;
 
-class UnitTestRule extends TestCase
+class UnitRuleTest extends TestCase
 {
     private function mountFileSingle(): array
     {

@@ -12,6 +12,7 @@ use DevUtils\DependencyInjection\{
     StrfTime,
 };
 use Exception;
+use InvalidArgumentException;
 
 class Format extends FormatAux
 {
@@ -23,7 +24,7 @@ class Format extends FormatAux
                 $value = substr_replace($value, '.', -2, 0);
             } else {
                 $value = (strlen(self::onlyNumbers($value)) > 0) ? self::onlyNumbers($value) : '000';
-            };
+            }
         }
         return floatval($value);
     }
@@ -88,20 +89,19 @@ class Format extends FormatAux
         } elseif (strlen($cpfCnpj) === 14) {
             return self::companyIdentification($cpfCnpj);
         } else {
-            throw new Exception('identifierOrCompany => Valor precisa ser um CPF ou CNPJ!');
+            throw new InvalidArgumentException('identifierOrCompany => Valor precisa ser um CPF ou CNPJ!');
         }
     }
 
     public static function telephone(string $number): string
     {
         if (strlen($number) < 10 || strlen($number) > 11) {
-            throw new Exception('telephone precisa ter 10 ou 11 números!');
+            throw new InvalidArgumentException('telephone precisa ter 10 ou 11 números!');
         }
         if (!is_numeric($number)) {
-            throw new Exception('telephone precisa conter apenas números!');
+            throw new InvalidArgumentException('telephone precisa conter apenas números!');
         }
-        $number = '(' . substr($number, 0, 2) . ') ' . substr($number, 2, -4) . '-' . substr($number, -4);
-        return $number;
+        return '(' . substr($number, 0, 2) . ') ' . substr($number, 2, -4) . '-' . substr($number, -4);
     }
 
     public static function zipCode(string $value): string
@@ -113,7 +113,7 @@ class Format extends FormatAux
     public static function dateBrazil(string $date): string
     {
         if (strlen($date) < 8 || strlen($date) > 10) {
-            throw new Exception('dateBrazil precisa conter 8 à 10 dígitos!');
+            throw new InvalidArgumentException('dateBrazil precisa conter 8 à 10 dígitos!');
         }
         return date('d/m/Y', (strtotime($date) ?: null));
     }
@@ -121,7 +121,7 @@ class Format extends FormatAux
     public static function dateAmerican(string $date): string
     {
         if (strlen($date) < 8 || strlen($date) > 10) {
-            throw new Exception('dateAmerican precisa conter 8 à 10 dígitos!');
+            throw new InvalidArgumentException('dateAmerican precisa conter 8 à 10 dígitos!');
         }
         if (strpos($date, '/') > -1) {
             return implode('-', array_reverse(explode('/', $date)));
@@ -226,10 +226,11 @@ class Format extends FormatAux
             return null;
         }
         if ($qtdHidden > strlen($string)) {
-            throw new Exception('Quantidade de caracteres para ocultar não pode ser maior que a String!');
+            throw new
+                InvalidArgumentException('Quantidade de caracteres para ocultar não pode ser maior que a String!');
         }
         if ($qtdHidden < 1) {
-            throw new Exception('Quantidade de caracteres para ocultar não pode ser menor que 1!');
+            throw new InvalidArgumentException('Quantidade de caracteres para ocultar não pode ser menor que 1!');
         }
         $chars = str_repeat($char, $qtdHidden);
         return substr_replace($string, $chars, $positionHidden, strlen($chars));
@@ -238,7 +239,7 @@ class Format extends FormatAux
     public static function reverse(string $string, string $charSet = 'UTF-8'): string
     {
         if (!extension_loaded('iconv')) {
-            throw new Exception(__METHOD__ . '() requires ICONV extension that is not loaded.');
+            throw new InvalidArgumentException(__METHOD__ . '() requires ICONV extension that is not loaded.');
         }
         return iconv('UTF-32LE', $charSet, strrev(iconv($charSet, 'UTF-32BE', $string) ?: '')) ?: '';
     }
@@ -298,7 +299,7 @@ class Format extends FormatAux
     public static function writeCurrencyExtensive(float $numeral): string
     {
         if ($numeral <= 0) {
-            throw new Exception('O valor numeral deve ser maior que zero!');
+            throw new InvalidArgumentException('O valor numeral deve ser maior que zero!');
         } else {
             return parent::extensive($numeral);
         }
@@ -308,10 +309,10 @@ class Format extends FormatAux
     {
         $arrayFile = [];
 
-        if (count($file) > 0) {
+        if (!empty($file)) {
             $fileError = ValidateFile::validateFileErrorPhp($file);
 
-            if (count($fileError) > 0) {
+            if (!empty($fileError)) {
                 return $fileError;
             }
 
@@ -334,7 +335,7 @@ class Format extends FormatAux
     public static function convertTimestampBrazilToAmerican(string $dt): string
     {
         if (!ValidateDate::validateTimeStamp($dt)) {
-            throw new Exception('Data não é um Timestamp!');
+            throw new InvalidArgumentException('Data não é um Timestamp!');
         }
 
         $dateTime = \DateTime::createFromFormat('d/m/Y H:i:s', $dt);

@@ -3,7 +3,6 @@
 namespace DevUtils\DependencyInjection;
 
 use DateTime;
-use DateTimeZone;
 use DateTimeInterface;
 use Exception;
 use IntlDateFormatter;
@@ -176,13 +175,13 @@ class StrfTime
                     case '-':
                         // remove leading zeros but keep last char if also zero
                         return preg_replace('/^0+(?=.)/', '', $result);
+                    default:
+                        return $result;
                 }
-                return $result;
             },
             $format
         );
 
-        $out = str_replace('%%', '%', $out);
-        return $out;
+        return str_replace('%%', '%', $out);
     }
 }

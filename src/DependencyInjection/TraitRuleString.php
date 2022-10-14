@@ -158,15 +158,11 @@ trait TraitRuleString
         if (is_numeric($value) && strlen($value) === 14) {
             $value = Format::mask('##.###.###/####-##', $value);
         }
-        if (strlen($value) === 14) {
-            if (!ValidateCpf::validateCpf($value)) {
-                $this->errors[$field] = !empty($message) ? $message : "O campo $field é inválido!";
-            }
+        if (strlen($value) === 14 && !ValidateCpf::validateCpf($value)) {
+            $this->errors[$field] = !empty($message) ? $message : "O campo $field é inválido!";
         }
-        if (strlen($value) === 18) {
-            if (!ValidateCnpj::validateCnpj($value, $rule)) {
-                $this->errors[$field] = !empty($message) ? $message : "O campo $field é inválido!";
-            }
+        if (strlen($value) === 18 && !ValidateCnpj::validateCnpj($value, $rule)) {
+            $this->errors[$field] = !empty($message) ? $message : "O campo $field é inválido!";
         }
         if (!in_array(strlen($value), [11, 14, 18])) {
             $this->errors[$field] = !empty($message) ? $message : "O campo $field é inválido!";
@@ -241,7 +237,7 @@ trait TraitRuleString
         if (mb_strlen($value) > $rule) {
             $this->errors[$field] = !empty($message) ?
                 $message : "O campo $field precisa conter no máximo $rule caracteres!";
-        };
+        }
     }
 
     protected function validatePlate(string $field = '', string $value = '', ?string $message = ''): void
