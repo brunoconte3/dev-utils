@@ -279,7 +279,7 @@ class UnitRuleTest extends TestCase
     {
         $validator = new Validator();
         $validator->set(['test' => null,], ['test' => 'optional|min:2|int',]);
-        self::assertFalse($validator->getErros());
+        self::assertFalse(!empty($validator->getErros()));
     }
 
     public function testParamJson(): void
@@ -590,7 +590,7 @@ class UnitRuleTest extends TestCase
         ];
         $validator = new Validator();
         $validator->set($array, $rules);
-        self::assertFalse($validator->getErros());
+        self::assertFalse(!empty($validator->getErros()));
     }
 
     public function testRequiredFile(): void
