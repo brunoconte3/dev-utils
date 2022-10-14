@@ -8,7 +8,7 @@ use DevUtils\Arrays;
 use PHPUnit\Framework\TestCase;
 use SimpleXMLElement;
 
-class UnitTestArray extends TestCase
+class UnitArrayTest extends TestCase
 {
     public function testSearchKey(): void
     {

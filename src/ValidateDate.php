@@ -11,10 +11,13 @@ class ValidateDate
         if (strlen($ano) < 4) {
             return false;
         }
-        if (ctype_digit($mes) && ctype_digit($dia) && ctype_digit($ano)) {
-            if (checkdate(intval($mes), intval($dia), intval($ano))) {
-                return true;
-            }
+        if (
+            ctype_digit($mes) &&
+            ctype_digit($dia) &&
+            ctype_digit($ano) &&
+            checkdate(intval($mes), intval($dia), intval($ano))
+        ) {
+            return true;
         }
         return false;
     }

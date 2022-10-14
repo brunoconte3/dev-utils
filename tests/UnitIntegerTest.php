@@ -7,7 +7,7 @@ namespace DevUtils\Test;
 use DevUtils\Validator;
 use PHPUnit\Framework\TestCase;
 
-class UnitTestInteger extends TestCase
+class UnitIntegerTest extends TestCase
 {
     private function assembleArrayForTests(): array
     {

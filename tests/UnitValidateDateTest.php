@@ -7,7 +7,7 @@ namespace DevUtils\Test;
 use DevUtils\ValidateDate;
 use PHPUnit\Framework\TestCase;
 
-class UnitTestValidateDate extends TestCase
+class UnitValidateDateTest extends TestCase
 {
     public function testValidateDateBrazil(): void
     {

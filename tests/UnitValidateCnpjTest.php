@@ -7,7 +7,7 @@ namespace DevUtils\Test;
 use DevUtils\ValidateCnpj;
 use PHPUnit\Framework\TestCase;
 
-class UnitTestValidateCnpj extends TestCase
+class UnitValidateCnpjTest extends TestCase
 {
     public function testValidate(): void
     {

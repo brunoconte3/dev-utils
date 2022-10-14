@@ -21,9 +21,7 @@ class ValidateCpf
             $sum += intval($cpf[$i]) * $j;
         }
         $rest = $sum % 11;
-        $res = $cpf[10] == ($rest < 2 ? 0 : 11 - $rest);
-
-        return $res;
+        return $cpf[10] == ($rest < 2 ? 0 : 11 - $rest);
     }
 
     private static function validateCpfSequenceInvalidate(string $cpf): bool
@@ -50,10 +48,7 @@ class ValidateCpf
         if (strlen($cpf) > 11) {
             $cpf = self::dealCpf($cpf);
         }
-        if (empty($cpf)) {
-            return false;
-        }
-        if (strlen($cpf) !== 11) {
+        if (empty($cpf) || strlen($cpf) !== 11) {
             return false;
         }
         if (self::validateCpfSequenceInvalidate($cpf)) {

@@ -11,7 +11,6 @@ trait TraitRuleFile
         if (!is_numeric($rule) || ($rule <= 0)) {
             $text = "O parâmetro do validador '$label', deve ser numérico e maior ou igual a zero!";
             $this->errors[$field][0] = $text;
-            return;
         }
     }
 
@@ -47,7 +46,7 @@ trait TraitRuleFile
 
     protected function validateFileName(string $field = '', array $value = [], ?string $message = ''): void
     {
-        if (count($value) <= 0) {
+        if (empty($value)) {
             $this->errors[$field][0] = !empty($message) ? $message : "O campo $field não pode ser vazio!";
             return;
         }
@@ -109,7 +108,7 @@ trait TraitRuleFile
         $imgValid = ['image/gif', 'image/png', 'image/jpeg', 'image/bmp', 'image/webp'];
         if (!extension_loaded('gd')) {
             return 'Biblioteca GD não foi encontrada!';
-        } elseif (count($_FILES) === 0) {
+        } elseif (empty($_FILES)) {
             return 'Anexo não foi encontrado!';
         } else {
             $msg = 'Para validar minWidth, maxWidth, minHeight e maxHeight o arquivo precisa ser uma imagem!';

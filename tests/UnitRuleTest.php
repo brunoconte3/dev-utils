@@ -7,7 +7,7 @@ namespace DevUtils\Test;
 use DevUtils\Validator;
 use PHPUnit\Framework\TestCase;
 
-class UnitTestRule extends TestCase
+class UnitRuleTest extends TestCase
 {
     private function mountFileSingle(): array
     {
@@ -279,7 +279,7 @@ class UnitTestRule extends TestCase
     {
         $validator = new Validator();
         $validator->set(['test' => null,], ['test' => 'optional|min:2|int',]);
-        self::assertFalse($validator->getErros());
+        self::assertFalse(!empty($validator->getErros()));
     }
 
     public function testParamJson(): void
@@ -590,7 +590,7 @@ class UnitTestRule extends TestCase
         ];
         $validator = new Validator();
         $validator->set($array, $rules);
-        self::assertFalse($validator->getErros());
+        self::assertFalse(!empty($validator->getErros()));
     }
 
     public function testRequiredFile(): void

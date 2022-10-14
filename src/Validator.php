@@ -27,10 +27,10 @@ class Validator extends Rules
         return true;
     }
 
-    public function getErros(): array | bool
+    public function getErros(): array
     {
         if (empty($this->errors)) {
-            return false;
+            return [];
         }
         return $this->errors;
     }

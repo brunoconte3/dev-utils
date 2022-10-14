@@ -2,7 +2,7 @@
 
 namespace DevUtils\DependencyInjection;
 
-use Exception;
+use InvalidArgumentException;
 
 abstract class FormatAux
 {
@@ -36,15 +36,8 @@ abstract class FormatAux
             case 'bool':
                 return self::returnTypeBool($value);
             case 'int':
-                if (is_int($value)) {
-                    return intval($value);
-                } elseif (filter_var($value, FILTER_VALIDATE_INT)) {
-                    return intval($value);
-                } elseif ($value === '0') {
-                    return intval($value);
-                } else {
-                    return $value;
-                }
+                return (is_int($value) || filter_var($value, FILTER_VALIDATE_INT) || $value === '0')
+                    ? intval($value) : $value;
             case 'float':
             case 'numeric':
                 return filter_var($value, FILTER_VALIDATE_FLOAT) ? floatval($value) : $value;
@@ -56,10 +49,10 @@ abstract class FormatAux
     protected static function validateForFormatting(string $nome, int $tamanho, string $value): void
     {
         if (strlen($value) !== $tamanho) {
-            throw new Exception("$nome precisa ter $tamanho números!");
+            throw new InvalidArgumentException("$nome precisa ter $tamanho números!");
         }
         if (!is_numeric($value)) {
-            throw new Exception($nome . ' precisa conter apenas números!');
+            throw new InvalidArgumentException($nome . ' precisa conter apenas números!');
         }
     }
 
@@ -94,10 +87,12 @@ abstract class FormatAux
 
             $rc = (($value > 100) && ($value < 200)) ? 'cento' : $hundred[$value[0]];
             $rd = ($value[1] < 2) ? '' : $ten[$value[1]];
-            $ru = ($value > 0) ? (($value[1] == 1) ? $ten10[$value[2]] : $unitary[$value[2]]) : '';
+            $rp = ($value[1] == 1) ? $ten10[$value[2]] : $unitary[$value[2]];
+            $ru = ($value > 0) ? $rp : '';
             $r = $rc . (($rc && ($rd || $ru)) ? ' e ' : '') . $rd . (($rd && $ru) ? ' e ' : '') . $ru;
             $t = count($integer) - 1 - $i;
-            $r .= $r ? ' ' . ($value > 1 ? $plural[$t] : $singular[$t]) : "";
+            $s = $value > 1 ? $plural[$t] : $singular[$t];
+            $r .= $r ? ' ' . $s : "";
 
             if ($value === '000') {
                 $z++;
@@ -109,8 +104,9 @@ abstract class FormatAux
                 $r .= (($z > 1) ? ' de ' : ' ') . $plural[$t];
             }
             if ($r) {
+                $st = ($i < $end) ? ', ' : ' e ';
                 $accumulator = $accumulator . ((($i > 0) && ($i <= $end) && ($integer[0] > 0) && ($z < 1))
-                    ? (($i < $end) ? ', ' : ' e ') : '') . $r;
+                    ? $st : '') . $r;
             }
         }
         return ($accumulator ? $accumulator : 'zero');
