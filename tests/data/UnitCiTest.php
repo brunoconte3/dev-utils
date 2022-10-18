@@ -14,7 +14,7 @@ class UnitCiTest extends TestCase
             $returnCheck = shell_exec('php ./src/CI.php  coverage/index.xml 80');
             self::assertStringContainsString('[PASS]', ($returnCheck ?: ''));
         } else {
-            $file = PATH_PROJECT . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'CI.php';
+            $file = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'CI.php';
             self::assertFileIsReadable($file, "filename doesn't exists");
         }
     }
