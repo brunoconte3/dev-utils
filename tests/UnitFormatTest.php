@@ -258,7 +258,11 @@ class UnitFormatTest extends TestCase
 
     public function testWriteDateExtensive(): void
     {
-        self::assertEquals('domingo, 08 de novembro de 2020', Format::writeDateExtensive('08/11/2020'));
+        if (extension_loaded('gd')) {
+            self::assertEquals('domingo, 08 de novembro de 2020', Format::writeDateExtensive('08/11/2020'));
+        } else {
+            self::assertFalse(extension_loaded('gd'));
+        }
     }
 
     public function testWriteCurrencyExtensive(): void
