@@ -716,7 +716,11 @@ class UnitRuleTest extends TestCase
         ];
         $validator = new Validator();
         $validator->set($array, $rules);
-        self::assertCount(1, $validator->getErros());
+        if (extension_loaded('gd')) {
+            self::assertCount(1, $validator->getErros());
+        } else {
+            self::assertFalse(extension_loaded('gd'));
+        }
     }
 
     public function testMaxHeight(): void
@@ -733,7 +737,11 @@ class UnitRuleTest extends TestCase
         $validator = new Validator();
         $validator->set($array, $rules);
 
-        self::assertCount(1, $validator->getErros());
+        if (extension_loaded('gd')) {
+            self::assertCount(1, $validator->getErros());
+        } else {
+            self::assertFalse(extension_loaded('gd'));
+        }
     }
 
     public function testMinWidth(): void
@@ -749,7 +757,11 @@ class UnitRuleTest extends TestCase
         ];
         $validator = new Validator();
         $validator->set($array, $rules);
-        self::assertCount(1, $validator->getErros());
+        if (extension_loaded('gd')) {
+            self::assertCount(1, $validator->getErros());
+        } else {
+            self::assertFalse(extension_loaded('gd'));
+        }
     }
 
     public function testMinHeight(): void
@@ -765,6 +777,10 @@ class UnitRuleTest extends TestCase
         ];
         $validator = new Validator();
         $validator->set($array, $rules);
-        self::assertCount(1, $validator->getErros());
+        if (extension_loaded('gd')) {
+            self::assertCount(1, $validator->getErros());
+        } else {
+            self::assertFalse(extension_loaded('gd'));
+        }
     }
 }
