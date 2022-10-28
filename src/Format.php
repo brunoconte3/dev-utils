@@ -19,6 +19,12 @@ class Format extends FormatAux
     private static function formatCurrencyForFloat(float | int | string $value): float
     {
         if (is_string($value)) {
+            $separador = str_contains($value, ',') ? ',' : '.';
+            $value = explode($separador, $value);
+            if (isset($value[1]) && strlen(strval($value[1])) === 1) {
+                $value[1] = strval($value[1]) . '0';
+            }
+            $value = implode($separador, $value);
             if (preg_match('/(\,|\.)/', substr(substr($value, -3), 0, 1))) {
                 $value = (strlen(self::onlyNumbers($value)) > 0) ? self::onlyNumbers($value) : '000';
                 $value = substr_replace($value, '.', -2, 0);
