@@ -147,6 +147,20 @@ class UnitFormatTest extends TestCase
     {
         self::assertEquals('1.123,45', Format::currency('1123.45'));
         self::assertEquals('R$ 1.123,45', Format::currency('1123.45', 'R$ '));
+        self::assertEquals('123,00', Format::currency('123'));
+        self::assertEquals('123,40', Format::currency('123.4'));
+        self::assertEquals('123,40', Format::currency('123,4'));
+        self::assertEquals('1,00', Format::currency('1'));
+        self::assertEquals('1,00', Format::currency('1.00'));
+        self::assertEquals('1,00', Format::currency('1,00'));
+        self::assertEquals('1,25', Format::currency('1.25'));
+        self::assertEquals('1,25', Format::currency('1,25'));
+        self::assertEquals('1.400,00', Format::currency('1.400'));
+        self::assertEquals('1.123,45', Format::currency(1123.45));
+        self::assertEquals('R$ 1.123,45', Format::currency(1123.45, 'R$ '));
+        self::assertEquals('123,00', Format::currency(123));
+        self::assertEquals('123,40', Format::currency(123.4));
+        self::assertEquals('1.400,00', Format::currency(1400));
     }
 
     public function testCurrencyUsd(): void
