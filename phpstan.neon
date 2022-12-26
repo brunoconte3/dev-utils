@@ -25,4 +25,4 @@ parameters:
            - src/DependencyInjection/StrfTime.php
     checkMissingIterableValueType: false
     checkGenericClassInNonGenericObjectType: false
-    phpVersion: 80013
+    phpVersion: 80108
