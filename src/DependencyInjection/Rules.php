@@ -243,7 +243,7 @@ class Rules
                                 !empty($auxValue)
                                 && (is_string($auxValue) && Compare::contains($auxValue, 'obrigatório!'))
                             ) {
-                                $this->errors[$field][$chaveErro] = "O campo {$field} é obrigatório!";
+                                $this->errors[$field][$chaveErro] = 'O campo ' . strval($field) . 'é obrigatório!';
                             } else {
                                 $method = trim(Rules::functionsValidation()[trim($key)] ?? 'invalidRule');
                                 $call = [$this, $method];
@@ -260,8 +260,8 @@ class Rules
                                         call_user_func_array($call, [$val, $field, $value, $msgCustomized]);
                                     }
                                 } else {
-                                    $this->errors[$field][$chaveErro] = "Há regras de validação não implementadas" .
-                                        "no campo $field!";
+                                    $this->errors[$field][$chaveErro] = 'Há regras de validação não implementadas' .
+                                        'no campo ' . strval($field) . '!';
                                 }
                             }
                         }
@@ -272,7 +272,7 @@ class Rules
                             !empty($this->errors[$field])
                             && (is_string($auxValue) && Compare::contains($auxValue, 'obrigatório!'))
                         ) {
-                            $this->errors[$field] = "O campo {$field} é obrigatório!";
+                            $this->errors[$field] = 'O campo ' . strval($field) . 'é obrigatório!';
                         } else {
                             $method = trim(Rules::functionsValidation()[trim($key)] ?? 'invalidRule');
                             $call = [$this, $method];
@@ -289,7 +289,8 @@ class Rules
                                     call_user_func_array($call, [$val, $field, $value, $msgCustomized]);
                                 }
                             } else {
-                                $this->errors[$field] = "Há regras de validação não implementadas no campo $field!";
+                                $this->errors[$field] = 'Há regras de validação não implementadas no campo '
+                                    . strval($field) . '!';
                             }
                         }
                     }
@@ -315,11 +316,15 @@ class Rules
             }
             $rulesArray = is_array($rulesArray) ? $rulesArray : [];
             $jsonRules = $this->levelSubLevelsArrayReturnJson($rulesArray);
-            $compareA = strpos(trim(strtolower($jsonRules)), 'required');
+            $compareA = strpos(trim(strtolower(strval($jsonRules))), 'required');
             if ($compareA !== false) {
-                $msg = "O campo $field não foi encontrado nos dados de entrada, indices filhos são obrigatórios!";
-                if (count(array_filter(array_values(json_decode($jsonRules, true)), 'is_array')) == 0) {
-                    $msg = "O campo obrigátorio $field não foi encontrado nos dados de entrada!";
+                $msg = 'O campo: ' . $field . ' não foi encontrado nos dados de entrada, indices filhos são ';
+                $msg .= 'obrigatórios!';
+                if (
+                    count(array_filter(array_values((array) json_decode(strval($jsonRules), true)), 'is_array'))
+                    === 0
+                ) {
+                    $msg = 'O campo obrigátorio ' . strval($field) . ' não foi encontrado nos dados de entrada!';
                 }
                 $this->errors[$field] = $msg;
             }

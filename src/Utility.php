@@ -6,7 +6,7 @@ namespace DevUtils;
 
 class Utility
 {
-    public static function captureClientIp(): ?string
+    public static function captureClientIp(): mixed
     {
         if (!empty(filter_input(INPUT_SERVER, 'HTTP_CLIENT_IP'))) {
             $ip = $_SERVER['HTTP_CLIENT_IP'];

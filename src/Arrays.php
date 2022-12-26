@@ -8,7 +8,7 @@ use DevUtils\Format;
 
 class Arrays
 {
-    public static function searchKey(array $array, string $key): ?int
+    public static function searchKey(array $array, string $key): mixed
     {
         return Format::falseToNull(array_search(key([$key => null]), array_keys($array), true));
     }
