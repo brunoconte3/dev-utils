@@ -12,8 +12,8 @@ jobs:
         uses: actions-x/phpstan@v1
         with:
           installComposer: 1
-          phpstanVersion: 1.8.2
-          level: 8
+          phpstanVersion: 1.9.2
+          level: 9
           paths: conf src tests
           configPath: phpstan.neon
           useBundled: 1
