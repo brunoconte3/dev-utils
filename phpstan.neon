@@ -13,6 +13,12 @@ parameters:
         -
             message: "#Cannot access offset 'textoError' on array\\|bool#"
             path: tests/UnitTestRule.php
+        -
+            message: "#Call to an undefined method object::asXML#"
+            path: tests/UnitArrayTest.php
+        -
+            message: "#Strict comparison using === between callable-string and#"
+            path: DependencyInjection/Rules.php
     bootstrapFiles:
         - vendor/autoload.php
         - src/resource/ConstantPhpStan.php
