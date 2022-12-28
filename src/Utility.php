@@ -6,7 +6,7 @@ namespace DevUtils;
 
 class Utility
 {
-    public static function captureClientIp(): ?string
+    public static function captureClientIp(): mixed
     {
         if (!empty(filter_input(INPUT_SERVER, 'HTTP_CLIENT_IP'))) {
             $ip = $_SERVER['HTTP_CLIENT_IP'];
@@ -23,12 +23,12 @@ class Utility
         bool $uppercase = true,
         bool $lowercase = true,
         bool $numbers = true,
-        bool $symbols = true
+        bool $symbols = true,
     ): string {
         $alphabet = 'abcdefghijklmnopqrstuvyxwz';
         $nums = '0123456789';
         $sym = '@#$!()-+%=';
-        $password = null;
+        $password = '';
 
         if ($numbers) {
             $password .= str_shuffle($nums);
@@ -55,7 +55,7 @@ class Utility
     * @param string $absolutePath -> Caminho absoluto
     * @param string $https -> 'on' para gerar url https, outro valor, gera url http
     */
-    public static function buildUrl(string $host, string $absolutePath = '', string $https = null): string
+    public static function buildUrl(string $host, string $absolutePath = '', ?string $https = ''): string
     {
         $protocol = ((isset($https) && ($https === 'on')) ? 'https' : 'http');
         return $protocol . '://' . $host . $absolutePath;

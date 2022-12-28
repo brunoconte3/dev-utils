@@ -4,19 +4,21 @@ declare(strict_types=1);
 
 namespace DevUtils\resource;
 
-final class Commum
+final class Common
 {
-    public static function buscaUltimaCamadaRecursivo($arr, $param, $ultTeste = false): bool
-    {
+    public static function searchLastLayerRecursive(
+        array $arr,
+        mixed $param,
+        bool $ultTeste = false
+    ): bool {
         foreach ($arr as $value) {
             if (is_array($value)) {
-                $ultTeste = Commum::buscaUltimaCamadaRecursivo($value, $param, $ultTeste);
+                $ultTeste = Common::searchLastLayerRecursive($value, $param, $ultTeste);
             } else {
-                if ($value === $param) {
+                if (intval($value) === intval($param)) {
                     $ultTeste = true;
                 }
             }
-
             if ($ultTeste) {
                 break;
             }

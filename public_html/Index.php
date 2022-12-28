@@ -8,10 +8,13 @@ use DevUtils\{
     Validator,
     Format,
 };
+use DevUtils\conf\Conf;
 
-require_once '../conf/conf.php';
+require_once '../conf/Conf.php';
 require_once 'AutoInstall.php';
 require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';
+
+(new Conf());
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -46,10 +49,11 @@ require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPAR
                     ];
                     $validator = new Validator();
                     $validator->set($array, $rules);
-                    echo '<pre>';
-                    print_r($validator->getErros());
                     ?>
+                    <pre>
+                        <?php print_r($validator->getErros()); ?>
                     <hr />
+                    </pre>
                 </div>
                 <div>
                     <?php
@@ -71,15 +75,16 @@ require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPAR
                             'fileUploadMultiple' => $ruleMultiple
                         ];
                         $validator = new Validator();
-                        $validator->set($array, $rules);
-                        echo '<pre>';
-                        print_r($validator->getErros());
-                        echo '<hr>';
-                        echo '<pre>';
+                        $validator->set($array, $rules); ?>
+                        <pre>
+                            <?php print_r($validator->getErros()); ?>
+                        <hr>
+                        <pre>
+                        <?php
                         print_r(Format::restructFileArray($fileUploadSingle));
                         print_r(Format::restructFileArray($fileUploadMultiple));
                     }
-                    ?>
+                        ?>
                     <div id="bd-form-upload">
                         <form method="POST" enctype="multipart/form-data">
                             <!-- Upload de um único arquivo. -->

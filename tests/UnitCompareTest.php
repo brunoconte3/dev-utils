@@ -7,7 +7,7 @@ namespace DevUtils\Test;
 use DevUtils\Compare;
 use PHPUnit\Framework\TestCase;
 
-class UnitTestCompare extends TestCase
+class UnitCompareTest extends TestCase
 {
     public function testDaysDifferenceBetweenData(): void
     {
@@ -36,8 +36,8 @@ class UnitTestCompare extends TestCase
 
     public function testCalculateAgeInYears(): void
     {
-        self::assertEquals('32', Compare::calculateAgeInYears('17/04/1989'));
-        self::assertEquals('78', Compare::calculateAgeInYears('17/04/2100'));
+        self::assertEquals('33', Compare::calculateAgeInYears('17/04/1989'));
+        self::assertEquals('77', Compare::calculateAgeInYears('17/04/2100'));
     }
 
     public function testDifferenceBetweenHours(): void
@@ -62,12 +62,12 @@ class UnitTestCompare extends TestCase
     {
         self::assertTrue(
             Compare::beginUrlWith('/teste', '/teste/variavel'),
-            'Erro ao executar a função testBeginUrlWith!'
+            'Erro ao executar a função testBeginUrlWith!',
         );
         self::assertTrue(Compare::beginUrlWith('/teste', '/teste1234'), 'Erro ao executar a função testBeginUrlWith!');
         self::assertNotTrue(
             Compare::beginUrlWith('/teste123', '/testeasc'),
-            'Erro ao executar a função testBeginUrlWith!'
+            'Erro ao executar a função testBeginUrlWith!',
         );
     }
 
@@ -75,15 +75,15 @@ class UnitTestCompare extends TestCase
     {
         self::assertTrue(
             Compare::finishUrlWith('/teste', 'asd/teste'),
-            'Erro ao executar a função testFinishUrlWith!'
+            'Erro ao executar a função testFinishUrlWith!',
         );
         self::assertTrue(
             Compare::finishUrlWith('/teste', 'sistema/teste'),
-            'Erro ao executar a função testFinishUrlWith!'
+            'Erro ao executar a função testFinishUrlWith!',
         );
         self::assertNotTrue(
             Compare::finishUrlWith('/test', 'sistema/teste1'),
-            'Erro ao executar a função testFinishUrlWith!'
+            'Erro ao executar a função testFinishUrlWith!',
         );
     }
 
@@ -91,7 +91,7 @@ class UnitTestCompare extends TestCase
     {
         self::assertTrue(
             Compare::compareStringFrom('sistema', 'sistema/teste', 0, 7),
-            'Erro ao executar a função compareStringFrom!'
+            'Erro ao executar a função compareStringFrom!',
         );
     }
 }

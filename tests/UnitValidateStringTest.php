@@ -7,7 +7,7 @@ namespace DevUtils\Test;
 use DevUtils\ValidateString;
 use PHPUnit\Framework\TestCase;
 
-class UnitTestValidateString extends TestCase
+class UnitValidateStringTest extends TestCase
 {
     public function testMaxWords(): void
     {

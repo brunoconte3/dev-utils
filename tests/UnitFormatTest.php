@@ -8,7 +8,7 @@ use DevUtils\Format;
 use PHPUnit\Framework\TestCase;
 use DevUtils\Test\data\DataConvertTypesBool;
 
-class UnitTestFormat extends TestCase
+class UnitFormatTest extends TestCase
 {
     public static function setUpBeforeClass(): void
     {
@@ -37,6 +37,7 @@ class UnitTestFormat extends TestCase
             'tratandoTipoFloat' => 'convert|float',
             'tratandoTipoBoolean' => 'convert|bool',
             'tratandoTipoNumeric' => 'convert|numeric',
+            'tratandoInexistente' => 'convert|bool',
         ];
         Format::convertTypes($data, $rules);
         self::assertIsInt($data['tratandoTipoInt']);
@@ -45,6 +46,7 @@ class UnitTestFormat extends TestCase
         self::assertIsFloat($data['tratandoTipoFloat']);
         self::assertIsBool($data['tratandoTipoBoolean']);
         self::assertIsNumeric($data['tratandoTipoNumeric']);
+        self::assertArrayNotHasKey('tratandoInexistente', $data);
     }
 
     public function testConvertTypesBool(): void
@@ -110,15 +112,17 @@ class UnitTestFormat extends TestCase
             1 => 123,
             'a' => 222,
             'b' => 333,
-            'c' => 0
+            'c' => 0,
         ];
-        self::assertEquals($arrayProcessed, Format::arrayToInt([
+        $arrayReferenced = [
             0 => '1',
             1 => '123',
             'a' => '222',
             'b' => 333,
-            'c' => ''
-        ]));
+            'c' => '',
+        ];
+        Format::arrayToIntReference($arrayReferenced);
+        self::assertEquals($arrayProcessed, $arrayReferenced);
     }
 
     public function testArrayToInt(): void
@@ -128,14 +132,14 @@ class UnitTestFormat extends TestCase
             1 => 123,
             'a' => 222,
             'b' => 333,
-            'c' => 0
+            'c' => 0,
         ];
         self::assertEquals($arrayProcessed, Format::arrayToInt([
             0 => '1',
             1 => '123',
             'a' => '222',
             'b' => 333,
-            'c' => ''
+            'c' => '',
         ]));
     }
 
@@ -143,6 +147,20 @@ class UnitTestFormat extends TestCase
     {
         self::assertEquals('1.123,45', Format::currency('1123.45'));
         self::assertEquals('R$ 1.123,45', Format::currency('1123.45', 'R$ '));
+        self::assertEquals('123,00', Format::currency('123'));
+        self::assertEquals('123,40', Format::currency('123.4'));
+        self::assertEquals('123,40', Format::currency('123,4'));
+        self::assertEquals('1,00', Format::currency('1'));
+        self::assertEquals('1,00', Format::currency('1.00'));
+        self::assertEquals('1,00', Format::currency('1,00'));
+        self::assertEquals('1,25', Format::currency('1.25'));
+        self::assertEquals('1,25', Format::currency('1,25'));
+        self::assertEquals('1.400,00', Format::currency('1.400'));
+        self::assertEquals('1.123,45', Format::currency(1123.45));
+        self::assertEquals('R$ 1.123,45', Format::currency(1123.45, 'R$ '));
+        self::assertEquals('123,00', Format::currency(123));
+        self::assertEquals('123,40', Format::currency(123.4));
+        self::assertEquals('1.400,00', Format::currency(1400));
     }
 
     public function testCurrencyUsd(): void
@@ -191,7 +209,7 @@ class UnitTestFormat extends TestCase
                 'f' => [],
                 'g' => [1, 2,],
             ],
-            '0'
+            '0',
         ));
     }
 
@@ -250,12 +268,15 @@ class UnitTestFormat extends TestCase
         self::assertEquals('Acafrao com Espaco ', Format::removeSpecialCharacters('Açafrão com Espaço %$#@!'));
         self::assertEquals('AcafraosemEspaco', Format::removeSpecialCharacters('Açafrão sem Espaço %$#@!', false));
         self::assertNull(Format::removeSpecialCharacters(''));
-        self::assertNull(Format::removeSpecialCharacters(null));
     }
 
     public function testWriteDateExtensive(): void
     {
-        self::assertEquals('domingo, 08 de novembro de 2020', Format::writeDateExtensive('08/11/2020'));
+        if (extension_loaded('gd')) {
+            self::assertEquals('domingo, 08 de novembro de 2020', Format::writeDateExtensive('08/11/2020'));
+        } else {
+            self::assertFalse(extension_loaded('gd'));
+        }
     }
 
     public function testWriteCurrencyExtensive(): void
@@ -280,7 +301,6 @@ class UnitTestFormat extends TestCase
             'error'    => ['0' => 0, '1' => 0],
             'size'     => ['0' => 8488, '1' => 818465],
         ];
-
         self::assertArrayHasKey('name', Format::restructFileArray($fileUploadSingle)[0]);
         self::assertArrayHasKey('name', Format::restructFileArray($fileUploadMultiple)[0]);
         self::assertArrayHasKey('name', Format::restructFileArray($fileUploadMultiple)[1]);

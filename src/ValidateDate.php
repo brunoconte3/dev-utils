@@ -11,10 +11,13 @@ class ValidateDate
         if (strlen($ano) < 4) {
             return false;
         }
-        if (ctype_digit($mes) && ctype_digit($dia) && ctype_digit($ano)) {
-            if (checkdate(intval($mes), intval($dia), intval($ano))) {
-                return true;
-            }
+        if (
+            ctype_digit($mes) &&
+            ctype_digit($dia) &&
+            ctype_digit($ano) &&
+            checkdate(intval($mes), intval($dia), intval($ano))
+        ) {
+            return true;
         }
         return false;
     }
@@ -29,7 +32,7 @@ class ValidateDate
             $dia = $partes[0];
             $mes = $partes[1];
             $ano = isset($partes[2]) ? $partes[2] : 0;
-            return self::validateYear($ano, $mes, $dia);
+            return self::validateYear(strval($ano), $mes, $dia);
         }
         return false;
     }
@@ -45,13 +48,13 @@ class ValidateDate
                 $mes = $partes[1];
                 $ano = isset($partes[0]) ? $partes[0] : 0;
 
-                return self::validateYear($ano, $mes, $dia);
+                return self::validateYear(strval($ano), $mes, $dia);
             }
             return false;
         }
     }
 
-    public static function validateTimeStamp($date): bool
+    public static function validateTimeStamp(string $date): bool
     {
         $format = 'Y-m-d H:i:s';
         $d = DateTime::createFromFormat($format, $date);
