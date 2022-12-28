@@ -7,7 +7,7 @@ namespace DevUtils\Test;
 use DevUtils\Validator;
 use PHPUnit\Framework\TestCase;
 
-class UnitTestInteger extends TestCase
+class UnitIntegerTest extends TestCase
 {
     private function assembleArrayForTests(): array
     {
@@ -33,7 +33,6 @@ class UnitTestInteger extends TestCase
             'testIntOne' => 'int',
             'testIntNegative' => 'int',
         ];
-
         $validator = new Validator();
         $validator->set($array, $rules);
         self::assertCount(4, $validator->getErros());

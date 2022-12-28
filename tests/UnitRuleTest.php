@@ -7,12 +7,12 @@ namespace DevUtils\Test;
 use DevUtils\Validator;
 use PHPUnit\Framework\TestCase;
 
-class UnitTestRule extends TestCase
+class UnitRuleTest extends TestCase
 {
     private function mountFileSingle(): array
     {
         $l = DIRECTORY_SEPARATOR;
-        $archive = substr(realpath(dirname(__FILE__)), 0, -5) . 'public_html' . $l . 'static' . $l . 'img'
+        $archive = substr(strval(realpath(dirname(__FILE__))), 0, -5) . 'public_html' . $l . 'static' . $l . 'img'
             . $l . 'iconTest.png';
         $archive = str_replace("\\", "\\/", $archive);
         return [
@@ -237,11 +237,21 @@ class UnitTestRule extends TestCase
 
     public function testNumMax(): void
     {
-        $array = ['testError' => 32, 'testValid' => 31, 'testErrorMaxZero' => '2',];
-        $rules = ['testError' => 'numMax:31', 'testValid' => 'numMax:31', 'testErrorMaxZero' => 'numMax:0',];
+        $array = [
+            'testValid' => 31,
+            'testError' => 32,
+            'testErrorMaxZero' => '2',
+            'testErrorNegative' => -1,
+        ];
+        $rules = [
+            'testValid' => 'numMax:31',
+            'testError' => 'numMax:31',
+            'testErrorMaxZero' => 'numMax:0',
+            'testErrorNegative' => 'numMax:3',
+        ];
         $validator = new Validator();
         $validator->set($array, $rules);
-        self::assertCount(2, $validator->getErros());
+        self::assertCount(3, $validator->getErros());
     }
 
     public function testNumMin(): void
@@ -269,7 +279,7 @@ class UnitTestRule extends TestCase
     {
         $validator = new Validator();
         $validator->set(['test' => null,], ['test' => 'optional|min:2|int',]);
-        self::assertFalse($validator->getErros());
+        self::assertFalse(!empty($validator->getErros()));
     }
 
     public function testParamJson(): void
@@ -580,7 +590,7 @@ class UnitTestRule extends TestCase
         ];
         $validator = new Validator();
         $validator->set($array, $rules);
-        self::assertFalse($validator->getErros());
+        self::assertFalse(!empty($validator->getErros()));
     }
 
     public function testRequiredFile(): void
@@ -706,7 +716,11 @@ class UnitTestRule extends TestCase
         ];
         $validator = new Validator();
         $validator->set($array, $rules);
-        self::assertCount(1, $validator->getErros());
+        if (extension_loaded('gd')) {
+            self::assertCount(1, $validator->getErros());
+        } else {
+            self::assertFalse(extension_loaded('gd'));
+        }
     }
 
     public function testMaxHeight(): void
@@ -723,7 +737,11 @@ class UnitTestRule extends TestCase
         $validator = new Validator();
         $validator->set($array, $rules);
 
-        self::assertCount(1, $validator->getErros());
+        if (extension_loaded('gd')) {
+            self::assertCount(1, $validator->getErros());
+        } else {
+            self::assertFalse(extension_loaded('gd'));
+        }
     }
 
     public function testMinWidth(): void
@@ -739,7 +757,11 @@ class UnitTestRule extends TestCase
         ];
         $validator = new Validator();
         $validator->set($array, $rules);
-        self::assertCount(1, $validator->getErros());
+        if (extension_loaded('gd')) {
+            self::assertCount(1, $validator->getErros());
+        } else {
+            self::assertFalse(extension_loaded('gd'));
+        }
     }
 
     public function testMinHeight(): void
@@ -755,6 +777,10 @@ class UnitTestRule extends TestCase
         ];
         $validator = new Validator();
         $validator->set($array, $rules);
-        self::assertCount(1, $validator->getErros());
+        if (extension_loaded('gd')) {
+            self::assertCount(1, $validator->getErros());
+        } else {
+            self::assertFalse(extension_loaded('gd'));
+        }
     }
 }

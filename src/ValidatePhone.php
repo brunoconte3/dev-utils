@@ -8,9 +8,9 @@ class ValidatePhone
 {
     public static function validate(string $phone): bool
     {
-        $phone = (int) Format::onlyNumbers($phone);
+        $phone = intval(Format::onlyNumbers($phone));
 
-        $phone = preg_replace('/\D+/', '', trim(strval($phone)));
+        $phone = preg_replace('/\D+/', '', trim(strval($phone))) ?? '';
         $numberDigits = strlen($phone);
 
         if ($numberDigits < 10 || $numberDigits > 11) {

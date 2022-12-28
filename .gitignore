@@ -5,3 +5,7 @@ vendor/
 .sonar/
 .scannerwork/
 composer.lock
+
+# --- Coverage
+/coverage/
+clover.xml

@@ -6,22 +6,20 @@ use DevUtils\DependencyInjection\Rules;
 
 class Validator extends Rules
 {
-    public function set(array $data, array $rules)
+    public function set(array $data, array $rules): bool
     {
-        //prepara dados para validação
-        $data = json_decode($this->levelSubLevelsArrayReturnJson($data), true);
+        $data = (array) json_decode(strval($this->levelSubLevelsArrayReturnJson($data)), true);
         if (empty($data)) {
             $this->errors['erro'] = 'informe os dados!';
             return false;
         }
-        //se for uma lista, valida a lista de objetos
         if (
-            count(array_filter(array_keys($data), 'is_numeric')) == count($data)
+            count(array_filter(array_keys($data), 'is_numeric')) === count($data)
             &&
-            count(array_filter(array_values($data), 'is_array')) == count($data)
+            count(array_filter(array_values($data), 'is_array')) === count($data)
         ) {
             foreach ($data as $val) {
-                $this->validateSubLevelData($val, $rules);
+                $this->validateSubLevelData((array) $val, $rules);
             }
         } else {
             $this->validateSubLevelData($data, $rules);
@@ -29,8 +27,11 @@ class Validator extends Rules
         return true;
     }
 
-    public function getErros()
+    public function getErros(): array
     {
+        if (empty($this->errors)) {
+            return [];
+        }
         return $this->errors;
     }
 }

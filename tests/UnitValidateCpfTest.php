@@ -7,7 +7,7 @@ namespace DevUtils\Test;
 use DevUtils\ValidateCpf;
 use PHPUnit\Framework\TestCase;
 
-class UnitTestValidateCpf extends TestCase
+class UnitValidateCpfTest extends TestCase
 {
     public function testValidate(): void
     {
