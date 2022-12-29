@@ -14,7 +14,7 @@ trait TraitRule
             'validateIntegerTyped', 'validateNumeric', 'validateNumMonth', 'validateFileName',
             'validateFileUploadMandatory', 'validateDateBrazil', 'validateDateAmerican', 'validateHour',
             'validateTimestamp', 'validateWeekend', 'validateArray', 'validateFieldMandatory', 'validateBoolean',
-            'validateFloating', 'validateJson',
+            'validateFloating', 'validateJson', 'validateDateNotFuture',
         ];
     }
 
@@ -31,6 +31,7 @@ trait TraitRule
             'companyIdentification' => 'validateCompanyIdentification',
             'dateAmerican' => 'validateDateAmerican',
             'dateBrazil' => 'validateDateBrazil',
+            'dateNotFuture' => 'validateDateNotFuture',
             'email' => 'validateEmail',
             'equals' => 'validateEquals',
             'fileName' => 'validateFileName',

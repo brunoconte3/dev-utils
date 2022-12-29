@@ -58,4 +58,13 @@ trait TraitRuleDate
             $this->errors[$field] = !empty($message) ? $message : "O campo $field não pode ser um Final de Semana!";
         }
     }
+
+    protected function validateDateNotFuture(string $field = '', string $value = '', ?string $message = ''): void
+    {
+        $dateAmerican = Format::dateAmerican($value);
+        if (!ValidateDate::validateDateNotFuture($dateAmerican)) {
+            $this->errors[$field] = !empty($message) ? $message :
+                "O campo $field não pode ser uma data maior que a atual";
+        }
+    }
 }

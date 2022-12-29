@@ -3,6 +3,7 @@
 namespace DevUtils;
 
 use DateTime;
+use DateTimeImmutable;
 
 class ValidateDate
 {
@@ -66,5 +67,17 @@ class ValidateDate
             $return = $d && $d->format($format) === $date;
         }
         return $return;
+    }
+
+    public static function validateDateNotFuture(string $dateAmerican): bool
+    {
+        $dateAmerican = new DateTimeImmutable($dateAmerican);
+        $dateNow = new DateTimeImmutable();
+        $interval = $dateAmerican->diff($dateNow);
+        $diff = $interval->format('%R%');
+        if ($diff === '-') {
+            return false;
+        }
+        return true;
     }
 }
