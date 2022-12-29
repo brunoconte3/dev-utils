@@ -14,7 +14,7 @@ A complete library, with PSR standard and guarantee of all methods unit tested b
 composer.json
 
 ```
-"brunoconte3/dev-utils": "2.4.2"
+"brunoconte3/dev-utils": "2.5.0"
 ```
 
 With composer, require
@@ -138,7 +138,7 @@ maxWidth and requiredFile, you can set the minimum and maximum size (bytes) of t
 - companyIdentification: `Validates if the CNPJ is valid, passing CNPJ with or without mask`
 - dateAmerican: `Validates if the American date is valid`
 - dateBrazil: `Validates if the Brazilian date is valid`
-- dateNotFuture: `Validates that the sent date is not greater than the current one`
+- dateNotFuture: `Validates if the date not greater than date current (accepts Brazilian or American format)`
 - ddd: `Validates ddd informed in YYY or YY format, by UF or in general` `Ex: ddd:pr, ddd do Paraná/Brazil, or just ddd`
 - email: `Check if it's a valid email`
 - equals: `Checks if the field is the same as another field, example above in the documentation, look for equals`
