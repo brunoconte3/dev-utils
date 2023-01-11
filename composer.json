@@ -54,11 +54,6 @@
             "role": "Developer"
         },
         {
-            "name": "Erick Hiroki Abe / 阿部広紀",
-            "email": "erickhirokiabe@gmail.com",
-            "role": "Developer"
-        },
-        {
             "name": "Eliseu Lorena Vidal",
             "email": "eliseuvidal0@hotmail.com",
             "role": "Developer"
@@ -71,6 +66,11 @@
         {
             "name": "Wellington Valentin Salatta",
             "email": "wellsalatta@gmail.com",
+            "role": "Developer"
+        },
+        {
+            "name": "Erick Hiroki Abe / 阿部広紀",
+            "email": "erickhirokiabe@gmail.com",
             "role": "Developer"
         }
     ],
