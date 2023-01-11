@@ -272,7 +272,7 @@ class Rules
                             !empty($this->errors[$field])
                             && (is_string($auxValue) && Compare::contains($auxValue, 'obrigatório!'))
                         ) {
-                            $this->errors[$field] = 'O campo ' . strval($field) . 'é obrigatório!';
+                            $this->errors[$field] = 'O campo ' . strval($field) . ' é obrigatório!';
                         } else {
                             $method = trim(Rules::functionsValidation()[trim($key)] ?? 'invalidRule');
                             $call = [$this, $method];
