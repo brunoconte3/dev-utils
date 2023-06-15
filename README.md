@@ -437,7 +437,7 @@ use DevUtils\ValidateCnpj;
 ValidateCnpj::validateCnpj('57.169.078/0001-51'); //Returns boolean, example true [Can pass with mask]
 
 use DevUtils\validateCpf;
-validateCpf::validateCpf('257.877.760-89'); //Returns boolean, example true [Can pass with mask]
+ValidateCpf::validateCpf('257.877.760-89'); //Returns boolean, example true [Can pass with mask]
 
 use DevUtils\ValidateDate;
 //Examples return true
