@@ -65,7 +65,7 @@ class Rules
         $charsetType = mb_detect_encoding($string);
         foreach ($enclist as $item) {
             $converted = iconv($item, $item . '//IGNORE', $string);
-            if (md5(strval($converted)) == md5(strval($string))) {
+            if (sha1(strval($converted)) == sha1(strval($string))) {
                 $charsetType = $item;
                 break;
             }
@@ -243,7 +243,7 @@ class Rules
                                 !empty($auxValue)
                                 && (is_string($auxValue) && Compare::contains($auxValue, 'obrigatório!'))
                             ) {
-                                $this->errors[$field][$chaveErro] = 'O campo ' . strval($field) . 'é obrigatório!';
+                                $this->errors[$field][$chaveErro] = 'O campo ' . strval($field) . ' é obrigatório!';
                             } else {
                                 $method = trim(Rules::functionsValidation()[trim($key)] ?? 'invalidRule');
                                 $call = [$this, $method];
@@ -272,7 +272,7 @@ class Rules
                             !empty($this->errors[$field])
                             && (is_string($auxValue) && Compare::contains($auxValue, 'obrigatório!'))
                         ) {
-                            $this->errors[$field] = 'O campo ' . strval($field) . 'é obrigatório!';
+                            $this->errors[$field] = 'O campo ' . strval($field) . ' é obrigatório!';
                         } else {
                             $method = trim(Rules::functionsValidation()[trim($key)] ?? 'invalidRule');
                             $call = [$this, $method];
