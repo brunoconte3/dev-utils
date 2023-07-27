@@ -14,7 +14,7 @@ A complete library, with PSR standard and guarantee of all methods unit tested b
 composer.json
 
 ```
-"brunoconte3/dev-utils": "2.5.3"
+"brunoconte3/dev-utils": "2.5.4"
 ```
 
 With composer, require
