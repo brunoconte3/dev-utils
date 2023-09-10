@@ -14,7 +14,7 @@ trait TraitRuleArray
     protected function validateArrayValues(
         string $rule = '',
         string $field = '',
-        string $value = '',
+        ?string $value = '',
         ?string $message = '',
     ): void {
         $ruleArray = explode('-', $rule);

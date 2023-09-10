@@ -14,7 +14,7 @@ A complete library, with PSR standard and guarantee of all methods unit tested b
 composer.json
 
 ```
-"brunoconte3/dev-utils": "2.5.1"
+"brunoconte3/dev-utils": "2.5.4"
 ```
 
 With composer, require
@@ -437,7 +437,7 @@ use DevUtils\ValidateCnpj;
 ValidateCnpj::validateCnpj('57.169.078/0001-51'); //Returns boolean, example true [Can pass with mask]
 
 use DevUtils\validateCpf;
-validateCpf::validateCpf('257.877.760-89'); //Returns boolean, example true [Can pass with mask]
+ValidateCpf::validateCpf('257.877.760-89'); //Returns boolean, example true [Can pass with mask]
 
 use DevUtils\ValidateDate;
 //Examples return true

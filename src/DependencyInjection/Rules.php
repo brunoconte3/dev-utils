@@ -65,7 +65,7 @@ class Rules
         $charsetType = mb_detect_encoding($string);
         foreach ($enclist as $item) {
             $converted = iconv($item, $item . '//IGNORE', $string);
-            if (md5(strval($converted)) == md5(strval($string))) {
+            if (sha1(strval($converted)) == sha1(strval($string))) {
                 $charsetType = $item;
                 break;
             }
