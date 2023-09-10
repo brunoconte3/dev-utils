@@ -545,7 +545,7 @@ Utility::generatePassword(10);
 * @param string $absolutePath -> absolute path
 * @param string $https -> 'on' to generate https url, null or other value, generate http url
 */
-Utility::buildUrl('localhost', '/Framework-Cooper/testando', 'on'); // Return to URL
+Utility::buildUrl('localhost', '/sua-url/complemento', 'on'); // Return to URL
 ```
 
 ## Check the minimum coverage of CI/CD unit tests using PHPUnit
