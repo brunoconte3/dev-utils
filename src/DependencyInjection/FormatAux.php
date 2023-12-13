@@ -2,6 +2,7 @@
 
 namespace DevUtils\DependencyInjection;
 
+use DevUtils\Format;
 use InvalidArgumentException;
 
 abstract class FormatAux
@@ -40,7 +41,8 @@ abstract class FormatAux
                     ? intval($value) : $value;
             case 'float':
             case 'numeric':
-                return filter_var($value, FILTER_VALIDATE_FLOAT) ? floatval($value) : $value;
+                return filter_var($value, FILTER_VALIDATE_FLOAT) ?
+                    floatval($value) : $value;
             default:
                 return $value;
         }

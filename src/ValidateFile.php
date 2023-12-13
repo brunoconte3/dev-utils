@@ -90,9 +90,9 @@ class ValidateFile
             self::validateFileTransformSingleToMultiple($file);
 
             foreach ($file['tmp_name'] as $tmpName) {
-                list($width) = getimagesize($tmpName) ?: [];
+                list($width) = getimagesize($tmpName) ?: [0];
 
-                if ($width < $rule) {
+                if ($width > 0 && $width < $rule) {
                     $msgMinWidth = "O campo $field não pode ser menor que $rule pexels de comprimento!";
                     $msgMinWidth = (!empty($message)) ? $message : $msgMinWidth;
                     array_push($arrayFileError, $msgMinWidth);
@@ -114,9 +114,9 @@ class ValidateFile
             self::validateFileTransformSingleToMultiple($file);
 
             foreach ($file['tmp_name'] as $tmpName) {
-                list(, $height) = getimagesize($tmpName) ?: [];
+                list(, $height) = getimagesize($tmpName) ?: [0, 0];
 
-                if ($height < $rule) {
+                if ($height > 0 && $height < $rule) {
                     $msgMinHeight = "O campo $field não pode ser menor que $rule pexels de altura!";
                     $msgMinHeight = (!empty($message)) ? $message : $msgMinHeight;
                     array_push($arrayFileError, $msgMinHeight);
@@ -138,9 +138,9 @@ class ValidateFile
             self::validateFileTransformSingleToMultiple($file);
 
             foreach ($file['tmp_name'] as $tmpName) {
-                list($width) = getimagesize($tmpName) ?: [];
+                list($width) = getimagesize($tmpName) ?: [0];
 
-                if ($width > $rule) {
+                if ($width > 0 && $width > $rule) {
                     $msgMaxWidth = "O campo $field não pode ser maior que $rule pexels de comprimento!";
                     $msgMaxWidth = (!empty($message)) ? $message : $msgMaxWidth;
                     array_push($arrayFileError, $msgMaxWidth);
@@ -162,9 +162,9 @@ class ValidateFile
             self::validateFileTransformSingleToMultiple($file);
 
             foreach ($file['tmp_name'] as $tmpName) {
-                list(, $height) = getimagesize($tmpName) ?: [];
+                list(, $height) = getimagesize($tmpName) ?: [0, 0];
 
-                if ($height > $rule) {
+                if ($height > 0 && $height > $rule) {
                     $msgMaxHeight = "O campo $field não pode ser maior que $rule pexels de altura!";
                     $msgMaxHeight = (!empty($message)) ? $message : $msgMaxHeight;
                     array_push($arrayFileError, $msgMaxHeight);
