@@ -91,6 +91,6 @@
     },
     "require-dev": {
         "phpunit/phpunit": "9.5.21",
-        "phpstan/phpstan": "1.9.2"
+        "phpstan/phpstan": "1.10.47"
     }
 }
