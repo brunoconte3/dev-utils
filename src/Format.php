@@ -197,7 +197,7 @@ class Format extends FormatAux
         for ($i = 0; $i < strlen($str); $i++) {
             $mask[strpos($mask, "#")] = $str[$i];
         }
-        return strval($mask);
+        return gettype($mask) === 'string' ? strval($mask) : '';
     }
 
     public static function onlyNumbers(string $str): string
