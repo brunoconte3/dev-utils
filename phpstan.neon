@@ -33,6 +33,9 @@ parameters:
         - '#function strval expects bool\|float\|int\|resource\|string\|null, mixed given#'
         - '#function intval expects array\|bool\|float\|int\|resource\|string\|null, mixed given#'
         - '#function floatval expects array\|bool\|float\|int\|resource\|string\|null, mixed given#'
+        -
+            message: "#Result of \\|\\| is always true#"
+            path: src/Format.php
     bootstrapFiles:
         - vendor/autoload.php
         - src/resource/ConstantPhpStan.php
