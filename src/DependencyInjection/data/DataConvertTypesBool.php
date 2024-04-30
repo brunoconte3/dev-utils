@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace DevUtils\Test\data;
+namespace DevUtils\DependencyInjection\data;
 
 use stdClass;
 

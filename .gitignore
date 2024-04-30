@@ -1,7 +1,6 @@
 vendor/
 .vscode
-composer.lock
-
+.phpunit.result.cache
 # ---- SonarQube
 .sonar/
 .scannerwork/
