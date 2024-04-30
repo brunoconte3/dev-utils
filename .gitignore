@@ -1,6 +1,7 @@
 vendor/
 .vscode
 .phpunit.result.cache
+.phpunit.cache
 # ---- SonarQube
 .sonar/
 .scannerwork/

@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace DevUtils\Test;
 
+use DevUtils\DependencyInjection\data\DataConvertTypesBool;
 use DevUtils\Format;
 use PHPUnit\Framework\TestCase;
-use DevUtils\Test\data\DataConvertTypesBool;
 
 class UnitFormatTest extends TestCase
 {
     public static function setUpBeforeClass(): void
     {
-        require_once './tests/data/DataConvertTypesBool.php';
+        require_once './src/DependencyInjection/data/DataConvertTypesBool.php';
     }
 
     public function testCompanyIdentification(): void
