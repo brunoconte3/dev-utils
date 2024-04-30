@@ -1,10 +1,14 @@
 vendor/
 .vscode
-.phpunit.result.cache
+composer.lock
+
 # ---- SonarQube
 .sonar/
 .scannerwork/
-composer.lock
+
+# ---- PHPUnit
+.phpunit.result.cache
+/.phpunit.cache
 
 # --- Coverage
 /coverage/
