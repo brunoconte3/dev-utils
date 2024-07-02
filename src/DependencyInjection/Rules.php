@@ -324,7 +324,7 @@ class Rules
                     count(array_filter(array_values((array) json_decode(strval($jsonRules), true)), 'is_array'))
                     === 0
                 ) {
-                    $msg = 'O campo obrigátorio ' . strval($field) . ' não foi encontrado nos dados de entrada!';
+                    $msg = 'O campo obrigatório ' . strval($field) . ' não foi encontrado nos dados de entrada!';
                 }
                 $this->errors[$field] = $msg;
             }

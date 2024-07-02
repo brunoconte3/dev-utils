@@ -24,6 +24,28 @@ class UnitRuleTest extends TestCase
         ];
     }
 
+    private function mountFileDataRequired(): array
+    {
+        return [
+            'name' => '',
+            'type' => '',
+            'tmp_name' => '',
+            'error' => 4,
+            'size' => 0,
+        ];
+    }
+
+    private function mountMineTypeFile(int $size = 8488): array
+    {
+        return [
+            'name' => 'JPG - Validação upload v.1.jpg',
+            'type' => 'image/jpeg',
+            'tmp_name' => '/tmp/phpODnLGo',
+            'error' => 0,
+            'size' => $size,
+        ];
+    }
+
     public function testArray(): void
     {
         $array = ['testError' => 'a', 'testValid' => ['a' => 1, 'b' => 2]];
@@ -479,13 +501,7 @@ class UnitRuleTest extends TestCase
 
     public function testFileMaxUploadSize(): void
     {
-        $fileUploadSingle = [
-            'name' => 'JPG - Validação upload v.1.jpg',
-            'type' => 'image/jpeg',
-            'tmp_name' => '/tmp/phpODnLGo',
-            'error' => 0,
-            'size' => 8488,
-        ];
+        $fileUploadSingle = $this->mountMineTypeFile();
         $fileUploadMultiple = [
             'name'     => ['0' => 'JPG - Validação upload v.1.jpg', '1' => 'PDF - Validação upload v.1.pdf',],
             'type'     => ['0' => 'image/jpeg', '1' => 'application/pdf',],
@@ -508,13 +524,7 @@ class UnitRuleTest extends TestCase
 
     public function testFileMinUploadSize(): void
     {
-        $fileUploadSingle = [
-            'name' => 'JPG - Validação upload v.1.jpg',
-            'type' => 'image/jpeg',
-            'tmp_name' => '/tmp/phpODnLGo',
-            'error' => 0,
-            'size' => 3589,
-        ];
+        $fileUploadSingle = $this->mountMineTypeFile(3589);
         $fileUploadMultiple = [
             'name'     => ['0' => 'JPG - Validação upload v.1.jpg', '1' => 'PDF - Validação upload v.1.pdf',],
             'type'     => ['0' => 'image/jpeg', '1' => 'application/pdf',],
@@ -537,13 +547,7 @@ class UnitRuleTest extends TestCase
 
     public function testFileMimeType(): void
     {
-        $fileUploadSingle = [
-            'name' => 'JPG - Validação upload v.1.jpg',
-            'type' => 'image/jpeg',
-            'tmp_name' => '/tmp/phpODnLGo',
-            'error' => 0,
-            'size' => 8488,
-        ];
+        $fileUploadSingle = $this->mountMineTypeFile();
         $fileUploadMultiple = [
             'name'     => ['0' => 'JPG - Validação upload v.1.jpg', '1' => 'PDF - Validação upload v.1.pdf',],
             'type'     => ['0' => 'image/jpeg', '1' => 'application/pdf',],
@@ -595,13 +599,7 @@ class UnitRuleTest extends TestCase
 
     public function testRequiredFile(): void
     {
-        $fileUploadSingle = [
-            'name' => '',
-            'type' => '',
-            'tmp_name' => '',
-            'error' => 4,
-            'size' => 0,
-        ];
+        $fileUploadSingle = $this->mountFileDataRequired();
         $fileUploadMultiple = [
             'name'     => ['0' => '',],
             'type'     => ['0' => '',],
@@ -640,13 +638,7 @@ class UnitRuleTest extends TestCase
 
     public function testMinFile(): void
     {
-        $fileUploadSingle = [
-            'name' => '',
-            'type' => '',
-            'tmp_name' => '',
-            'error' => 4,
-            'size' => 0,
-        ];
+        $fileUploadSingle = $this->mountFileDataRequired();
         $fileUploadMultiple = [
             'name'     => ['0' => 'JPG - Validação upload v.1.jpg',],
             'type'     => ['0' => 'image/jpeg',],
