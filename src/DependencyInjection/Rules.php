@@ -154,12 +154,28 @@ class Rules
         if ($recursive) {
             return $data;
         }
+        // Pré-processa cada valor em $data
+        $data = $this->preProcess($data);
         //se for raiz retorna json
         $json = json_encode(
             $data,
             JSON_UNESCAPED_UNICODE
-        );
-        return strtr(($json ?: ''), ["\r" => '', "\n" => '', "\t" => '', "\\" => '']);
+        ) ?: '';
+        // Remove quebras de linha, tabulações
+        return str_replace(["\r", "\n", "\t"], '', $json);
+    }
+
+    protected function preProcess(mixed $value): mixed
+    {
+        if (is_array($value)) {
+            foreach ($value as $key => $item) {
+                $value[$key] = $this->preProcess($item);
+            }
+            return $value;
+        } elseif (is_string($value)) {
+            return preg_replace('/\\\\(?!["\\\\\/bfnrtu])/', '', $value);
+        }
+        return $value;
     }
 
     protected function validateSubLevelData(
