@@ -51,7 +51,14 @@ require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPAR
                     $validator->set($array, $rules);
                     ?>
                     <pre>
-                        <?php print_r($validator->getErros()); ?>
+                        <?php
+                        if (empty($validator->getErros())) {
+                            echo '<p style="background-color:green;">Sucesso! dados válidos!</p>';
+                        } else {
+                            echo '<p style="background-color:red;">Revise a entrada!<pre></p>';
+                            print_r($validator->getErros());
+                        }
+                        ?>
                     <hr />
                     </pre>
                 </div>
