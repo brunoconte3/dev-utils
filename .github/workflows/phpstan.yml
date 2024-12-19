@@ -12,7 +12,7 @@ jobs:
         uses: actions-x/phpstan@v1
         with:
           installComposer: 1
-          phpstanVersion: 1.9.2
+          phpstanVersion: 2.0.4
           level: 9
           paths: conf src tests
           configPath: phpstan.neon
