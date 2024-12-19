@@ -1,17 +1,28 @@
 on: [push]
-name: "PHPSTAN - CI"
+name: "PHPStan - CI"
 
 jobs:
   phpstan:
-    name: phpstan
+    name: Run PHPStan
     runs-on: ubuntu-latest
     steps:
+      # Configurar a versão correta do PHP
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.3" # Ajuste conforme necessário
+          coverage: none
+          extensions: mbstring, json
+
+      # Fazer checkout do projeto
       - name: Checkout project
         uses: actions/checkout@v2
-      - name: Run phpstan
+
+      # Executar o PHPStan
+      - name: Run PHPStan
         uses: actions-x/phpstan@v1
         with:
-          installComposer: 1
+          installComposer: 2
           phpstanVersion: 2.0.4
           level: 9
           paths: conf src
