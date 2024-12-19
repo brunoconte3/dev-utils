@@ -6,29 +6,32 @@ jobs:
   build-test:
     runs-on: ubuntu-latest
     steps:
+      # Checkout do repositório
       - name: Checkout Code
         uses: actions/checkout@v2
 
+      # Configurar a versão correta do PHP
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: "8.3"
+          php-version: "8.3" # Garante PHP >= 8.3
           extensions: xdebug
           ini-values: |
             memory_limit=512M
           coverage: xdebug
 
+      # Verificar versão do PHP após setup
       - name: Validate PHP version
         run: php -v
 
-      - name: Install Composer
+      # Instalar dependências do Composer
+      - name: Install Composer dependencies
         run: composer install --prefer-dist --no-progress --no-suggest
 
-      - name: PHPUnit Tests
-        uses: php-actions/phpunit@v3
-        with:
-          bootstrap: vendor/autoload.php
-          configuration: phpunit.xml
-          version: 10.5.20
-          php_extensions: xdebug
-          args: tests --coverage-clover ./coverage.xml
+      # Verificar dependências instaladas corretamente
+      - name: Validate Composer dependencies
+        run: composer check-platform-reqs
+
+      # Executar PHPUnit
+      - name: Run PHPUnit Tests
+        run: ./vendor/bin/phpunit --configuration phpunit.xml --coverage-clover ./coverage.xml
