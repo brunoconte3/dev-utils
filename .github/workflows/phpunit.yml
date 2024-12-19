@@ -12,14 +12,17 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: "8.3" # Ajuste para a versão necessária
+          php-version: "8.3"
           extensions: xdebug
           ini-values: |
             memory_limit=512M
           coverage: xdebug
 
-      - name: Install composer and dependencies
-        uses: php-actions/composer@v6
+      - name: Validate PHP version
+        run: php -v
+
+      - name: Install Composer
+        run: composer install --prefer-dist --no-progress --no-suggest
 
       - name: PHPUnit Tests
         uses: php-actions/phpunit@v3
