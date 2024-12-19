@@ -116,6 +116,6 @@ class Arrays
                 }
             }
         }
-        return $aux ?? false;
+        return $aux;
     }
 }

@@ -113,16 +113,18 @@ trait TraitRuleFile
         } else {
             $msg = 'Para validar minWidth, maxWidth, minHeight e maxHeight o arquivo precisa ser uma imagem!';
             $file = $_FILES[$field] ?? $_FILES;
-            foreach ($file as $key => $value) {
-                if (is_array($value)) {
-                    foreach ($value as $valor) {
-                        if ($key === 'type' && !empty($valor) && !in_array($valor, $imgValid)) {
-                            return $msg;
+            if (is_iterable($file)) {
+                foreach ($file as $key => $value) {
+                    if (is_array($value)) {
+                        foreach ($value as $valor) {
+                            if ($key === 'type' && !empty($valor) && !in_array($valor, $imgValid)) {
+                                return $msg;
+                            }
                         }
                     }
-                }
-                if ($key === 'type' && !empty($value) && is_string($value) && !in_array($value, $imgValid)) {
-                    return $msg;
+                    if ($key === 'type' && !empty($value) && is_string($value) && !in_array($value, $imgValid)) {
+                        return $msg;
+                    }
                 }
             }
         }

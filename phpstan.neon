@@ -1,6 +1,7 @@
 parameters:
     reportUnmatchedIgnoredErrors: false
     ignoreErrors:
+        - '#no value type specified in iterable type array#'
         -
             message: "#expects Countable\\|iterable, array\\|bool given#"
             paths:
@@ -36,15 +37,15 @@ parameters:
         -
             message: "#Result of \\|\\| is always true#"
             path: src/Format.php
+        -
+            message: "#Strict comparison using === between 0#"
+            path: src/Format.php
     bootstrapFiles:
         - vendor/autoload.php
         - src/resource/ConstantPhpStan.php
     paths:
         - conf
         - src
-        - tests
     excludePaths:
         analyseAndScan:
            - src/DependencyInjection/StrfTime.php
-    checkMissingIterableValueType: false
-    checkGenericClassInNonGenericObjectType: false

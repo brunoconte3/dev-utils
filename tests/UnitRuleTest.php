@@ -294,7 +294,7 @@ class UnitRuleTest extends TestCase
         ];
         $validator = new Validator();
         $validator->set($array, $rules);
-        self::assertCount(2, $validator->getErros());
+        self::assertCount(3, $validator->getErros());
     }
 
     public function testOptional(): void

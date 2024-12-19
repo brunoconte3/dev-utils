@@ -87,7 +87,7 @@ trait TraitRuleString
                 $arrayDdd = array_map(function ($value) {
                     if (is_array($value)) {
                         return array_map(function ($value) {
-                            return '0' . $value;
+                            return '0' . strval($value);
                         }, $value);
                     }
                 }, $arrayDdd);

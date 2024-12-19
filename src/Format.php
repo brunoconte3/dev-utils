@@ -148,7 +148,7 @@ class Format extends FormatAux
     public static function currency(float | int | string $value, ?string $coinType = ''): string
     {
         $value = self::formatCurrencyForFloat($value);
-        return (!empty($value) || strval($value) === '0') ?
+        return (!empty($value) || $value === 0 || $value === '0')  ?
             $coinType . number_format(floatval($value), 2, ',', '.') : '';
     }
 
@@ -322,18 +322,19 @@ class Format extends FormatAux
             if (!empty($fileError)) {
                 return $fileError;
             }
-
-            foreach ($file['name'] as $key => $name) {
-                $name = self::formatFileName($name);
-                $params = [
-                    'name'     => $name,
-                    'type'     => $file['type'][$key],
-                    'tmp_name' => $file['tmp_name'][$key],
-                    'error'    => $file['error'][$key],
-                    'size'     => $file['size'][$key],
-                    'name_upload' => self::generateFileName($name)
-                ];
-                array_push($arrayFile, $params);
+            if (isset($file['name'])) {
+                foreach ($file['name'] as $key => $name) {
+                    $name = self::formatFileName($name);
+                    $params = [
+                        'name'     => $name,
+                        'type'     => $file['type'][$key],
+                        'tmp_name' => $file['tmp_name'][$key],
+                        'error'    => $file['error'][$key],
+                        'size'     => $file['size'][$key],
+                        'name_upload' => self::generateFileName($name),
+                    ];
+                    array_push($arrayFile, $params);
+                }
             }
         }
         return $arrayFile;

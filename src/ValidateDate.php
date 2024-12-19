@@ -47,7 +47,7 @@ class ValidateDate
                 $partes = explode('-', $data);
                 $dia = $partes[2];
                 $mes = $partes[1];
-                $ano = isset($partes[0]) ? $partes[0] : 0;
+                $ano = $partes[0] ?: 0;
 
                 return self::validateYear(strval($ano), $mes, $dia);
             }

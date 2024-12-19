@@ -80,7 +80,7 @@
         "ext-intl": "to use Format with Date"
 	},
     "require": {
-        "php": "^8.2|^8.3"
+        "php": "^8.3|^8.4"
     },
     "autoload": {
         "psr-4": {
@@ -91,6 +91,6 @@
     },
     "require-dev": {
         "phpunit/phpunit": "10.5.20",
-        "phpstan/phpstan": "1.10.67"
+        "phpstan/phpstan": "2.0.4"
     }
 }

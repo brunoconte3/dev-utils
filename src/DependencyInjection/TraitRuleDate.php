@@ -10,7 +10,7 @@ use DevUtils\{
 
 trait TraitRuleDate
 {
-    protected function validateDateBrazil(string $field = '', string $value = null, ?string $message = ''): void
+    protected function validateDateBrazil(string $field = '', ?string $value = null, ?string $message = ''): void
     {
         if (is_numeric($value) && strlen($value) === 8) {
             $value = Format::mask('##/##/####', $value);
@@ -21,7 +21,7 @@ trait TraitRuleDate
         }
     }
 
-    protected function validateDateAmerican(string $field = '', string $value = null, ?string $message = ''): void
+    protected function validateDateAmerican(string $field = '', ?string $value = null, ?string $message = ''): void
     {
         if (is_numeric($value) && strlen($value) === 8) {
             $value = Format::mask('####-##-##', $value);
@@ -32,7 +32,7 @@ trait TraitRuleDate
         }
     }
 
-    protected function validateHour(string $field = '', string $value = null, ?string $message = ''): void
+    protected function validateHour(string $field = '', ?string $value = null, ?string $message = ''): void
     {
         $value = $value ?? '';
         if (!ValidateHour::validateHour($value)) {

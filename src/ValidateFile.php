@@ -28,7 +28,7 @@ class ValidateFile
         return 0;
     }
 
-    public static function validateFileErrorPhp(?array &$file, string $message = ''): array
+    public static function validateFileErrorPhp(array &$file, string $message = ''): array
     {
         self::validateFileTransformSingleToMultiple($file);
 

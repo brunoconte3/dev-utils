@@ -27,7 +27,7 @@ class Rules
             $msg .= $rule;
         }
         if (!empty($value)) {
-            $msg .= $value;
+            $msg .= strval($value);
         }
         if (!empty($message)) {
             $msg .= $message;
@@ -39,7 +39,7 @@ class Rules
     private function validateHandleErrorsInArray(array $errorList = [], string $field = ''): void
     {
         if (!empty($errorList)) {
-            if (is_array($this->errors) && array_key_exists($field, $this->errors)) {
+            if (array_key_exists($field, $this->errors)) {
                 foreach ($errorList as $error) {
                     array_push($this->errors[$field], $error);
                 }
@@ -56,11 +56,25 @@ class Rules
         $regex = preg_replace("/^$bomchar/", '', $string) ?? '';
         $string = trim($regex);
         static $enclist = [
-            'UTF-8', 'ASCII',
-            'ISO-8859-1', 'ISO-8859-2', 'ISO-8859-3', 'ISO-8859-4', 'ISO-8859-5',
-            'ISO-8859-6', 'ISO-8859-7', 'ISO-8859-8', 'ISO-8859-9', 'ISO-8859-10',
-            'ISO-8859-13', 'ISO-8859-14', 'ISO-8859-15', 'ISO-8859-16',
-            'Windows-1251', 'Windows-1252', 'Windows-1254',
+            'UTF-8',
+            'ASCII',
+            'ISO-8859-1',
+            'ISO-8859-2',
+            'ISO-8859-3',
+            'ISO-8859-4',
+            'ISO-8859-5',
+            'ISO-8859-6',
+            'ISO-8859-7',
+            'ISO-8859-8',
+            'ISO-8859-9',
+            'ISO-8859-10',
+            'ISO-8859-13',
+            'ISO-8859-14',
+            'ISO-8859-15',
+            'ISO-8859-16',
+            'Windows-1251',
+            'Windows-1252',
+            'Windows-1254',
         ];
         $charsetType = mb_detect_encoding($string);
         foreach ($enclist as $item) {
@@ -91,7 +105,7 @@ class Rules
     protected function validateFieldMandatory(
         string $field = '',
         mixed $value = null,
-        string $message = null,
+        ?string $message = null,
     ): array | string {
         if (is_array($value) && (count($value) <= 0)) {
             return $this->errors[$field] = !empty($message) ? $message : "O campo $field é obrigatório!";
@@ -233,7 +247,7 @@ class Rules
                             if (is_array($conf) && array_key_exists(1, $conf) && !empty($conf[1])) {
                                 $rulesArray['mensagem'] = trim(strip_tags($conf[1]));
                             }
-                            $keyConf = $ruleArrayConf[0] ?? (count($rulesArray) + 1);
+                            $keyConf = $ruleArrayConf[0];
                             $rulesArray[strval($keyConf)] = $ruleArrayConf[1] ?? true;
                         }
                     }
@@ -246,7 +260,8 @@ class Rules
                 unset($rulesArray['mensagem']);
             }
             foreach ($rulesArray as $key => $val) {
-                $ruleValue = (!empty($val) || (intval($val) === 0)) ? true : false;
+                $val = is_numeric($val) ? intval($val) : $val;
+                $ruleValue = (!empty($val) || ($val === 0)) ? true : false;
                 if (!in_array('optional', $rulesArray) || (in_array('optional', $rulesArray) && $ruleValue)) {
                     if (in_array(trim(strtolower($key)), self::RULES_WITHOUT_FUNCS)) {
                         continue;
@@ -284,10 +299,7 @@ class Rules
                     }
 
                     if (is_string($auxValue)) {
-                        if (
-                            !empty($this->errors[$field])
-                            && (is_string($auxValue) && Compare::contains($auxValue, 'obrigatório!'))
-                        ) {
+                        if (!empty($this->errors[$field]) && Compare::contains($auxValue, 'obrigatório!')) {
                             $this->errors[$field] = 'O campo ' . strval($field) . ' é obrigatório!';
                         } else {
                             $method = trim(Rules::functionsValidation()[trim($key)] ?? 'invalidRule');
@@ -326,7 +338,7 @@ class Rules
                     $rulesConf = explode('|', trim($rules));
                     foreach ($rulesConf as $valueRuleConf) {
                         $ruleArrayConf =  explode(':', trim($valueRuleConf));
-                        $rulesArray[$ruleArrayConf[0] ?? (count($rulesArray) + 1)] = $ruleArrayConf[1] ?? true;
+                        $rulesArray[$ruleArrayConf[0]] = $ruleArrayConf[1] ?? true;
                     }
                 }
             }
@@ -334,7 +346,7 @@ class Rules
             $jsonRules = $this->levelSubLevelsArrayReturnJson($rulesArray);
             $compareA = strpos(trim(strtolower(strval($jsonRules))), 'required');
             if ($compareA !== false) {
-                $msg = 'O campo: ' . $field . ' não foi encontrado nos dados de entrada, indices filhos são ';
+                $msg = 'O campo: ' . strval($field) . ' não foi encontrado nos dados de entrada, indices filhos são ';
                 $msg .= 'obrigatórios!';
                 if (
                     count(array_filter(array_values((array) json_decode(strval($jsonRules), true)), 'is_array'))
@@ -348,7 +360,7 @@ class Rules
         }
     }
 
-    protected function validateBoolean(string $field = '', string $value = null, ?string $message = null): void
+    protected function validateBoolean(string $field = '', ?string $value = null, ?string $message = null): void
     {
         if (!filter_var($value, FILTER_VALIDATE_BOOLEAN)) {
             $this->errors[$field] = !empty($message) ?
@@ -356,7 +368,7 @@ class Rules
         }
     }
 
-    protected function validateFloating(string $field = '', string $value = null, ?string $message = null): void
+    protected function validateFloating(string $field = '', ?string $value = null, ?string $message = null): void
     {
         if (!filter_var($value, FILTER_VALIDATE_FLOAT)) {
             $this->errors[$field] = !empty($message) ?

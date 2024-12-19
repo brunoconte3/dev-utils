@@ -4,21 +4,24 @@ namespace DevUtils\DependencyInjection;
 
 trait TraitRuleInteger
 {
-    protected function validateInteger(string $field = '', string $value = null, ?string $message = ''): void
+    protected function validateInteger(string $field = '', ?string $value = null, ?string $message = ''): void
     {
         if (!filter_var($value, FILTER_VALIDATE_INT)) {
             $this->errors[$field] = !empty($message) ? $message : "O campo $field deve ser do tipo inteiro!";
         }
     }
 
-    protected function validateIntegerTyped(string $field = '', string | int $value = null, ?string $message = ''): void
-    {
+    protected function validateIntegerTyped(
+        string $field = '',
+        string|int|null $value = null,
+        ?string $message = ''
+    ): void {
         if (!is_int($value)) {
             $this->errors[$field] = !empty($message) ? $message : "O campo $field deve ser do tipado como inteiro!";
         }
     }
 
-    protected function validateNumeric(string $field = '', string $value = null, ?string $message = ''): void
+    protected function validateNumeric(string $field = '', ?string $value = null, ?string $message = ''): void
     {
         if (!is_numeric($value)) {
             $this->errors[$field] = !empty($message) ? $message : "O campo $field só pode conter valores numéricos!";
@@ -41,13 +44,12 @@ trait TraitRuleInteger
         }
     }
 
-    protected function validateNumMonth(string $field = '', string $value = null, ?string $message = ''): void
+    protected function validateNumMonth(string $field = '', ?string $value = null, ?string $message = ''): void
     {
-        if (!is_int(intval($value))) {
+        if (!is_numeric($value)) {
             $this->errors[$field] = !empty($message) ?
-                $message : "O campo $field precisa ser do valor inteiro!";
-        }
-        if ($value > 12 || $value <= 0 || strlen(strval($value)) > 2) {
+                $message : "O campo $field precisa ser do valor inteiro e maior que 0!";
+        } elseif ($value > 12 || $value <= 0 || strlen(strval($value)) > 2) {
             $this->errors[$field] = !empty($message) ?
                 $message : "O campo $field não é um mês válido!";
         }
@@ -59,14 +61,14 @@ trait TraitRuleInteger
         ?string $value = '',
         ?string $message = '',
     ): void {
-        if (!is_int(intval($value))) {
+        if (!is_numeric($value)) {
             $this->errors[$field] = !empty($message) ? $message : "O campo $field não é um inteiro!";
         }
-        if ($value < $rule) {
+        if (intval($value) < $rule) {
             $this->errors[$field] = !empty($message) ?
                 $message : "O campo $field deve ter o valor mínimo de $rule!";
         }
-        if ($value < 0) {
+        if (intval($value) < 0) {
             $this->errors[$field] = !empty($message) ?
                 $message : "O campo $field deve ter o valor mínimo de zero!";
         }
