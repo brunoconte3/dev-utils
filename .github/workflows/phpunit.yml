@@ -6,13 +6,13 @@ jobs:
   build-test:
     runs-on: ubuntu-latest
     steps:
-      # Checkout do repositório
-      - name: Checkout Code
-        uses: actions/checkout@v2
+      # Checkout the repository
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      # Configurar a versão correta do PHP
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2 # Mantendo a versão v2
+      # Set up PHP
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
         with:
           php-version: "8.3"
           extensions: xdebug
@@ -20,18 +20,18 @@ jobs:
             memory_limit=512M
           coverage: xdebug
 
-      # Verificar versão do PHP após setup
-      - name: Validate PHP version
+      # Show PHP version
+      - name: Show PHP version
         run: php -v
 
-      # Instalar dependências do Composer
+      # Install Composer dependencies
       - name: Install Composer dependencies
         run: composer install --prefer-dist --no-progress --no-suggest
 
-      # Verificar dependências instaladas corretamente
-      - name: Validate Composer dependencies
+      # Check Composer platform requirements
+      - name: Check Composer platform requirements
         run: composer check-platform-reqs
 
-      # Executar PHPUnit
-      - name: Run PHPUnit Tests
+      # Run PHPUnit tests
+      - name: Run PHPUnit tests
         run: ./vendor/bin/phpunit --configuration phpunit.xml --coverage-clover ./coverage.xml

@@ -1,51 +1,50 @@
 parameters:
-    reportUnmatchedIgnoredErrors: false
-    ignoreErrors:
-        - '#no value type specified in iterable type array#'
-        -
-            message: "#expects Countable\\|iterable, array\\|bool given#"
-            paths:
-                - tests/UnitTestString.php
-                - tests/UnitTestRule.php
-                - tests/UnitTestInteger.php
-        -
-            message: "#Call to an undefined method object::addChild#"
-            path: src/Arrays.php
-        -
-            message: "#Cannot access offset 'textoError' on array\\|bool#"
-            path: tests/UnitTestRule.php
-        -
-            message: "#Call to an undefined method object::asXML#"
-            path: tests/UnitArrayTest.php
-        -
-            message: "#Strict comparison using === between callable-string and#"
-            paths:
-                - DependencyInjection/Rules.php
-                - src/DependencyInjection/Rules.php
-        -
-            message: "#invalidRule\\(\\) is unused#"
-            path: src/DependencyInjection/Rules.php
-        -
-            message: "#is always true#"
-            path: src/DependencyInjection/Rules.php
-        -
-            message: "#strval expects bool\\|float\\|int\\|resource\\|string\\|null#"
-            path: src/DependencyInjection/Rules.php
-        - '#function strval expects bool\|float\|int\|resource\|string\|null, mixed given#'
-        - '#function intval expects array\|bool\|float\|int\|resource\|string\|null, mixed given#'
-        - '#function floatval expects array\|bool\|float\|int\|resource\|string\|null, mixed given#'
-        -
-            message: "#Result of \\|\\| is always true#"
-            path: src/Format.php
-        -
-            message: "#Strict comparison using === between 0#"
-            path: src/Format.php
-    bootstrapFiles:
-        - vendor/autoload.php
-        - src/resource/ConstantPhpStan.php
-    paths:
-        - conf
-        - src
-    excludePaths:
-        analyseAndScan:
-           - src/DependencyInjection/StrfTime.php
+  reportUnmatchedIgnoredErrors: false
+  ignoreErrors:
+    - '#no value type specified in iterable type array#'
+    -
+      message: "#expects Countable\\|iterable, array\\|bool given#"
+      paths:
+        - tests/UnitTestString.php
+        - tests/UnitTestRule.php
+        - tests/UnitTestInteger.php
+    -
+      message: "#Call to an undefined method object::addChild#"
+      path: src/Arrays.php
+    -
+      message: "#Cannot access offset 'textoError' on array\\|bool#"
+      path: tests/UnitTestRule.php
+    -
+      message: "#Call to an undefined method object::asXML#"
+      path: tests/UnitArrayTest.php
+    -
+      message: "#Strict comparison using === between callable-string and#"
+      paths:
+        - DependencyInjection/Rules.php
+        - src/DependencyInjection/Rules.php
+    -
+      message: "#invalidRule\\(\\) is unused#"
+      path: src/DependencyInjection/Rules.php
+    -
+      message: "#is always true#"
+      path: src/DependencyInjection/Rules.php
+    -
+      message: "#strval expects bool\\|float\\|int\\|resource\\|string\\|null#"
+      path: src/DependencyInjection/Rules.php
+    - '#function strval expects bool\|float\|int\|resource\|string\|null, mixed given#'
+    - '#function intval expects array\|bool\|float\|int\|resource\|string\|null, mixed given#'
+    - '#function floatval expects array\|bool\|float\|int\|resource\|string\|null, mixed given#'
+    -
+      message: "#Result of \\|\\| is always true#"
+      path: src/Format.php
+    -
+      message: "#Strict comparison using === between 0#"
+      path: src/Format.php
+
+  bootstrapFiles:
+    - vendor/autoload.php
+    - src/resource/ConstantPhpStan.php
+
+  paths:
+    - conf
+    - src

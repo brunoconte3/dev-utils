@@ -11,8 +11,11 @@ use InvalidArgumentException;
 
 class StrfTime
 {
-    public static function strftime(string $format, $timestamp = null, ?string $locale = null): string
-    {
+    public static function strftime(
+        string $format,
+        DateTimeInterface|int|string|null $timestamp = null,
+        ?string $locale = null
+    ): string {
         if (!($timestamp instanceof DateTimeInterface)) {
             $timestamp = is_int($timestamp) ? '@' . $timestamp : strval($timestamp);
 
@@ -26,7 +29,7 @@ class StrfTime
         if (empty($locale)) {
             $locale = setlocale(LC_TIME, '0');
         }
-        $locale = preg_replace('/[^\w-].*$/', '', $locale);
+        $locale = preg_replace('/[^\w-].*$/', '', strval($locale));
 
         $intlFormats = [
             '%a' => 'EEE',
@@ -43,8 +46,6 @@ class StrfTime
             $pattern = '';
 
             switch ($format) {
-                    // %c = Preferred date and time stamp based on locale
-                    // Example: Tue Feb 5 00:45:10 2009 for February 5, 2009 at 12:45:10 AM
                 case '%c':
                     $dateType = IntlDateFormatter::LONG;
                     $timeType = IntlDateFormatter::SHORT;
@@ -57,7 +58,6 @@ class StrfTime
                     $dateType = IntlDateFormatter::NONE;
                     $timeType = IntlDateFormatter::MEDIUM;
                     break;
-
                 default:
                     $pattern = $intlFormats[$format];
             }
@@ -128,8 +128,8 @@ class StrfTime
             '%r' => 'h:i:s A', // %I:%M:%S %p
             '%R' => 'H:i', // %H:%M
             '%S' => 's',
-            '%T' => 'H:i:s', // %H:%M:%S
-            '%X' => $intlFormatter, // Preferred time representation based on locale, without the date
+            '%T' => 'H:i:s',
+            '%X' => $intlFormatter,
 
             // Timezone
             '%z' => 'O',
@@ -145,13 +145,13 @@ class StrfTime
 
         $out = preg_replace_callback(
             '/(?<!%)%([_#-]?)([a-zA-Z])/',
-            function ($match) use ($translateTable, $timestamp) {
+            function (array $match) use ($translateTable, $timestamp): string {
                 $prefix = $match[1];
                 $char = $match[2];
                 $pattern = '%' . $char;
-                if ($pattern == '%n') {
+                if ($pattern === '%n') {
                     return "\n";
-                } elseif ($pattern == '%t') {
+                } elseif ($pattern === '%t') {
                     return "\t";
                 }
 
@@ -166,22 +166,21 @@ class StrfTime
                 } else {
                     $result = $replace($timestamp, $pattern);
                 }
+                $result = (string)$result;
 
                 switch ($prefix) {
                     case '_':
-                        // replace leading zeros with spaces but keep last char if also zero
-                        return preg_replace('/\G0(?=.)/', ' ', $result);
+                        return (string)preg_replace('/\G0(?=.)/', ' ', $result);
                     case '#':
                     case '-':
-                        // remove leading zeros but keep last char if also zero
-                        return preg_replace('/^0+(?=.)/', '', $result);
+                        return (string)preg_replace('/^0+(?=.)/', '', $result);
                     default:
                         return $result;
                 }
             },
-            $format
+            (string)$format
         );
 
-        return str_replace('%%', '%', $out);
+        return str_replace('%%', '%', strval($out));
     }
 }

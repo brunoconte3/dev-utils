@@ -300,7 +300,11 @@ class Format extends FormatAux
         if (strpos($date, '/') > -1) {
             $date = implode('-', array_reverse(explode('/', $date)));
         }
-        return StrfTime::strftime('%A, %d de %B de %Y', strtotime($date), 'pt_BR');
+        $timestamp = strtotime($date);
+        if ($timestamp === false) {
+            throw new InvalidArgumentException('Invalid date format for writeDateExtensive.');
+        }
+        return StrfTime::strftime('%A, %d de %B de %Y', $timestamp, 'pt_BR');
     }
 
     public static function writeCurrencyExtensive(float $numeral): string

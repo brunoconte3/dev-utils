@@ -1,8 +1,11 @@
 {
     "name": "brunoconte3/dev-utils",
-    "description": "Dev-utils is complete, validates, formats, compares data, plus utilities",
-    "keywords": ["validation", "utils", "format", "array", "dev", "utility", "compare"],
+    "description": "A complete PHP utility library for validating, formatting, comparing data, and more.",
+    "keywords": [
+        "validation", "utils", "format", "array", "dev", "utility", "compare"
+    ],
     "license": "MIT",
+    "homepage": "https://github.com/brunoconte3/dev-utils",
     "authors": [{
             "name": "Bruno Conte",
             "email": "brunoconte3@gmail.com",
@@ -74,23 +77,33 @@
             "role": "Developer"
         }
     ],
+    "support": {
+        "issues": "https://github.com/brunoconte3/dev-utils/issues",
+        "source": "https://github.com/brunoconte3/dev-utils"
+    },
     "suggest": {
-		"ext-gd": "to use the GD implementation",
-        "ext-mbstring": "to use Format::lower() etc...",
-        "ext-intl": "to use Format with Date"
-	},
+        "ext-gd": "To use the GD implementation",
+        "ext-mbstring": "To use Format::lower() etc.",
+        "ext-intl": "To use Format with Date"
+    },
     "require": {
-        "php": "^8.2|^8.3|^8.4"
+        "php": "^8.3 || ^8.4"
     },
     "autoload": {
         "psr-4": {
             "DevUtils\\conf\\": "conf/",
-            "DevUtils\\Test\\": "tests/",
             "DevUtils\\": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "DevUtils\\Test\\": "tests/"
+        }
+    },
     "require-dev": {
-        "phpunit/phpunit": "10.5.20",
-        "phpstan/phpstan": "2.0.4"
-    }
+        "phpunit/phpunit": "^12.1",
+        "phpstan/phpstan": "^2.1"
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
 }

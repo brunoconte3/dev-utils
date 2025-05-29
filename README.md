@@ -11,16 +11,16 @@ A complete library, with PSR standard and guarantee of all methods unit tested b
 
 ## Installation
 
-composer.json
+Install using Composer:
 
-```
-"brunoconte3/dev-utils": "2.7.0"
+```bash
+composer require brunoconte3/dev-utils
 ```
 
-With composer, require
+Or add to your `composer.json`:
 
-```
-$ composer require brunoconte3/dev-utils
+```json
+"brunoconte3/dev-utils": "2.8.0"
 ```
 
 ## Data Validation Example
@@ -567,6 +567,7 @@ Add Line: /coverage/
 ## Will perform pull request, please execute unit tests, and phpstan level 9
 
 `./vendor/bin/phpunit --coverage-xml coverage`
+`./vendor/bin/phpstan analyse -c phpstan.neon --level 9`
 `If you don't know how to run phpstan, I execute and adjust whatever is necessary`
 
 # License
