@@ -13,21 +13,16 @@ on:
       - ".github/workflows/phpcs.yml"
 
 jobs:
-  build:
+  phpcs:
+    name: Run PHP_CodeSniffer
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-      with:
-        fetch-depth: 0
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Install PHP_CodeSniffer
-      run: |
-        curl -OL https://squizlabs.github.io/PHP_CodeSniffer/phpcs.phar
-        php phpcs.phar --version
-
-    - uses: chindit/actions-phpcs@master
-      with:
-        files: "**.php" # you may customize glob as needed
-        phpcs_path: php phpcs.phar
-        standard: phpcs.xml
-        dir: src/
+      - name: Run PHP_CodeSniffer
+        uses: chindit/actions-phpcs@master
+        with:
+          files: "**.php"
+          standard: phpcs.xml
+          dir: src/

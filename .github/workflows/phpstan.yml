@@ -6,26 +6,21 @@ jobs:
     name: Run PHPStan
     runs-on: ubuntu-latest
     steps:
-      # Configurar a versão correta do PHP
-      - name: Setup PHP
+      # Set up PHP
+      - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: "8.3" # Ajuste conforme necessário
-          coverage: none
+          php-version: "8.4"
           extensions: mbstring, json
 
-      # Fazer checkout do projeto
+      # Checkout project
       - name: Checkout project
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
-      # Executar o PHPStan
+      # Install Composer dependencies
+      - name: Install Composer dependencies
+        run: composer install --prefer-dist --no-progress --no-suggest
+
+      # Run PHPStan
       - name: Run PHPStan
-        uses: actions-x/phpstan@v1
-        with:
-          installComposer: 2
-          phpstanVersion: 2.0.4
-          level: 9
-          paths: conf src
-          configPath: phpstan.neon
-          useBundled: 1
-          arguments: --autoload-file src/resource/ConstantPhpStan.php
+        run: vendor/bin/phpstan analyse conf src --level=9 --configuration=phpstan.neon --autoload-file=src/resource/ConstantPhpStan.php --memory-limit=512M

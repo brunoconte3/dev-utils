@@ -311,9 +311,8 @@ class Format extends FormatAux
     {
         if ($numeral <= 0) {
             throw new InvalidArgumentException('O valor numeral deve ser maior que zero!');
-        } else {
-            return parent::extensive($numeral);
         }
+        return parent::extensive($numeral);
     }
 
     public static function restructFileArray(array $file = []): array

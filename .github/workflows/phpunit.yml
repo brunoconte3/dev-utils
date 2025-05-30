@@ -1,37 +1,44 @@
 name: "PHPUnit - CI"
 
-on: [push]
+on:
+  push:
+    branches:
+      - "**"
+  pull_request:
 
 jobs:
   build-test:
     runs-on: ubuntu-latest
     steps:
-      # Checkout the repository
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Set up PHP
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: "8.3"
           extensions: xdebug
-          ini-values: |
-            memory_limit=512M
+          ini-values: memory_limit=512M
           coverage: xdebug
+          tools: composer:v2
 
-      # Show PHP version
-      - name: Show PHP version
-        run: php -v
+      - name: Validate composer.json and composer.lock
+        run: composer validate --strict
 
-      # Install Composer dependencies
       - name: Install Composer dependencies
-        run: composer install --prefer-dist --no-progress --no-suggest
+        run: composer install --prefer-dist --no-interaction --no-progress --no-suggest
 
-      # Check Composer platform requirements
       - name: Check Composer platform requirements
         run: composer check-platform-reqs
 
-      # Run PHPUnit tests
-      - name: Run PHPUnit tests
-        run: ./vendor/bin/phpunit --configuration phpunit.xml --coverage-clover ./coverage.xml
+      - name: Show PHP version
+        run: php -v
+
+      - name: Run PHPUnit tests with coverage
+        run: ./vendor/bin/phpunit --configuration phpunit.xml --coverage-clover=coverage.xml
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage.xml
