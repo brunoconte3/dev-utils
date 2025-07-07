@@ -9,6 +9,7 @@ use DevUtils\{
     Format,
 };
 use DevUtils\conf\Conf;
+use DevUtils\ValidateCart;
 
 require_once '../conf/Conf.php';
 require_once 'AutoInstall.php';
@@ -208,6 +209,66 @@ require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPAR
                                 <button type="submit" name="upload_files" value="1">Upload</button>
                             </div>
                         </form>
+                    </div>
+                </div>
+            </div>
+            <div class="item-section-class">
+                <div>
+                    <!-- Formulário para testar cartões -->
+                    <div class="item-section-class">
+                        <h3>Teste de Validação de Cartão</h3>
+                        <form method="POST">
+                            <div>
+                                <label for="cartao_numero">Número do Cartão:</label>
+                                <input type="text" name="cartao_numero" id="cartao_numero" placeholder="Ex: 4111111111111111" value="<?php echo $_POST['cartao_numero'] ?? ''; ?>">
+                                <small>Digite um número de cartão válido (Visa, Mastercard, Elo, Hipercard, Amex)</small>
+                                </div>
+                            <div>
+                                <label for="cartao_cvv">CVV:</label>
+                                <input type="text" name="cartao_cvv" id="cartao_cvv" placeholder="Ex: 123" value="<?php echo $_POST['cartao_cvv'] ?? ''; ?>">
+                                <small>Digite um CVV válido (3 dígitos)</small>
+                            </div>
+                            <div>
+                                <button type="submit" name="testar_cartao">Testar Cartão</button>
+                            </div>
+                        </form>
+                        <?php
+                        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['testar_cartao'])) {
+                            $numero = $_POST['cartao_numero'] ?? '';
+                            $cvv = $_POST['cartao_cvv'] ?? '';
+                            $bandeira = null;
+                            $erros = [];
+                            if (ValidateCart::isVisa($numero)) {
+                                $bandeira = 'Visa';
+                            } elseif (ValidateCart::isMastercard($numero)) {
+                                $bandeira = 'Mastercard';
+                            } elseif (ValidateCart::isElo($numero)) {
+                                $bandeira = 'Elo';
+                            } elseif (ValidateCart::isHipercard($numero)) {
+                                $bandeira = 'Hipercard';
+                            } elseif (ValidateCart::isAmex($numero)) {
+                                $bandeira = 'Amex';
+                            } else {
+                                $erros['cartao_numero'] = 'Bandeira não reconhecida ou número inválido!';
+                            }
+                            if (!ValidateCart::isValidCvv($cvv)) {
+                                $erros['cartao_cvv'] = 'CVV inválido!';
+                            }
+                            echo '<hr><h4>Resultado:</h4>';
+                            if (empty($erros)) {
+                                echo '<p style="background-color:green;color:white;">Sucesso! dados válidos!</p>';
+                                echo '<pre style="background-color: #d4edda; font-family: math;padding: 1rem;color: #510651; border:1px solid #c3e6cb;">';
+                                echo 'cartao_numero: Cartão ' . $bandeira . ' válido\n';
+                                echo 'cartao_cvv: CVV válido!';
+                                echo '</pre>';
+                            } else {
+                                echo '<p style="background-color:red;color:white;">Revise a entrada&#8628;</p>';
+                                echo '<pre style="background-color: #f8d7da; font-family: math;padding: 1rem;color: #510651; border:1px solid #f5c6cb;">';
+                                print_r($erros);
+                                echo '</pre>';
+                            }
+                        }
+                        ?>
                     </div>
                 </div>
             </div>
