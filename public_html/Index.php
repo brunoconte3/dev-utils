@@ -27,7 +27,7 @@ require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPAR
 </head>
 
 <body>
-    <div class="container">
+<div class="container">
         <header id="body-title-page">
             <h1>brunoconte3/dev-utils</h1>
             <small>Espaço para fazer seus testes</small>
@@ -87,7 +87,7 @@ require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPAR
                         </form>
                     </div>
                     
-                    <!-- Resultado da validação  -->
+                    <!-- Resultado da validação -->
                     <?php if (isset($validator)): ?>
                         <?php
                         if (empty($validator->getErros())) {
@@ -134,39 +134,66 @@ require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPAR
                     </div>
                     -->
                 </div>
-                <div>
+                <div class="item-section-class">
+                    <h3>Teste de Upload de Arquivos</h3>
                     <?php
-                    if (filter_input(INPUT_SERVER, 'REQUEST_METHOD') === 'POST') {
-                        $fileUploadSingle = $_FILES['fileUploadSingle'];
-                        $fileUploadMultiple = $_FILES['fileUploadMultiple'];
-                        $array = [
-                            'fileUploadSingle' => $fileUploadSingle,
-                            'fileUploadMultiple' => $fileUploadMultiple
-                        ];
-                        $ruleSingle = 'requiredFile|fileName|mimeType:jpeg;png;jpg;txt;docx;xlsx;pdf|minUploadSize:10|';
-                        $ruleSingle .= 'maxUploadSize:30000|maxFile:1|minWidth:200|maxWidth:200|minHeight:200|';
-                        $ruleSingle .= 'maxHeight:200';
-                        $ruleMultiple = 'fileName|mimeType:jpeg;png|minFile:1|maxFile:3|minUploadSize:10';
-                        $ruleMultiple .= '|minWidth:200|maxWidth:200|minHeight:200|maxHeight:200|';
-                        $ruleMultiple .= 'maxUploadSize:30000, Mensagem personalizada aqui!';
-                        $rules = [
-                            'fileUploadSingle' => $ruleSingle,
-                            'fileUploadMultiple' => $ruleMultiple
-                        ];
-                        $validator = new Validator();
-                        $validator->set($array, $rules); ?>
-                        <pre>
-                            <?php print_r($validator->getErros()); ?>
-                        <hr>
-                        <pre>
+                    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['upload_files'])) {
+                        try {
+                            $fileUploadSingle = $_FILES['fileUploadSingle'];
+                            $fileUploadMultiple = $_FILES['fileUploadMultiple'];
+                            
+                            $array = [
+                                'fileUploadSingle' => $fileUploadSingle,
+                                'fileUploadMultiple' => $fileUploadMultiple
+                            ];
+                            $ruleSingle = 'requiredFile|fileName|mimeType:jpeg;png;jpg;txt;docx;xlsx;pdf|minUploadSize:10|';
+                            $ruleSingle .= 'maxUploadSize:150000|maxFile:1'; // |minWidth:200|maxWidth:200|minHeight:200|maxHeight:200->Requer biblioteca GD
+                            
+                            $ruleMultiple = 'fileName|mimeType:jpeg;png|minFile:1|maxFile:3|minUploadSize:10|';
+                            $ruleMultiple .= 'maxUploadSize:150000, Mensagem personalizada aqui!'; // |minWidth:200|maxWidth:200|minHeight:200|maxHeight:200->Requer biblioteca GD
+                            
+                            $rules = [];
+                            if (!empty($fileUploadSingle['name'][0])) {
+                                $rules['fileUploadSingle'] = $ruleSingle;
+                            }
+                            if (!empty($fileUploadMultiple['name'][0])) {
+                                $rules['fileUploadMultiple'] = $ruleMultiple;
+                            }
+                            
+                            $validator = new Validator();
+                            $validator->set($array, $rules);
+                            ?>
+                            
+                        <!-- Resultado da validação de upload -->
                         <?php
-                        print_r(Format::restructFileArray($fileUploadSingle));
-                        print_r(Format::restructFileArray($fileUploadMultiple));
-                    }
+                        if (empty($validator->getErros()) && (!empty($fileUploadSingle['name'][0]) || !empty($fileUploadMultiple['name'][0]))) {
+                            echo '<p style="background-color:green;color:white;">✓ Sucesso! Arquivos válidos!</p>';
+                        } else {
+                            if (empty($fileUploadSingle['name'][0]) && empty($fileUploadMultiple['name'][0])) {
+                                echo '<p style="background-color:red;color:white;">⚠ Nenhum arquivo foi enviado!</p>';
+                            } else {
+                                echo '<p style="background-color:red;color:white;">⚠ Erros no upload!</p>';
+                                echo '<pre style="background-color: #f8d7da; font-family: math;padding: 1rem;color: #510651; border:1px solid #f5c6cb;">';
+                                print_r($validator->getErros());
+                                echo '</pre>';
+                            }
+                        }
                         ?>
-                    <h3>Upload de Arquivos</h3>
+                            
+                        <hr/>
+                        <h4>Dados dos arquivos enviados:</h4>
+                        <pre style="<?php echo (empty($validator->getErros()) && (!empty($fileUploadSingle['name'][0]) || !empty($fileUploadMultiple['name'][0]))) ? 'background-color: #d4edda; font-family: math;padding: 1rem;color: #510651; border:1px solid #c3e6cb;' : 'background-color: #f8d7da; font-family: math;padding: 1rem;color: #8B008B; border:1px solid #f5c6cb;'; ?> padding: 15px; border-radius: 4px;">
+                            <?php
+                            print_r(Format::restructFileArray($fileUploadSingle));
+                            print_r(Format::restructFileArray($fileUploadMultiple));
+                            ?>
+                        </pre>
+                        <?php } catch (Exception $e) {
+                            echo '<p style="background-color:red;color:white;">ERRO: ' . $e->getMessage() . '</p>';
+                        } ?>
+                    <?php } ?>
                     <div id="bd-form-upload">
-                        <form method="POST" enctype="multipart/form-data">
+                        <form method="POST" enctype="multipart/form-data" action="">
                             <!-- Upload de um único arquivo. -->
                             <div>
                                 <label for="fileUploadSingle">Upload de um arquivo</label>
@@ -174,11 +201,11 @@ require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPAR
                             </div>
                             <!-- Upload de um ou múltiplos arquivos. -->
                             <div>
-                                <label for="fileUploadSingle">Upload de múltiplos arquivo</label>
+                                <label for="fileUploadMultiple">Upload de múltiplos arquivo</label>
                                 <input type="file" name="fileUploadMultiple[]" multiple="multiple">
                             </div>
                             <div>
-                                <button type="submit">Upload</button>
+                                <button type="submit" name="upload_files" value="1">Upload</button>
                             </div>
                         </form>
                     </div>
