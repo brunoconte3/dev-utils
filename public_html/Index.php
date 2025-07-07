@@ -37,30 +37,102 @@ require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPAR
                 <div>
                     <?php
                     echo '<p>Aqui vem os seus testes!</p>';
-                    $array = [
-                        'cpfOuCnpj' => '04764334879',
-                        'nomePais' => 'Brasil',
-                        'dadosEmpresa' => ['empresa' => 'cooper'],
-                    ];
-                    $rules = [
-                        'cpfOuCnpj' => 'identifierOrCompany',
-                        'nomePais' => 'required|alpha',
-                        'dadosEmpresa' => 'required|array',
-                    ];
-                    $validator = new Validator();
-                    $validator->set($array, $rules);
+                    
+                    // Processar dados do formulário se enviado
+                    if ($_SERVER['REQUEST_METHOD'] === 'POST' && array_key_exists('testar_validacao', $_POST)) {
+                        $array = [
+                            'cpfOuCnpj' => $_POST['cpfOuCnpj'] ?? '',
+                            'nomePais' => $_POST['nomePais'] ?? '',
+                            'dadosEmpresa' => $_POST['dadosEmpresa'] ?? '',
+                        ];
+                        $rules = [
+                            'cpfOuCnpj' => 'identifierOrCompany',
+                            'nomePais' => 'required|alpha|min:3|max:30',
+                            'dadosEmpresa' => 'required|alpha|min:3|max:80',
+                        ];
+                        $validator = new Validator();
+                        $validator->set($array, $rules);
+                    }
                     ?>
-                    <pre>
+                    
+                    
+                    <!-- Formulário para testar validações -->
+                    <div class="item-section-class">
+                        <h3>Teste de Validação de Dados</h3>
+                        <form method="POST">
+                            <div>
+                                <label for="cpfOuCnpj">CPF ou CNPJ:</label>
+                                <input type="text" name="cpfOuCnpj" id="cpfOuCnpj" placeholder="Ex: 04764334879 ou 39.678.379/0001-29" 
+                                       value="<?php echo $_POST['cpfOuCnpj'] ?? ''; ?>">
+                                <small>Digite um CPF ou CNPJ válido (com ou sem máscara)</small>
+                            </div>
+                            
+                            <div>
+                                <label for="nomePais">Nome do País:</label>
+                                <input type="text" name="nomePais" id="nomePais" placeholder="Ex: Brasil" 
+                                       value="<?php echo $_POST['nomePais'] ?? ''; ?>">
+                                <small>Digite apenas letras e espaços (3-30 caracteres)</small>
+                            </div>
+                            
+                            <div>
+                                <label for="dadosEmpresa">Nome da Empresa:</label>
+                                <input type="text" name="dadosEmpresa" id="dadosEmpresa" placeholder="Ex: cooper" 
+                                       value="<?php echo $_POST['dadosEmpresa'] ?? ''; ?>">
+                                <small>Digite o nome da empresa (3-80 caracteres)</small>
+                            </div>
+                            
+                            <div>
+                                <button type="submit" name="testar_validacao">Testar Validação</button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <!-- Resultado da validação  -->
+                    <?php if (isset($validator)): ?>
                         <?php
                         if (empty($validator->getErros())) {
-                            echo '<p style="background-color:green;">Sucesso! dados válidos!</p>';
+                            echo '<p style="background-color:green;color:white;">Sucesso! dados válidos!</p>';
                         } else {
-                            echo '<p style="background-color:red;">Revise a entrada!<pre></p>';
+                            echo '<p style="background-color:red;color:white;">Revise a entrada&#8628;</p>';
+                            echo '<pre style="background-color: #f8d7da; font-family: math;padding: 1rem;color: #510651; border:1px solid #f5c6cb;">';
                             print_r($validator->getErros());
+                            echo '</pre>';
                         }
                         ?>
+                    <?php endif; ?>
+                    
                     <hr />
-                    </pre>
+                    
+                    <!-- Exemplo hardcoded (old) -->
+                    <!--
+                    <div class="item-section-class">
+                        <h4>Exemplo:</h4>
+                        <?php
+                        $array = [
+                            'cpfOuCnpj' => '04764334879',
+                            'nomePais' => 'Brasil',
+                            'dadosEmpresa' => ['empresa' => 'cooper'],
+                        ];
+                        $rules = [
+                            'cpfOuCnpj' => 'identifierOrCompany',
+                            'nomePais' => 'required|alpha',
+                            'dadosEmpresa' => 'required|array',
+                        ];
+                        $validator = new Validator();
+                        $validator->set($array, $rules);
+                        ?>
+                        <pre>
+                            <?php
+                            if (empty($validator->getErros())) {
+                                echo '<p style="background-color:green;">Sucesso! dados válidos!</p>';
+                            } else {
+                                echo '<p style="background-color:red;">Revise a entrada!</p>';
+                                print_r($validator->getErros());
+                            }
+                            ?>
+                        </pre>
+                    </div>
+                    -->
                 </div>
                 <div>
                     <?php
@@ -92,6 +164,7 @@ require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPAR
                         print_r(Format::restructFileArray($fileUploadMultiple));
                     }
                         ?>
+                    <h3>Upload de Arquivos</h3>
                     <div id="bd-form-upload">
                         <form method="POST" enctype="multipart/form-data">
                             <!-- Upload de um único arquivo. -->
