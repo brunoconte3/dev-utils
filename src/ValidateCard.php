@@ -5,7 +5,7 @@ namespace DevUtils;
 use DevUtils\DependencyInjection\TraitRuleCart;
 use DevUtils\Format;
 
-class ValidateCart
+class ValidateCard
 {
     use TraitRuleCart;
 
@@ -19,49 +19,48 @@ class ValidateCart
 
     public static function onlyNumbers(string $number): string
     {
-        $numberOnlyDigits = preg_replace('/\D/', '', $number);
-        return $numberOnlyDigits;
+        return Format::onlyNumbers($number);
     }
 
     public static function isVisa(string $number): bool
     {
-        $numberOnlyDigits = preg_replace('/\D/', '', $number);
+        $numberOnlyDigits = Format::onlyNumbers($number);
         return self::ruleVisa($numberOnlyDigits);
     }
 
     public static function isMastercard(string $number): bool
     {
-        $numberOnlyDigits = preg_replace('/\D/', '', $number);
+        $numberOnlyDigits = Format::onlyNumbers($number);
         return self::ruleMastercard($numberOnlyDigits);
     }
 
     public static function isElo(string $number): bool
     {
-        $numberOnlyDigits = preg_replace('/\D/', '', $number);
+        $numberOnlyDigits = Format::onlyNumbers($number);
         return self::ruleElo($numberOnlyDigits);
     }
 
     public static function isHipercard(string $number): bool
     {
-        $numberOnlyDigits = preg_replace('/\D/', '', $number);
+        $numberOnlyDigits = Format::onlyNumbers($number);
         return self::ruleHipercard($numberOnlyDigits);
     }
 
     public static function isAmex(string $number): bool
     {
-        $numberOnlyDigits = preg_replace('/\D/', '', $number);
+        $numberOnlyDigits = Format::onlyNumbers($number);
         return self::ruleAmex($numberOnlyDigits);
     }
 
     public static function isValidCvv(string $cvv): bool
     {
-        $cvvOnlyDigits = preg_replace('/\D/', '', $cvv);
+        $cvvOnlyDigits = Format::onlyNumbers($cvv);
         return self::ruleCvv($cvvOnlyDigits);
     }
 
     public static function luhn(string $number): bool
     {
-        $numberOnlyDigits = preg_replace('/\D/', '', $number);
+        $numberOnlyDigits = Format::onlyNumbers($number);
         $sum = 0;
         $alt = false;
         for ($i = strlen($numberOnlyDigits) - 1; $i >= 0; $i--) {
@@ -80,30 +79,12 @@ class ValidateCart
 
     public static function getBrand(string $number): string
     {
-        $numberOnlyDigits = preg_replace('/\D/', '', $number);
+        $numberOnlyDigits = Format::onlyNumbers($number);
         foreach (self::CARD_BRANDS as $brand => $pattern) {
             if (preg_match($pattern, $numberOnlyDigits)) {
                 return $brand;
             }
         }
         return 'Desconhecida';
-    }
-
-    public static function maskCard(string $number, string $mask = '#### #### #### ####'): string
-    {
-        $number = self::onlyNumbers($number);
-        return Format::mask($mask, $number);
-    }
-
-    public static function MaskCardHidden(string $number, int $start = 4, int $end = 4, string $char = '*'): string
-    {
-        $numberOnlyDigits = preg_replace('/\D/', '', $number);
-        return Format::maskStringHidden($numberOnlyDigits, $start, $end, $char);
-    }
-
-    public static function MarkCardsecure(string $number): string
-    {
-        $numberOnlyDigits = preg_replace('/\D/', '', $number);
-        return Format::maskStringHidden($numberOnlyDigits, 0, strlen($numberOnlyDigits) - 4, '*');
     }
 } 

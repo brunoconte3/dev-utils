@@ -192,13 +192,25 @@ class Format extends FormatAux
         }, $array);
     }
 
-    public static function mask(string $mask, string $str): string
+    // Aplica máscara customizada ou por tipo (preset) à string
+    public static function mask(string $mask, string $str, ?string $type = null): string
     {
+        $types = [
+            'card' => '#### #### #### ####',
+            'cpf' => '###.###.###-##',
+            'cnpj' => '##.###.###/####-##',
+            // outros tipos podem ser adicionados aqui
+        ];
+
+        if ($type && isset($types[$type])) {
+            $mask = $types[$type];
+        }
+
         $str = str_replace(' ', '', $str);
         for ($i = 0; $i < strlen($str); $i++) {
             $mask[strpos($mask, "#")] = $str[$i];
         }
-        return gettype($mask) === 'string' ? strval($mask) : '';
+        return $mask;
     }
 
     public static function onlyNumbers(string $str): string
