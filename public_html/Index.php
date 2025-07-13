@@ -9,7 +9,7 @@ use DevUtils\{
     Format,
 };
 use DevUtils\conf\Conf;
-use DevUtils\ValidateCart;
+use DevUtils\ValidateCard;
 
 require_once '../conf/Conf.php';
 require_once 'AutoInstall.php';
@@ -238,20 +238,20 @@ require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPAR
                             $cvv = $_POST['cartao_cvv'] ?? '';
                             $bandeira = null;
                             $erros = [];
-                            if (ValidateCart::isVisa($numero)) {
+                            if (ValidateCard::isVisa($numero)) {
                                 $bandeira = 'Visa';
-                            } elseif (ValidateCart::isMastercard($numero)) {
+                            } elseif (ValidateCard::isMastercard($numero)) {
                                 $bandeira = 'Mastercard';
-                            } elseif (ValidateCart::isElo($numero)) {
+                            } elseif (ValidateCard::isElo($numero)) {
                                 $bandeira = 'Elo';
-                            } elseif (ValidateCart::isHipercard($numero)) {
+                            } elseif (ValidateCard::isHipercard($numero)) {
                                 $bandeira = 'Hipercard';
-                            } elseif (ValidateCart::isAmex($numero)) {
+                            } elseif (ValidateCard::isAmex($numero)) {
                                 $bandeira = 'Amex';
                             } else {
                                 $erros['cartao_numero'] = 'Bandeira não reconhecida ou número inválido!';
                             }
-                            if (!ValidateCart::isValidCvv($cvv)) {
+                            if (!ValidateCard::isValidCvv($cvv)) {
                                 $erros['cartao_cvv'] = 'CVV inválido!';
                             }
                             echo '<hr><h4>Resultado:</h4>';
