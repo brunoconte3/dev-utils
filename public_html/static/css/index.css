@@ -103,3 +103,12 @@ div#bd-form-upload>form>div>input[type='file'] {
     border-radius: 4px;
     margin: 10px 0;
 }
+
+.alert-warning {
+    background-color: #fff3cd;
+    color: #856404;
+    padding: 8px 12px;
+    border: 1px solid #ffeaa7;
+    border-radius: 4px;
+    margin: 10px 0;
+}

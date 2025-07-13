@@ -91,14 +91,17 @@ require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPAR
                     <!-- Resultado da validação -->
                     <?php if (isset($validator)): ?>
                         <?php
-                        if (empty($validator->getErros())) {
-                            echo '<p class="alert-success">Sucesso! dados válidos!</p>';
-                        } else {
-                            echo '<p class="alert-error">Revise a entrada&#8628;</p>';
-                            echo '<pre class="error-details">';
-                            print_r($validator->getErros());
-                            echo '</pre>';
+                        function showResult($validator, $successMsg = 'Sucesso! dados válidos!') {
+                            if (empty($validator->getErros())) {
+                                echo '<p class="alert-success">' . $successMsg . '</p>';
+                            } else {
+                                echo '<p class="alert-error">Revise a entrada</p>';
+                                echo '<pre class="error-details">';
+                                print_r($validator->getErros());
+                                echo '</pre>';
+                            }
                         }
+                        showResult($validator);
                         ?>
                     <?php endif; ?>
                     
@@ -167,30 +170,23 @@ require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPAR
                             
                         <!-- Resultado da validação de upload -->
                         <?php
-                        if (empty($validator->getErros()) && (!empty($fileUploadSingle['name'][0]) || !empty($fileUploadMultiple['name'][0]))) {
-                            echo '<p class="alert-success">✓ Sucesso! Arquivos válidos!</p>';
+                        if (empty($fileUploadSingle['name'][0]) && empty($fileUploadMultiple['name'][0])) {
+                            echo '<p class="alert-warning">⚠ Nenhum arquivo foi enviado!</p>';
                         } else {
-                            if (empty($fileUploadSingle['name'][0]) && empty($fileUploadMultiple['name'][0])) {
-                                echo '<p class="alert-error">⚠ Nenhum arquivo foi enviado!</p>';
-                            } else {
-                                echo '<p class="alert-error">⚠ Erros no upload!</p>';
-                                echo '<pre class="error-details">';
-                                print_r($validator->getErros());
-                                echo '</pre>';
-                            }
+                            showResult($validator, '✓ Sucesso! Arquivos válidos!');
                         }
                         ?>
                             
                         <hr/>
                         <h4>Dados dos arquivos enviados:</h4>
-                        <pre class="<?php echo (empty($validator->getErros()) && (!empty($fileUploadSingle['name'][0]) || !empty($fileUploadMultiple['name'][0]))) ? 'success-details' : 'error-details'; ?>">
+                        <pre style="<?php echo (empty($validator->getErros()) && (!empty($fileUploadSingle['name'][0]) || !empty($fileUploadMultiple['name'][0]))) ? 'background-color: #d4edda; font-family: math;padding: 1rem;color: #510651; border:1px solid #c3e6cb;' : 'background-color: #f8d7da; font-family: math;padding: 1rem;color: #8B008B; border:1px solid #f5c6cb;'; ?> padding: 15px; border-radius: 4px;">
                             <?php
                             print_r(Format::restructFileArray($fileUploadSingle));
                             print_r(Format::restructFileArray($fileUploadMultiple));
                             ?>
                         </pre>
-                        <?php                         } catch (Exception $e) {
-                            echo '<p class="alert-error">ERRO: ' . $e->getMessage() . '</p>';
+                        <?php } catch (Exception $e) {
+                            echo '<p style="background-color:red;color:white;">ERRO: ' . $e->getMessage() . '</p>';
                         } ?>
                     <?php } ?>
                     <div id="bd-form-upload">
@@ -226,7 +222,7 @@ require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPAR
                             <div>
                                 <label for="cartao_cvv">CVV:</label>
                                 <input type="text" name="cartao_cvv" id="cartao_cvv" placeholder="Ex: 123" value="<?php echo $_POST['cartao_cvv'] ?? ''; ?>">
-                                <small>Digite um CVV válido (3 dígitos)</small>
+                                <small>Digite um CVV válido (3 dígitos para Visa/Mastercard/Elo/Hipercard, 4 dígitos para Amex)</small>
                             </div>
                             <div>
                                 <button type="submit" name="testar_cartao">Testar Cartão</button>
@@ -251,22 +247,25 @@ require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPAR
                             } else {
                                 $erros['cartao_numero'] = 'Bandeira não reconhecida ou número inválido!';
                             }
-                            if (!ValidateCard::isValidCvv($cvv)) {
+                            if (!ValidateCard::isValidCvv($cvv, $bandeira)) {
                                 $erros['cartao_cvv'] = 'CVV inválido!';
                             }
                             echo '<hr><h4>Resultado:</h4>';
-                            if (empty($erros)) {
-                                echo '<p class="alert-success">Sucesso! dados válidos!</p>';
-                                echo '<pre class="success-details">';
-                                echo 'cartao_numero: Cartão ' . $bandeira . ' válido\n';
-                                echo 'cartao_cvv: CVV válido!';
-                                echo '</pre>';
-                            } else {
-                                echo '<p class="alert-error">Revise a entrada&#8628;</p>';
-                                echo '<pre class="error-details">';
-                                print_r($erros);
-                                echo '</pre>';
+                            function showCardResult($erros, $bandeira) {
+                                if (empty($erros)) {
+                                    echo '<p class="alert-success">Sucesso! dados válidos!</p>';
+                                    echo '<pre class="success-details">';
+                                    echo 'cartao_numero: Cartão ' . $bandeira . ' válido' . PHP_EOL;
+                                    echo 'cartao_cvv: CVV válido!';
+                                    echo '</pre>';
+                                } else {
+                                    echo '<p class="alert-error">Revise a entrada</p>';
+                                    echo '<pre class="error-details">';
+                                    print_r($erros);
+                                    echo '</pre>';
+                                }
                             }
+                            showCardResult($erros, $bandeira);
                         }
                         ?>
                     </div>
