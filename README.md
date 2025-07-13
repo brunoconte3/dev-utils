@@ -220,7 +220,14 @@ Format::identifierOrCompany('30720870089'); //CPF/CNPJ Brazil ==> 307.208.700-89
 Format::falseToNull(false); //Return ==> null
 Format::lower('CArrO'); //lowercase text ==> carro - the 2nd parameter chooses the charset, UTF-8 default
 //[Apply any type of Mask, accepts space, points and others]
-Format::mask('#### #### #### ####', '1234567890123456'); //Mask ==> 1234 5678 9012 3456
+Format::mask('#### #### #### ####', '1234567890123456'); // Mask ==> 1234 5678 9012 3456
+// Or use Format::mask with type parameter (presets), e.g for documents:
+  - Format::mask('12345678901', null, 'cpf');      // ==> 123.456.789-01
+  - Format::mask('12345678000123', null, 'cnpj');  // ==> 12.345.678/0001-23
+// For cards
+  - Format::mask('4111111111111111', null, 'card');        // ==> 4111 1111 1111 1111
+  - Format::mask('4111111111111111', null, 'card-hidden'); // ==> ************1111
+
 Format::maskStringHidden('065.775.009.96', 3, 4, '*'); //Mask of string ==> 065.***.009.96
 Format::onlyNumbers('548Abc87@'); //Returns only numbers ==> 54887;
 Format::onlyLettersNumbers('548Abc87@'); //Returns only letters and numbers ==> 548Abc87;
@@ -439,6 +446,12 @@ ValidateCnpj::validateCnpj('57.169.078/0001-51'); //Returns boolean, example tru
 use DevUtils\validateCpf;
 ValidateCpf::validateCpf('257.877.760-89'); //Returns boolean, example true [Can pass with mask]
 
+use DevUtils\ValidateCard;
+ValidateCard::getBrand('4111111111111111'); //Returns 'Visa'
+ValidateCard::isVisa('4111111111111111'); //Returns true
+ValidateCard::luhn('4111111111111111'); //Returns true if card has a valid structure
+ValidateCard::isValidCvv('123'); //Returns true
+
 use DevUtils\ValidateDate;
 //Examples return true
 ValidateDate::validateDateBrazil('29/04/2021'); //Return boolean [Format dd/mm/yyyy]
@@ -454,6 +467,40 @@ ValidatePhone::validate('44999999999'); //Return boolean [[You can wear a mask]
 use DevUtils\ValidateString;
 ValidateString::minWords('Bruno Conte', 2) //Return boolean
 ValidateString::maxWords('Bruno Conte', 2) //Return boolean
+```
+
+## Card Validation (ValidateCard)
+
+```php
+<?php
+
+require 'vendor/autoload.php';
+
+use DevUtils\ValidateCard;
+
+// Check if a card is Visa
+ValidateCard::isVisa('4111111111111111'); // Returns true
+
+// Check if a card is Mastercard
+ValidateCard::isMastercard('5555555555554444'); // Returns true
+
+// Check if a card is Elo
+ValidateCard::isElo('4011780000000000'); // Returns true
+
+// Check if a card is Hipercard
+ValidateCard::isHipercard('6062825624254001'); // Returns true
+
+// Check if a card is American Express (Amex)
+ValidateCard::isAmex('371449635398431'); // Returns true
+
+// Validate CVV (3 or 4 digits)
+ValidateCard::isValidCvv('123'); // Returns true
+
+// Detect card brand automatically
+ValidateCard::getBrand('4111111111111111'); // Returns 'Visa'
+
+// Validate card number using Luhn algorithm
+ValidateCard::luhn('4111111111111111'); // Returns true
 ```
 
 ## Manipulate Arrays
