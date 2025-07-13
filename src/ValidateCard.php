@@ -52,10 +52,21 @@ class ValidateCard
         return self::ruleAmex($numberOnlyDigits);
     }
 
-    public static function isValidCvv(string $cvv): bool
+    public static function isValidCvv(string $cvv, ?string $brand = null): bool
     {
         $cvvOnlyDigits = Format::onlyNumbers($cvv);
-        return self::ruleCvv($cvvOnlyDigits);
+        
+        // If brand is specified, validate according to it
+        if ($brand !== null) {
+            if ($brand === 'Amex') {
+                return (bool)preg_match('/^\d{4}$/', $cvvOnlyDigits);
+            } else {
+                return (bool)preg_match('/^\d{3}$/', $cvvOnlyDigits);
+            }
+        }
+        
+        // Default validation: accepts 3 or 4 digits (for compatibility)
+        return (bool)preg_match('/^\d{3,4}$/', $cvvOnlyDigits);
     }
 
     public static function luhn(string $number): bool

@@ -206,7 +206,10 @@ class Format extends FormatAux
 
         $str = str_replace(' ', '', $str);
         for ($i = 0; $i < strlen($str); $i++) {
-            $mask[strpos($mask, "#")] = $str[$i];
+            $pos = strpos($mask, "#");
+            if ($pos !== false) {
+                $mask[$pos] = $str[$i];
+            }
         }
         return $mask;
     }

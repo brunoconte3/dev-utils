@@ -48,6 +48,8 @@ trait TraitRuleCard
     protected static function ruleCvv(string $cvv): bool
     {
         $cvvOnlyDigits = Format::onlyNumbers($cvv);
-        return (bool)preg_match('/^\d{3,4}$/', $cvvOnlyDigits);
+        // CVV must have exactly 3 digits for most cards
+        // or 4 digits for American Express
+        return (bool)preg_match('/^\d{3}$/', $cvvOnlyDigits);
     }
 } 
