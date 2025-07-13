@@ -2,12 +2,12 @@
 
 namespace DevUtils;
 
-use DevUtils\DependencyInjection\TraitRuleCart;
+use DevUtils\DependencyInjection\TraitRuleCard;
 use DevUtils\Format;
 
 class ValidateCard
 {
-    use TraitRuleCart;
+    use TraitRuleCard;
 
     protected const CARD_BRANDS = [
         'Elo' => '/^(401178|401179|431274|438935|451416|457393|457631|457632|504175|506699|5067|509|627780|636297|636368|650|651|655)/',
