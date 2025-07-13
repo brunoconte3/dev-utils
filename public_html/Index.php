@@ -92,10 +92,10 @@ require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPAR
                     <?php if (isset($validator)): ?>
                         <?php
                         if (empty($validator->getErros())) {
-                            echo '<p style="background-color:green;color:white;">Sucesso! dados válidos!</p>';
+                            echo '<p class="alert-success">Sucesso! dados válidos!</p>';
                         } else {
-                            echo '<p style="background-color:red;color:white;">Revise a entrada&#8628;</p>';
-                            echo '<pre style="background-color: #f8d7da; font-family: math;padding: 1rem;color: #510651; border:1px solid #f5c6cb;">';
+                            echo '<p class="alert-error">Revise a entrada&#8628;</p>';
+                            echo '<pre class="error-details">';
                             print_r($validator->getErros());
                             echo '</pre>';
                         }
@@ -168,13 +168,13 @@ require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPAR
                         <!-- Resultado da validação de upload -->
                         <?php
                         if (empty($validator->getErros()) && (!empty($fileUploadSingle['name'][0]) || !empty($fileUploadMultiple['name'][0]))) {
-                            echo '<p style="background-color:green;color:white;">✓ Sucesso! Arquivos válidos!</p>';
+                            echo '<p class="alert-success">✓ Sucesso! Arquivos válidos!</p>';
                         } else {
                             if (empty($fileUploadSingle['name'][0]) && empty($fileUploadMultiple['name'][0])) {
-                                echo '<p style="background-color:red;color:white;">⚠ Nenhum arquivo foi enviado!</p>';
+                                echo '<p class="alert-error">⚠ Nenhum arquivo foi enviado!</p>';
                             } else {
-                                echo '<p style="background-color:red;color:white;">⚠ Erros no upload!</p>';
-                                echo '<pre style="background-color: #f8d7da; font-family: math;padding: 1rem;color: #510651; border:1px solid #f5c6cb;">';
+                                echo '<p class="alert-error">⚠ Erros no upload!</p>';
+                                echo '<pre class="error-details">';
                                 print_r($validator->getErros());
                                 echo '</pre>';
                             }
@@ -183,14 +183,14 @@ require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPAR
                             
                         <hr/>
                         <h4>Dados dos arquivos enviados:</h4>
-                        <pre style="<?php echo (empty($validator->getErros()) && (!empty($fileUploadSingle['name'][0]) || !empty($fileUploadMultiple['name'][0]))) ? 'background-color: #d4edda; font-family: math;padding: 1rem;color: #510651; border:1px solid #c3e6cb;' : 'background-color: #f8d7da; font-family: math;padding: 1rem;color: #8B008B; border:1px solid #f5c6cb;'; ?> padding: 15px; border-radius: 4px;">
+                        <pre class="<?php echo (empty($validator->getErros()) && (!empty($fileUploadSingle['name'][0]) || !empty($fileUploadMultiple['name'][0]))) ? 'success-details' : 'error-details'; ?>">
                             <?php
                             print_r(Format::restructFileArray($fileUploadSingle));
                             print_r(Format::restructFileArray($fileUploadMultiple));
                             ?>
                         </pre>
-                        <?php } catch (Exception $e) {
-                            echo '<p style="background-color:red;color:white;">ERRO: ' . $e->getMessage() . '</p>';
+                        <?php                         } catch (Exception $e) {
+                            echo '<p class="alert-error">ERRO: ' . $e->getMessage() . '</p>';
                         } ?>
                     <?php } ?>
                     <div id="bd-form-upload">
@@ -256,14 +256,14 @@ require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPAR
                             }
                             echo '<hr><h4>Resultado:</h4>';
                             if (empty($erros)) {
-                                echo '<p style="background-color:green;color:white;">Sucesso! dados válidos!</p>';
-                                echo '<pre style="background-color: #d4edda; font-family: math;padding: 1rem;color: #510651; border:1px solid #c3e6cb;">';
+                                echo '<p class="alert-success">Sucesso! dados válidos!</p>';
+                                echo '<pre class="success-details">';
                                 echo 'cartao_numero: Cartão ' . $bandeira . ' válido\n';
                                 echo 'cartao_cvv: CVV válido!';
                                 echo '</pre>';
                             } else {
-                                echo '<p style="background-color:red;color:white;">Revise a entrada&#8628;</p>';
-                                echo '<pre style="background-color: #f8d7da; font-family: math;padding: 1rem;color: #510651; border:1px solid #f5c6cb;">';
+                                echo '<p class="alert-error">Revise a entrada&#8628;</p>';
+                                echo '<pre class="error-details">';
                                 print_r($erros);
                                 echo '</pre>';
                             }

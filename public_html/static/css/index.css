@@ -67,3 +67,39 @@ div#bd-form-upload>form>div>input[type='file'] {
     width: 100%;
     border: 1px solid #ccc;
 }
+
+.alert-success {
+    background-color: green;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 4px;
+    margin: 10px 0;
+}
+
+.alert-error {
+    background-color: red;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 4px;
+    margin: 10px 0;
+}
+
+.error-details {
+    background-color: #f8d7da;
+    font-family: math, monospace, Consolas, 'Courier New', Courier;
+    padding: 1rem 15px;
+    color: #510651;
+    border: 1px solid #f5c6cb;
+    border-radius: 4px;
+    margin: 10px 0;
+}
+
+.success-details {
+    background-color: #d4edda;
+    font-family: math, monospace, Consolas, 'Courier New', Courier;
+    padding: 1rem 15px;
+    color: #510651;
+    border: 1px solid #c3e6cb;
+    border-radius: 4px;
+    margin: 10px 0;
+}

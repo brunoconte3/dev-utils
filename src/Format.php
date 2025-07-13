@@ -192,14 +192,12 @@ class Format extends FormatAux
         }, $array);
     }
 
-    // Aplica máscara customizada ou por tipo (preset) à string
     public static function mask(string $mask, string $str, ?string $type = null): string
     {
         $types = [
             'card' => '#### #### #### ####',
             'cpf' => '###.###.###-##',
             'cnpj' => '##.###.###/####-##',
-            // outros tipos podem ser adicionados aqui
         ];
 
         if ($type && isset($types[$type])) {
