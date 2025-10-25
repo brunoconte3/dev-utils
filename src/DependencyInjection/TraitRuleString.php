@@ -65,10 +65,7 @@ trait TraitRuleString
         ?string $value = '',
         ?string $message = '',
     ): void {
-        if (is_numeric($value) && strlen($value) === 14) {
-            $value = Format::mask('##.###.###/####-##', $value);
-        }
-        if (empty($value) || !ValidateCnpj::validateCnpj($value, $rule)) {
+        if (empty($value)  || !ValidateCnpj::validateCnpj($value, $rule)) {
             $this->errors[$field] = !empty($message) ?
                 $message : "O campo $field é inválido!";
         }
@@ -155,7 +152,7 @@ trait TraitRuleString
         if (strlen($value) === 11) {
             $value = Format::mask('###.###.###-##', $value);
         }
-        if (is_numeric($value) && strlen($value) === 14) {
+        if (strlen($value) === 14 && ctype_digit(substr($value, 12, 2))) {
             $value = Format::mask('##.###.###/####-##', $value);
         }
         if (strlen($value) === 14 && !ValidateCpf::validateCpf($value)) {
