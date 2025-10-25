@@ -20,7 +20,7 @@ composer require brunoconte3/dev-utils
 Or add to your `composer.json`:
 
 ```json
-"brunoconte3/dev-utils": "2.8.0"
+"brunoconte3/dev-utils": "2.9.0"
 ```
 
 ## Data Validation Example
@@ -209,7 +209,7 @@ require 'vendor/autoload.php';
 
 use DevUtils\Format;
 
-Format::companyIdentification('39678379000129'); //CNPJ ==> 39.678.379/0001-29
+Format::companyIdentification('A1B2C3D45E6F59'); //CNPJ ==> A1.B2C.3D4/5E6F-59
 Format::convertTimestampBrazilToAmerican('15/04/2021 19:50:25'); //Convert Timestamp Brazil to American format
 Format::currency('113', 'R$ '); //Default currency BR ==> 123.00 - the 2nd parameter chooses the Currency label
 Format::currencyUsd('1123.45'); //Default currency USD ==> 1,123.45 - the 2nd parameter chooses the Currency label
@@ -434,10 +434,10 @@ Compare::compareStringFrom('sistema', 'sistema/teste', 0, 7);
 require 'vendor/autoload.php';
 
 use DevUtils\ValidateCnpj;
-ValidateCnpj::validateCnpj('57.169.078/0001-51'); //Returns boolean, example true [Can pass with mask]
+ValidateCnpj::validateCnpj('A1.B2C.3D4/5E6F-59'); //Returns boolean, example true [Can pass without mask]
 
 use DevUtils\validateCpf;
-ValidateCpf::validateCpf('257.877.760-89'); //Returns boolean, example true [Can pass with mask]
+ValidateCpf::validateCpf('257.877.760-89'); //Returns boolean, example true [Can pass without mask]
 
 use DevUtils\ValidateDate;
 //Examples return true
