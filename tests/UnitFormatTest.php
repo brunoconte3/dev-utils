@@ -18,6 +18,7 @@ class UnitFormatTest extends TestCase
     public function testCompanyIdentification(): void
     {
         self::assertEquals('76.027.484/0001-24', Format::companyIdentification('76027484000124'));
+        self::assertEquals('BR.ASI.L20/26AA-64', Format::companyIdentification('BRASIL2026AA64'));
     }
 
     public function testConvertTypes(): void
@@ -83,6 +84,7 @@ class UnitFormatTest extends TestCase
     {
         self::assertEquals('307.208.700-89', Format::identifierOrCompany('30720870089'));
         self::assertEquals('12.456.571/0001-14', Format::identifierOrCompany('12456571000114'));
+        self::assertEquals('A1.B2C.3D4/5E6F-59', Format::identifierOrCompany('A1B2C3D45E6F59'));
     }
 
     public function testTelephone(): void
