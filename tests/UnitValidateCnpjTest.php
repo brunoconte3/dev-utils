@@ -12,8 +12,12 @@ final class UnitValidateCnpjTest extends TestCase
     private static function charValue(string $ch): int
     {
         $n = ord($ch);
-        if ($n >= 48 && $n <= 57) return $n - 48;
-        if ($n >= 65 && $n <= 90) return $n - 48;
+        if ($n >= 48 && $n <= 57) {
+            return $n - 48;
+        }
+        if ($n >= 65 && $n <= 90) {
+            return $n - 48;
+        }
         return -1;
     }
 
@@ -21,7 +25,9 @@ final class UnitValidateCnpjTest extends TestCase
     {
         $w1 = [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2];
         $sum = 0;
-        for ($i = 0; $i < 12; $i++) $sum += self::charValue($root[$i]) * $w1[$i];
+        for ($i = 0; $i < 12; $i++) {
+            $sum += self::charValue($root[$i]) * $w1[$i];
+        }
         $r1 = $sum % 11;
         $dv1 = ($r1 < 2) ? 0 : 11 - $r1;
 

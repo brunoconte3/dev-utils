@@ -216,7 +216,7 @@ class Rules
     }
 
     protected function validateRuleField(
-        mixed $field,
+        string|int $field,
         mixed $value,
         mixed $rules,
         bool $valid = false,
