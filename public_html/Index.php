@@ -40,10 +40,10 @@ require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPAR
 
                     $validator = new Validator();
 
-                    $cnpj = Format::companyIdentification('A1B2C3D45E6F59');
-                    echo '<br> Teste dados válidos identifierOrCompany => ' . $cnpj;
+                    $cpfOuCnpj = Format::identifierOrCompany('DEVUTILS123404');
+                    echo '<br> Teste dados válidos identifierOrCompany => ' . $cpfOuCnpj;
                     $array = [
-                        'cpfOuCnpj' => $cnpj,
+                        'cpfOuCnpj' => $cpfOuCnpj,
                         'nomeCidade' => 'Maringá',
                         'dadosEmpresa' => ['empresa' => 'CooperTec'],
                     ];
