@@ -149,21 +149,30 @@ trait TraitRuleString
         string $value = '',
         ?string $message = '',
     ): void {
-        if (strlen($value) === 11) {
-            $value = Format::mask('###.###.###-##', $value);
+        $value = strtoupper(strval(preg_replace('/[^A-Z0-9]/', '', $value)));
+        $errorMessage = ($message !== null && $message !== '') ? $message : "O campo $field é inválido!";
+
+        if ($value === '') {
+            $this->errors[$field] = $errorMessage;
+            return;
         }
+
+        if (ctype_digit($value) && strlen($value) === 11) {
+            $cpfMasked = Format::mask('###.###.###-##', $value);
+            if (!ValidateCpf::validateCpf($cpfMasked)) {
+                $this->errors[$field] = $errorMessage;
+            }
+            return;
+        }
+
         if (strlen($value) === 14 && ctype_digit(substr($value, 12, 2))) {
-            $value = Format::mask('##.###.###/####-##', $value);
+            if (!ValidateCnpj::validateCnpj($value, $rule)) {
+                $this->errors[$field] = $errorMessage;
+            }
+            return;
         }
-        if (strlen($value) === 14 && !ValidateCpf::validateCpf($value)) {
-            $this->errors[$field] = !empty($message) ? $message : "O campo $field é inválido!";
-        }
-        if (strlen($value) === 18 && !ValidateCnpj::validateCnpj($value, $rule)) {
-            $this->errors[$field] = !empty($message) ? $message : "O campo $field é inválido!";
-        }
-        if (!in_array(strlen($value), [11, 14, 18])) {
-            $this->errors[$field] = !empty($message) ? $message : "O campo $field é inválido!";
-        }
+
+        $this->errors[$field] = $errorMessage;
     }
 
     protected function validateIp(string $field = '', string $value = '', ?string $message = ''): void
