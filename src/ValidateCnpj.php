@@ -55,17 +55,23 @@ class ValidateCnpj
 
         for ($i = 0, $j = 5, $sum = 0; $i < 12; $i++) {
             $v = self::cnpjCharValue($cnpj[$i]);
-            if ($v < 0) return false;
+            if ($v < 0) {
+                return false;
+            }
             $sum += $v * $j;
             $j = ($j == 2) ? 9 : $j - 1;
         }
         $rest = $sum % 11;
         $dv1  = ($rest < 2) ? 0 : 11 - $rest;
-        if ((int)$cnpj[12] !== $dv1) return false;
+        if ((int)$cnpj[12] !== $dv1) {
+            return false;
+        }
 
         for ($i = 0, $j = 6, $sum = 0; $i < 13; $i++) {
             $v = ($i < 12) ? self::cnpjCharValue($cnpj[$i]) : $dv1;
-            if ($v < 0) return false;
+            if ($v < 0) {
+                return false;
+            }
             $sum += $v * $j;
             $j = ($j == 2) ? 9 : $j - 1;
         }
@@ -83,8 +89,12 @@ class ValidateCnpj
     private static function cnpjCharValue(string $ch): int
     {
         $o = ord($ch);
-        if ($o >= 48 && $o <= 57) return $o - 48;
-        if ($o >= 65 && $o <= 90) return $o - 48;
+        if ($o >= 48 && $o <= 57) {
+            return $o - 48;
+        }
+        if ($o >= 65 && $o <= 90) {
+            return $o - 48;
+        }
         return -1;
     }
 
