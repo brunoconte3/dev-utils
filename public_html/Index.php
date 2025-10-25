@@ -37,17 +37,21 @@ require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPAR
                 <div>
                     <?php
                     echo '<p>Aqui vem os seus testes!</p>';
+
+                    $validator = new Validator();
+
+                    $cnpj = Format::companyIdentification('A1B2C3D45E6F59');
+                    echo '<br> Teste dados válidos identifierOrCompany => ' . $cnpj;
                     $array = [
-                        'cpfOuCnpj' => '04764334879',
-                        'nomePais' => 'Brasil',
-                        'dadosEmpresa' => ['empresa' => 'cooper'],
+                        'cpfOuCnpj' => $cnpj,
+                        'nomeCidade' => 'Maringá',
+                        'dadosEmpresa' => ['empresa' => 'CooperTec'],
                     ];
                     $rules = [
                         'cpfOuCnpj' => 'identifierOrCompany',
-                        'nomePais' => 'required|alpha',
+                        'nomeCidade' => 'required|alpha',
                         'dadosEmpresa' => 'required|array',
                     ];
-                    $validator = new Validator();
                     $validator->set($array, $rules);
                     ?>
                     <pre>
