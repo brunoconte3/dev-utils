@@ -481,8 +481,8 @@ class UnitRuleTest extends TestCase
     public function testIdentifierOrCompany(): void
     {
         $array = [
-            'cpfOuCnpjerror' => '96.284.092.0001/59',
-            'cpfOuCnpjValid' => '96.284.092/0001-58',
+            'cpfOuCnpjerror' => '9E.2A4.092.0001/5A',
+            'cpfOuCnpjValid' => 'DE.VUT.ILS/123X-49',
             'cpfOuCnpjExceptionError' => '12.123.456/0007-12',
             'cpfOuCnpjExceptionValid' => '00.000.000/0000-00',
             'cpfOuCnpjInvalid' => '0966894790',

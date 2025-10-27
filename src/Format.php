@@ -76,9 +76,22 @@ class Format extends FormatAux
 
     public static function companyIdentification(string $cnpj): string
     {
-        parent::validateForFormatting('companyIdentification', 14, $cnpj);
-        $retorno = preg_replace("/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/", "\$1.\$2.\$3/\$4-\$5", $cnpj);
-        return $retorno ?? '';
+        $companyIdentification = strtoupper(strval(preg_replace('/[^A-Z0-9]/', '', $cnpj)));
+
+        if (!preg_match('/^[A-Z0-9]{12}\d{2}$/', $companyIdentification)) {
+            throw new InvalidArgumentException(
+                'companyIdentification precisa conter 12 caracteres alfanuméricos seguidos de 2 dígitos!'
+            );
+        }
+
+        return sprintf(
+            '%s.%s.%s/%s-%s',
+            substr($companyIdentification, 0, 2),
+            substr($companyIdentification, 2, 3),
+            substr($companyIdentification, 5, 3),
+            substr($companyIdentification, 8, 4),
+            substr($companyIdentification, 12, 2)
+        );
     }
 
     public static function identifier(string $cpf): string
