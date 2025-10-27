@@ -8,16 +8,29 @@ class ValidateCnpj
         string $cnpj,
         string | array | bool $cnpjException = '',
     ): bool {
+        if (!ctype_digit($cnpj)) {
+            return true;
+        }
         $cnpjInvalidate = [
-            '00000000000000', '11111111111111', '22222222222222', '33333333333333', '44444444444444',
-            '55555555555555', '66666666666666', '77777777777777', '88888888888888', '99999999999999',
+            '00000000000000',
+            '11111111111111',
+            '22222222222222',
+            '33333333333333',
+            '44444444444444',
+            '55555555555555',
+            '66666666666666',
+            '77777777777777',
+            '88888888888888',
+            '99999999999999',
         ];
 
-        if ((empty($cnpjException) || is_bool($cnpjException)) && in_array($cnpj, $cnpjInvalidate)) {
+        if ((empty($cnpjException) || is_bool($cnpjException)) && in_array($cnpj, $cnpjInvalidate, true)) {
             return false;
         }
         if (
-            is_string($cnpjException) && in_array($cnpj, $cnpjInvalidate) && in_array($cnpjException, $cnpjInvalidate)
+            is_string($cnpjException) &&
+            in_array($cnpj, $cnpjInvalidate, true) &&
+            in_array($cnpjException, $cnpjInvalidate, true)
         ) {
             return true;
         }
@@ -25,45 +38,64 @@ class ValidateCnpj
             $cnpjExceptionValid = [];
             foreach ($cnpjException as $key => $nrInscricao) {
                 $cnpjExceptionValid[$key] = false;
-                if (in_array($nrInscricao, $cnpjInvalidate) && in_array($cnpj, $cnpjInvalidate)) {
+                if (in_array($nrInscricao, $cnpjInvalidate, true) && in_array($cnpj, $cnpjInvalidate, true)) {
                     $cnpjExceptionValid[$key] = true;
                 }
             }
-            return (in_array(false, $cnpjExceptionValid)) ? false : true;
+            return (in_array(false, $cnpjExceptionValid, true)) ? false : true;
         }
         return true;
     }
 
     private static function validateRuleCnpj(string $cnpj): bool
     {
-        if (strlen($cnpj) > 14) {
-            $cnpj = self::dealCnpj($cnpj);
-        }
-        if (strlen($cnpj) < 14) {
+        if (strlen($cnpj) !== 14 || !ctype_digit(substr($cnpj, 12, 2))) {
             return false;
         }
 
         for ($i = 0, $j = 5, $sum = 0; $i < 12; $i++) {
-            $sum += intval($cnpj[$i]) * $j;
+            $v = self::cnpjCharValue($cnpj[$i]);
+            if ($v < 0) {
+                return false;
+            }
+            $sum += $v * $j;
             $j = ($j == 2) ? 9 : $j - 1;
         }
         $rest = $sum % 11;
-        if ($cnpj[12] != ($rest < 2 ? 0 : 11 - $rest)) {
+        $dv1  = ($rest < 2) ? 0 : 11 - $rest;
+        if ((int)$cnpj[12] !== $dv1) {
             return false;
         }
+
         for ($i = 0, $j = 6, $sum = 0; $i < 13; $i++) {
-            $sum += intval($cnpj[$i]) * $j;
+            $v = ($i < 12) ? self::cnpjCharValue($cnpj[$i]) : $dv1;
+            if ($v < 0) {
+                return false;
+            }
+            $sum += $v * $j;
             $j = ($j == 2) ? 9 : $j - 1;
         }
         $rest = $sum % 11;
-        return $cnpj[13] == ($rest < 2 ? 0 : 11 - $rest);
+        $dv2  = ($rest < 2) ? 0 : 11 - $rest;
+
+        return (int)$cnpj[13] === $dv2;
     }
 
     private static function dealCnpj(string $cnpj): string
     {
-        $newCnpj = preg_match('/[0-9]/', $cnpj) ?
-            str_replace(['-', '.', '/'], '', str_pad($cnpj, 14, '0', STR_PAD_LEFT), $cnpj) : 0;
-        return strval($newCnpj);
+        return strtoupper(strval(preg_replace('/[^A-Z0-9]/i', '', $cnpj)));
+    }
+
+    private static function cnpjCharValue(string $ch): int
+    {
+        $o = ord($ch);
+        if ($o >= 48 && $o <= 57) {
+            return $o - 48;
+        }
+        if ($o >= 65 && $o <= 90) {
+            return $o - 48;
+        }
+        return -1;
     }
 
     public static function validateCnpj(string $cnpj, string | array | bool $cnpjException = ''): bool
@@ -71,9 +103,7 @@ class ValidateCnpj
         if (empty($cnpj)) {
             return false;
         }
-        if (strlen($cnpj) > 14) {
-            $cnpj = self::dealCnpj($cnpj);
-        }
+        $cnpj = self::dealCnpj($cnpj);
         if (!self::validateCnpjSequenceInvalidate($cnpj, $cnpjException)) {
             return false;
         }

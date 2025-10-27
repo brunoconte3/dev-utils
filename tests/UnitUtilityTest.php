@@ -23,7 +23,7 @@ class UnitUtilityTest extends TestCase
         self::assertTrue(boolval(preg_match('@[A-Z]@', $passWordFull)));
         self::assertTrue(boolval(preg_match('@[a-z]@', $passWordFull)));
         self::assertTrue(boolval(preg_match('@[0-9]@', $passWordFull)));
-        self::assertTrue(boolval(preg_match("/(?=.*[^A-Za-zd])/", $passWordFull)));
+        self::assertTrue(boolval(preg_match("/(?=.*[^A-Za-z\\d])/", $passWordFull)));
     }
 
     public function testBuildUrl(): void

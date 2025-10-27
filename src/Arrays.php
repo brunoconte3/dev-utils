@@ -8,9 +8,10 @@ use DevUtils\Format;
 
 class Arrays
 {
-    public static function searchKey(array $array, string $key): mixed
+    public static function searchKey(array $array, string $key): ?int
     {
-        return Format::falseToNull(array_search(key([$key => null]), array_keys($array), true));
+        $result = array_search(key([$key => null]), array_keys($array), true);
+        return $result === false ? null : $result;
     }
 
     public static function renameKey(array &$array, string $oldKey, string $newKey): bool
