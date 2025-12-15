@@ -7,7 +7,6 @@
 </head>
 
 <body>
-    <h2></h2>
     <header>
         <div class="container-fluid">
             <div class="row align-items-center">
