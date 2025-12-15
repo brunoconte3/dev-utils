@@ -79,7 +79,7 @@ class Rules
         $charsetType = mb_detect_encoding($string);
         foreach ($enclist as $item) {
             $converted = iconv($item, $item . '//IGNORE', $string);
-            if (sha1(strval($converted)) == sha1(strval($string))) {
+            if (strcmp(strval($converted), strval($string)) === 0) {
                 $charsetType = $item;
                 break;
             }
