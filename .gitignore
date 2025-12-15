@@ -5,6 +5,7 @@ vendor/
 # ---- SonarQube
 .sonar/
 .scannerwork/
+.sonarqube/
 
 # ---- PHPUnit
 .phpunit.result.cache

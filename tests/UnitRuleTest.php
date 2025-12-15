@@ -162,7 +162,9 @@ class UnitRuleTest extends TestCase
 
     public function testIp(): void
     {
-        $array = ['testError' => '1.1.0', 'testValid' => '10.202.0.58',];
+        // @codingStandardsIgnoreStart
+        $array = ['testError' => '1.1.0', 'testValid' => '10.202.0.58',]; // NOSONAR - Test not actual IP addresses
+        // @codingStandardsIgnoreEnd
         $rules = ['testError' => 'ip', 'testValid' => 'ip',];
         $validator = new Validator();
         $validator->set($array, $rules);

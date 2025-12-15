@@ -53,7 +53,8 @@ class Format extends FormatAux
 
     private static function generateFileName(?string $nameFile): string
     {
-        return date("d-m-Y_s_") . uniqid(rand() . rand() . rand() . time()) . '_' . $nameFile;
+        return date("d-m-Y_s_") . uniqid(random_int(0, PHP_INT_MAX) . random_int(0, PHP_INT_MAX)
+            . random_int(0, PHP_INT_MAX) . time()) . '_' . $nameFile;
     }
 
     public static function convertTypes(array &$data, array $rules): void
