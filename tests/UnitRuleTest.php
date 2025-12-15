@@ -97,6 +97,7 @@ class UnitRuleTest extends TestCase
             'testError' => '52186923000120',
             'testErrorEmpty' => '',
             'testValid' => '21111527000163',
+            'testOtherValid' => 'JA.JL4.X24/9VI6-23',
             'testExceptionError' => '12123456000712',
             'testExceptionValid' => '00000000000000',
         ];
@@ -104,6 +105,7 @@ class UnitRuleTest extends TestCase
             'testError' => 'companyIdentification',
             'testErrorEmpty' => 'companyIdentification',
             'testValid' => 'companyIdentification',
+            'testOtherValid' => 'companyIdentification',
             'testExceptionError' => 'companyIdentification:12123456000712',
             'testExceptionValid' => 'companyIdentification:00000000000000;22222222222222',
         ];
