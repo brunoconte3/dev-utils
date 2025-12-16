@@ -7,7 +7,7 @@ use DevUtils\resource\ComposerInstall;
 if (!file_exists('../vendor/autoload.php') && !is_dir('../vendor')) {
     $instalar = filter_input(INPUT_POST, 'instalar');
     if (!empty($instalar)) {
-        include_once '../src/resource/ComposerInstall.php';
+        include_once '../src/resource/ComposerInstall.php'; // NOSONAR - Autoloader not available yet
         $composer = new ComposerInstall();
         $composer->instalar();
     }
@@ -20,7 +20,7 @@ if (!file_exists('../vendor/autoload.php') && !is_dir('../vendor')) {
     if (!file_exists($arquivo)) {
         echo 'Houve um erro. A view composerInstall não existe!';
     }
-    if (!require_once($arquivo)) {
+    if (!require_once $arquivo) {
         echo 'Houve um erro ao carregar a view composerInstall!';
     }
     exit();
