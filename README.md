@@ -564,10 +564,10 @@ file: .gitignore
 Add Line: /coverage/
 ```
 
-## Will perform pull request, please execute unit tests, and phpstan level 9
+## Will perform pull request, please execute unit tests, and phpstan level 10
 
 `./vendor/bin/phpunit --coverage-xml coverage`
-`./vendor/bin/phpstan analyse -c phpstan.neon --level 9`
+`./vendor/bin/phpstan analyse -c phpstan.neon --level 10`
 `If you don't know how to run phpstan, I execute and adjust whatever is necessary`
 
 # License
