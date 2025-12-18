@@ -45,7 +45,8 @@ class ValidateFile
 
             foreach ($file['size'] as $key => $size) {
                 if ($condition($size, $rule)) {
-                    $fileName = (is_array($file['name']) && isset($file['name'][$key])) ? strval($file['name'][$key]) : 'arquivo';
+                    $fileName = (is_array($file['name']) && isset($file['name'][$key]))
+                        ? strval($file['name'][$key]) : 'arquivo';
                     $defaultMsg = "O arquivo {$fileName} deve conter, no {$type} {$rule} bytes!";
                     $msg = (!empty($message)) ? $message : $defaultMsg;
                     array_push($arrayFileError, $msg);

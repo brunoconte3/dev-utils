@@ -355,8 +355,10 @@ class Format extends FormatAux
                     $params = [
                         'name'     => $name,
                         'type'     => is_array($file['type']) && isset($file['type'][$key]) ? $file['type'][$key] : '',
-                        'tmp_name' => is_array($file['tmp_name']) && isset($file['tmp_name'][$key]) ? $file['tmp_name'][$key] : '',
-                        'error'    => is_array($file['error']) && isset($file['error'][$key]) ? $file['error'][$key] : 0,
+                        'tmp_name' => is_array($file['tmp_name']) && isset($file['tmp_name'][$key])
+                            ? $file['tmp_name'][$key] : '',
+                        'error'    => is_array($file['error']) && isset($file['error'][$key])
+                            ? $file['error'][$key] : 0,
                         'size'     => is_array($file['size']) && isset($file['size'][$key]) ? $file['size'][$key] : 0,
                         'name_upload' => self::generateFileName($name),
                     ];

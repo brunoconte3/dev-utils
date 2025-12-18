@@ -40,7 +40,8 @@ class Rules
     {
         $functionsValidation = self::functionsValidation();
         $trimmedRule = trim($rule);
-        return trim(is_string($functionsValidation[$trimmedRule] ?? null) ? $functionsValidation[$trimmedRule] : 'invalidRule');
+        return trim(is_string($functionsValidation[$trimmedRule] ?? null)
+            ? $functionsValidation[$trimmedRule] : 'invalidRule');
     }
 
     private function callValidationMethod(
@@ -54,14 +55,18 @@ class Rules
         $call = [$this, $method];
         if (!is_callable($call, true, $method)) {
             if (is_array($this->errors[$field] ?? null)) {
-                $this->errors[$field][$field] = 'Há regras de validação não implementadas no campo ' . strval($field) . '!';
+                $this->errors[$field][$field] = 'Há regras de validação não implementadas no campo '
+                    . strval($field) . '!';
             } else {
                 $this->errors[$field] = 'Há regras de validação não implementadas no campo ' . strval($field) . '!';
             }
             return;
         }
 
-        if (in_array(substr($method, 20), $this->methodsNoRuleValue()) || in_array($method, $this->methodsNoRuleValue())) {
+        if (
+            in_array(substr($method, 20), $this->methodsNoRuleValue())
+            || in_array($method, $this->methodsNoRuleValue())
+        ) {
             call_user_func_array($call, [$field, $value, $msgCustomized]);
         } elseif (substr($method, 20) === 'validateEquals') {
             call_user_func_array($call, [$val, $field, $value, $msgCustomized, $data]);
@@ -305,7 +310,10 @@ class Rules
                     $auxValue = $this->errors[$field] ?? '';
                     if (is_array($auxValue)) {
                         foreach ($auxValue as $chaveErro => $valueErro) {
-                            if (!is_array($this->errors[$field]) || !array_key_exists($chaveErro, $this->errors[$field])) {
+                            if (
+                                !is_array($this->errors[$field])
+                                || !array_key_exists($chaveErro, $this->errors[$field])
+                            ) {
                                 continue;
                             }
                             $auxValue = $this->errors[$field][$chaveErro];
