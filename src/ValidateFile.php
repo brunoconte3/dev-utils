@@ -28,6 +28,33 @@ class ValidateFile
         return 0;
     }
 
+    private static function validateFileSize(
+        array $file,
+        ?int $rule,
+        ?string $message,
+        callable $condition,
+        string $type
+    ): array {
+        $arrayFileError = [];
+
+        if (self::validateFileCount($file) > 0) {
+            self::validateFileTransformSingleToMultiple($file);
+            if (!isset($file['size']) || !is_array($file['size'])) {
+                return $arrayFileError;
+            }
+
+            foreach ($file['size'] as $key => $size) {
+                if ($condition($size, $rule)) {
+                    $fileName = (is_array($file['name']) && isset($file['name'][$key])) ? strval($file['name'][$key]) : 'arquivo';
+                    $defaultMsg = "O arquivo {$fileName} deve conter, no {$type} {$rule} bytes!";
+                    $msg = (!empty($message)) ? $message : $defaultMsg;
+                    array_push($arrayFileError, $msg);
+                }
+            }
+        }
+        return $arrayFileError;
+    }
+
     public static function validateFileErrorPhp(array &$file, string $message = ''): array
     {
         self::validateFileTransformSingleToMultiple($file);
@@ -45,9 +72,13 @@ class ValidateFile
         ];
 
         $arrayFileError = [];
+        if (!isset($file['error']) || !is_array($file['error'])) {
+            return $arrayFileError;
+        }
         foreach ($file['error'] as $key => $codeError) {
-            if (($codeError > 0) && (array_key_exists($codeError, $phpFileErrors))) {
-                $nameFile = empty($file['name'][$key]) ? '' : '[' . $file['name'][$key] . '] - ';
+            if (($codeError > 0) && is_int($codeError) && (array_key_exists($codeError, $phpFileErrors))) {
+                $fileName = (is_array($file['name']) && isset($file['name'][$key])) ? $file['name'][$key] : '';
+                $nameFile = empty($fileName) ? '' : '[' . strval($fileName) . '] - ';
                 $message = (!empty($message)) ? $nameFile . $message : $nameFile . $phpFileErrors[$codeError];
 
                 array_push($arrayFileError, $message);
@@ -61,21 +92,19 @@ class ValidateFile
         array $file = [],
         ?string $message = '',
     ): array {
-        $arrayFileError = [];
+        return self::validateFileSize($file, $rule, $message, function ($size, $rule) {
+            return $size > $rule;
+        }, 'máximo');
+    }
 
-        if (self::validateFileCount($file) > 0) {
-            self::validateFileTransformSingleToMultiple($file);
-
-            foreach ($file['size'] as $key => $size) {
-                if ($size > $rule) {
-                    $msgMaxSize = 'O arquivo ' . $file['name'][$key] . ' deve conter, no máximo ' . $rule . ' bytes!';
-                    $msgMaxSize = (!empty($message)) ? $message : $msgMaxSize;
-
-                    array_push($arrayFileError, $msgMaxSize);
-                }
-            }
-        }
-        return $arrayFileError;
+    public static function validateMinUploadSize(
+        ?int $rule = 0,
+        array $file = [],
+        ?string $message = '',
+    ): array {
+        return self::validateFileSize($file, $rule, $message, function ($size, $rule) {
+            return $size < $rule;
+        }, 'mínimo');
     }
 
     public static function validateMinWidth(
@@ -84,22 +113,7 @@ class ValidateFile
         array $file,
         ?string $message = '',
     ): array {
-        $arrayFileError = [];
-
-        if (self::validateFileCount($file) > 0) {
-            self::validateFileTransformSingleToMultiple($file);
-
-            foreach ($file['tmp_name'] as $tmpName) {
-                list($width) = getimagesize($tmpName) ?: [0];
-
-                if ($width > 0 && $width < $rule) {
-                    $msgMinWidth = "O campo $field não pode ser menor que $rule pexels de comprimento!";
-                    $msgMinWidth = (!empty($message)) ? $message : $msgMinWidth;
-                    array_push($arrayFileError, $msgMinWidth);
-                }
-            }
-        }
-        return $arrayFileError;
+        return self::validateImageDimension($field, $rule, $file, $message, 'width', 'min', 0);
     }
 
     public static function validateMinHeight(
@@ -108,22 +122,7 @@ class ValidateFile
         array $file,
         ?string $message = '',
     ): array {
-        $arrayFileError = [];
-
-        if (self::validateFileCount($file) > 0) {
-            self::validateFileTransformSingleToMultiple($file);
-
-            foreach ($file['tmp_name'] as $tmpName) {
-                list(, $height) = getimagesize($tmpName) ?: [0, 0];
-
-                if ($height > 0 && $height < $rule) {
-                    $msgMinHeight = "O campo $field não pode ser menor que $rule pexels de altura!";
-                    $msgMinHeight = (!empty($message)) ? $message : $msgMinHeight;
-                    array_push($arrayFileError, $msgMinHeight);
-                }
-            }
-        }
-        return $arrayFileError;
+        return self::validateImageDimension($field, $rule, $file, $message, 'height', 'min', 1);
     }
 
     public static function validateMaxWidth(
@@ -132,22 +131,7 @@ class ValidateFile
         array $file,
         ?string $message = '',
     ): array {
-        $arrayFileError = [];
-
-        if (self::validateFileCount($file) > 0) {
-            self::validateFileTransformSingleToMultiple($file);
-
-            foreach ($file['tmp_name'] as $tmpName) {
-                list($width) = getimagesize($tmpName) ?: [0];
-
-                if ($width > 0 && $width > $rule) {
-                    $msgMaxWidth = "O campo $field não pode ser maior que $rule pexels de comprimento!";
-                    $msgMaxWidth = (!empty($message)) ? $message : $msgMaxWidth;
-                    array_push($arrayFileError, $msgMaxWidth);
-                }
-            }
-        }
-        return $arrayFileError;
+        return self::validateImageDimension($field, $rule, $file, $message, 'width', 'max', 0);
     }
 
     public static function validateMaxHeight(
@@ -156,40 +140,45 @@ class ValidateFile
         array $file,
         ?string $message = '',
     ): array {
-        $arrayFileError = [];
-
-        if (self::validateFileCount($file) > 0) {
-            self::validateFileTransformSingleToMultiple($file);
-
-            foreach ($file['tmp_name'] as $tmpName) {
-                list(, $height) = getimagesize($tmpName) ?: [0, 0];
-
-                if ($height > 0 && $height > $rule) {
-                    $msgMaxHeight = "O campo $field não pode ser maior que $rule pexels de altura!";
-                    $msgMaxHeight = (!empty($message)) ? $message : $msgMaxHeight;
-                    array_push($arrayFileError, $msgMaxHeight);
-                }
-            }
-        }
-        return $arrayFileError;
+        return self::validateImageDimension($field, $rule, $file, $message, 'height', 'max', 1);
     }
 
-    public static function validateMinUploadSize(
-        ?int $rule = 0,
-        array $file = [],
-        ?string $message = '',
+    private static function validateImageDimension(
+        string $field,
+        ?int $rule,
+        array $file,
+        ?string $message,
+        string $dimension,
+        string $type,
+        int $imageSizeIndex
     ): array {
         $arrayFileError = [];
 
         if (self::validateFileCount($file) > 0) {
             self::validateFileTransformSingleToMultiple($file);
+            if (!isset($file['tmp_name']) || !is_array($file['tmp_name'])) {
+                return $arrayFileError;
+            }
 
-            foreach ($file['size'] as $key => $size) {
-                if ($size < $rule) {
-                    $msgMinSize = 'O arquivo ' . $file['name'][$key] . ' deve conter, no máximo ' . $rule . ' bytes!';
-                    $msgMinSize = (!empty($message)) ? $message : $msgMinSize;
+            foreach ($file['tmp_name'] as $tmpName) {
+                if (!is_string($tmpName)) {
+                    continue;
+                }
+                $imageSize = getimagesize($tmpName) ?: [0, 0];
+                $value = $imageSize[$imageSizeIndex];
 
-                    array_push($arrayFileError, $msgMinSize);
+                $isInvalid = match ($type) {
+                    'min' => $value > 0 && $value < $rule,
+                    'max' => $value > 0 && $value > $rule,
+                    default => false,
+                };
+
+                if ($isInvalid) {
+                    $dimensionLabel = $dimension === 'width' ? 'comprimento' : 'altura';
+                    $typeLabel = $type === 'min' ? 'menor' : 'maior';
+                    $defaultMsg = "O campo {$field} não pode ser {$typeLabel} que {$rule} pexels de {$dimensionLabel}!";
+                    $msg = (!empty($message)) ? $message : $defaultMsg;
+                    array_push($arrayFileError, $msg);
                 }
             }
         }
@@ -202,8 +191,14 @@ class ValidateFile
 
         if (self::validateFileCount($file) > 0) {
             self::validateFileTransformSingleToMultiple($file);
+            if (!isset($file['name']) || !is_array($file['name'])) {
+                return $arrayFileError;
+            }
 
             foreach ($file['name'] as $key => $fileName) {
+                if (!is_string($fileName)) {
+                    continue;
+                }
                 $noSpecialCharacter = Format::removeSpecialCharacters($fileName) ?? '';
                 $file['name'][$key] = explode('.', strtolower(trim(
                     str_replace(' ', '', $noSpecialCharacter)
@@ -223,9 +218,15 @@ class ValidateFile
         if (self::validateFileCount($file) > 0) {
             self::validateFileTransformSingleToMultiple($file);
 
-            $rule = (is_array($rule)) ? array_map('trim', $rule) : trim($rule);
+            $rule = (is_array($rule)) ? array_map(fn($v) => is_string($v) ? trim($v) : $v, $rule) : trim($rule);
+            if (!isset($file['name']) || !is_array($file['name'])) {
+                return $arrayFileError;
+            }
 
             foreach ($file['name'] as $fileName) {
+                if (!is_string($fileName)) {
+                    continue;
+                }
                 $ext = explode('.', $fileName);
 
                 $messageMimeType = 'O arquivo ' . $fileName . ', contém uma extensão inválida!';

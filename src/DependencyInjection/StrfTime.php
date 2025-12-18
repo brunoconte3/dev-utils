@@ -73,10 +73,12 @@ class StrfTime
             '%A' => $intlFormatter,
             '%d' => 'd',
             '%e' => function ($timestamp) {
+                assert($timestamp instanceof DateTimeInterface);
                 return sprintf('% 2u', $timestamp->format('j'));
             },
             '%j' => function ($timestamp) {
                 // Day number in year, 001 to 366
+                assert($timestamp instanceof DateTimeInterface);
                 return sprintf('%03d', $timestamp->format('z') + 1);
             },
             '%u' => 'N',
@@ -85,14 +87,16 @@ class StrfTime
             // Week
             '%U' => function ($timestamp) {
                 // Number of weeks between date and first Sunday of year
+                assert($timestamp instanceof DateTimeInterface);
                 $day = new DateTime(sprintf('%d-01 Sunday', $timestamp->format('Y')));
-                return sprintf('%02u', 1 + ($timestamp->format('z') - $day->format('z')) / 7);
+                return sprintf('%02u', 1 + ((int)$timestamp->format('z') - (int)$day->format('z')) / 7);
             },
             '%V' => 'W',
             '%W' => function ($timestamp) {
                 // Number of weeks between date and first Monday of year
+                assert($timestamp instanceof DateTimeInterface);
                 $day = new DateTime(sprintf('%d-01 Monday', $timestamp->format('Y')));
-                return sprintf('%02u', 1 + ($timestamp->format('z') - $day->format('z')) / 7);
+                return sprintf('%02u', 1 + ((int)$timestamp->format('z') - (int)$day->format('z')) / 7);
             },
 
             // Month
@@ -104,9 +108,11 @@ class StrfTime
             // Year
             '%C' => function ($timestamp) {
                 // Century (-1): 19 for 20th century
-                return floor($timestamp->format('Y') / 100);
+                assert($timestamp instanceof DateTimeInterface);
+                return floor((int)$timestamp->format('Y') / 100);
             },
             '%g' => function ($timestamp) {
+                assert($timestamp instanceof DateTimeInterface);
                 return substr($timestamp->format('o'), -2);
             },
             '%G' => 'o',
@@ -116,10 +122,12 @@ class StrfTime
             // Time
             '%H' => 'H',
             '%k' => function ($timestamp) {
+                assert($timestamp instanceof DateTimeInterface);
                 return sprintf('% 2u', $timestamp->format('G'));
             },
             '%I' => 'h',
             '%l' => function ($timestamp) {
+                assert($timestamp instanceof DateTimeInterface);
                 return sprintf('% 2u', $timestamp->format('g'));
             },
             '%M' => 'i',

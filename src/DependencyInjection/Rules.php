@@ -36,14 +36,51 @@ class Rules
         $this->errors[$field] = $msg;
     }
 
+    private function getValidationMethod(string $rule): string
+    {
+        $functionsValidation = self::functionsValidation();
+        $trimmedRule = trim($rule);
+        return trim(is_string($functionsValidation[$trimmedRule] ?? null) ? $functionsValidation[$trimmedRule] : 'invalidRule');
+    }
+
+    private function callValidationMethod(
+        string $method,
+        mixed $val,
+        string|int $field,
+        mixed $value,
+        ?string $msgCustomized,
+        array $data = []
+    ): void {
+        $call = [$this, $method];
+        if (!is_callable($call, true, $method)) {
+            if (is_array($this->errors[$field] ?? null)) {
+                $this->errors[$field][$field] = 'Há regras de validação não implementadas no campo ' . strval($field) . '!';
+            } else {
+                $this->errors[$field] = 'Há regras de validação não implementadas no campo ' . strval($field) . '!';
+            }
+            return;
+        }
+
+        if (in_array(substr($method, 20), $this->methodsNoRuleValue()) || in_array($method, $this->methodsNoRuleValue())) {
+            call_user_func_array($call, [$field, $value, $msgCustomized]);
+        } elseif (substr($method, 20) === 'validateEquals') {
+            call_user_func_array($call, [$val, $field, $value, $msgCustomized, $data]);
+        } else {
+            call_user_func_array($call, [$val, $field, $value, $msgCustomized]);
+        }
+    }
+
     private function validateHandleErrorsInArray(array $errorList = [], string $field = ''): void
     {
         if (!empty($errorList)) {
             if (array_key_exists($field, $this->errors)) {
-                foreach ($errorList as $error) {
-                    array_push($this->errors[$field], $error);
+                $currentErrors = $this->errors[$field];
+                if (is_array($currentErrors)) {
+                    foreach ($errorList as $error) {
+                        array_push($currentErrors, $error);
+                    }
+                    $this->errors[$field] = array_unique($currentErrors);
                 }
-                $this->errors[$field] = array_unique($this->errors[$field]);
             } else {
                 $this->errors[$field] = $errorList;
             }
@@ -77,15 +114,20 @@ class Rules
             'Windows-1254',
         ];
         $charsetType = mb_detect_encoding($string);
+        if ($charsetType === false) {
+            $charsetType = 'UTF-8';
+        }
+        /** @var array<string> $enclist */
         foreach ($enclist as $item) {
             $converted = iconv($item, $item . '//IGNORE', $string);
-            if (strcmp(strval($converted), strval($string)) === 0) {
+            if (is_string($converted) && strcmp($converted, $string) === 0) {
                 $charsetType = $item;
                 break;
             }
         }
-        if (strtoupper(trim($charsetType)) != strtoupper(trim($convert))) {
-            return ($bom ? $bomchar : '') . iconv($charsetType, $convert . '//TRANSLIT', $string);
+        $convertedString = iconv($charsetType, $convert . '//TRANSLIT', $string);
+        if (is_string($convertedString) && strtoupper(trim($charsetType)) != strtoupper(trim($convert))) {
+            return ($bom ? $bomchar : '') . $convertedString;
         }
         return ($bom ? $bomchar : '') . $string;
     }
@@ -130,21 +172,9 @@ class Rules
             return;
         }
 
-        $method = trim(self::functionsValidation()[trim($rule)] ?? 'invalidRule');
-
-        $call = [$this, $method];
+        $method = $this->getValidationMethod($rule);
         //chama há função de validação, de cada parametro json
-        if (is_callable($call, true, $method)) {
-            if (in_array(substr($method, 20), $this->methodsNoRuleValue())) {
-                call_user_func_array($call, [$field, $value, $message]);
-            } elseif ($method === 'validateEquals') {
-                call_user_func_array($call, [$rule, $field, $value, $message]);
-            } else {
-                call_user_func_array($call, [$rule, $field, $value, $message]);
-            }
-        } else {
-            $this->errors[$field] = "Há regras de validação não implementadas no campo $field!";
-        }
+        $this->callValidationMethod($method, $rule, $field, $value, $message);
     }
 
     protected function levelSubLevelsArrayReturnJson(array $data, bool $recursive = false): mixed
@@ -200,7 +230,11 @@ class Rules
         foreach ($rules as $key => $val) {
             //se for um objeto no primeiro nivel, valida recurssivo
             if ((array_key_exists($key, $data) && is_array($data[$key])) && is_array($val)) {
-                $this->validateSubLevelData($data[$key], $rules[$key]);
+                $subData = $data[$key];
+                $subRules = $rules[$key];
+                if (is_array($subRules)) {
+                    $this->validateSubLevelData($subData, $subRules);
+                }
             }
             //valida campos filhos required, porém não existe no array de dados
             if (empty($data) && is_array($val) && (strpos(trim(strtolower(strval(json_encode($val)))), 'required'))) {
@@ -248,7 +282,9 @@ class Rules
                                 $rulesArray['mensagem'] = trim(strip_tags($conf[1]));
                             }
                             $keyConf = $ruleArrayConf[0];
-                            $rulesArray[strval($keyConf)] = $ruleArrayConf[1] ?? true;
+                            if (is_string($keyConf)) {
+                                $rulesArray[strval($keyConf)] = $ruleArrayConf[1] ?? true;
+                            }
                         }
                     }
                 }
@@ -268,32 +304,23 @@ class Rules
                     }
                     $auxValue = $this->errors[$field] ?? '';
                     if (is_array($auxValue)) {
-                        foreach ($this->errors[$field] as $chaveErro => $valueErro) {
+                        foreach ($auxValue as $chaveErro => $valueErro) {
+                            if (!is_array($this->errors[$field]) || !array_key_exists($chaveErro, $this->errors[$field])) {
+                                continue;
+                            }
                             $auxValue = $this->errors[$field][$chaveErro];
                             if (
                                 !empty($auxValue)
                                 && (is_string($auxValue) && Compare::contains($auxValue, 'obrigatório!'))
                             ) {
-                                $this->errors[$field][$chaveErro] = 'O campo ' . strval($field) . ' é obrigatório!';
-                            } else {
-                                $method = trim(Rules::functionsValidation()[trim($key)] ?? 'invalidRule');
-                                $call = [$this, $method];
-                                //chama a função de validação, de cada parametro json
-                                if (is_callable($call, true, $method)) {
-                                    if (
-                                        in_array(substr($method, 20), $this->methodsNoRuleValue())
-                                        || in_array($method, $this->methodsNoRuleValue())
-                                    ) {
-                                        call_user_func_array($call, [$field, $value, $msgCustomized]);
-                                    } elseif (substr($method, 20) === 'validateEquals') {
-                                        call_user_func_array($call, [$val, $field, $value, $msgCustomized, $data]);
-                                    } else {
-                                        call_user_func_array($call, [$val, $field, $value, $msgCustomized]);
-                                    }
-                                } else {
-                                    $this->errors[$field][$chaveErro] = 'Há regras de validação não implementadas' .
-                                        'no campo ' . strval($field) . '!';
+                                if (is_array($this->errors[$field])) {
+                                    $this->errors[$field][$chaveErro] = 'O campo ' . strval($field) . ' é obrigatório!';
                                 }
+                            } else {
+                                $method = $this->getValidationMethod($key);
+                                //chama a função de validação, de cada parametro json
+                                $customMsg = is_string($msgCustomized) ? $msgCustomized : null;
+                                $this->callValidationMethod($method, $val, $field, $value, $customMsg, $data);
                             }
                         }
                     }
@@ -302,24 +329,10 @@ class Rules
                         if (!empty($this->errors[$field]) && Compare::contains($auxValue, 'obrigatório!')) {
                             $this->errors[$field] = 'O campo ' . strval($field) . ' é obrigatório!';
                         } else {
-                            $method = trim(Rules::functionsValidation()[trim($key)] ?? 'invalidRule');
-                            $call = [$this, $method];
+                            $method = $this->getValidationMethod($key);
                             //chama a função de validação, de cada parametro json
-                            if (is_callable($call, true, $method)) {
-                                if (
-                                    in_array(substr($method, 20), $this->methodsNoRuleValue())
-                                    || in_array($method, $this->methodsNoRuleValue())
-                                ) {
-                                    call_user_func_array($call, [$field, $value, $msgCustomized]);
-                                } elseif (substr($method, 20) === 'validateEquals') {
-                                    call_user_func_array($call, [$val, $field, $value, $msgCustomized, $data]);
-                                } else {
-                                    call_user_func_array($call, [$val, $field, $value, $msgCustomized]);
-                                }
-                            } else {
-                                $this->errors[$field] = 'Há regras de validação não implementadas no campo '
-                                    . strval($field) . '!';
-                            }
+                            $customMsg = is_string($msgCustomized) ? $msgCustomized : null;
+                            $this->callValidationMethod($method, $val, $field, $value, $customMsg, $data);
                         }
                     }
                 }

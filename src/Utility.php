@@ -6,6 +6,52 @@ namespace DevUtils;
 
 class Utility
 {
+    private static function buildCharset(
+        bool $uppercase,
+        bool $lowercase,
+        bool $numbers,
+        bool $symbols
+    ): string {
+        $charset = '';
+
+        if ($numbers) {
+            $charset .= str_shuffle('0123456789');
+        }
+        if ($symbols) {
+            $charset .= str_shuffle('@#$!()-+%=');
+        }
+        if ($uppercase) {
+            $charset .= str_shuffle('ABCDEFGHIJKLMNOPQRSTUVYXWZ');
+        }
+        if ($lowercase) {
+            $charset .= str_shuffle('abcdefghijklmnopqrstuvyxwz');
+        }
+        return $charset;
+    }
+
+    private static function isValidPassword(
+        string $password,
+        bool $uppercase,
+        bool $lowercase,
+        bool $numbers,
+        bool $symbols
+    ): bool {
+        if ($uppercase && !preg_match('@[A-Z]@', $password)) {
+            return false;
+        }
+        if ($lowercase && !preg_match('@[a-z]@', $password)) {
+            return false;
+        }
+        if ($numbers && !preg_match('@[0-9]@', $password)) {
+            return false;
+        }
+        if ($symbols && !preg_match('/[^A-Za-z0-9]/', $password)) {
+            return false;
+        }
+        return true;
+    }
+
+
     public static function captureClientIp(): mixed
     {
         if (!empty(filter_input(INPUT_SERVER, 'HTTP_CLIENT_IP'))) {
@@ -25,36 +71,14 @@ class Utility
         bool $numbers = true,
         bool $symbols = true,
     ): string {
-        $alphabet = 'abcdefghijklmnopqrstuvyxwz';
-        $nums = '0123456789';
-        $sym = '@#$!()-+%=';
-        $password = '';
+        $charset = self::buildCharset($uppercase, $lowercase, $numbers, $symbols);
+        $password = substr(str_shuffle($charset), 0, $size);
 
-        if ($numbers) {
-            $password .= str_shuffle($nums);
-        }
-        if ($symbols) {
-            $password .= str_shuffle($sym);
-        }
-        if ($uppercase) {
-            $password .= str_shuffle(strtoupper($alphabet));
-        }
-        if ($lowercase) {
-            $password .= str_shuffle(strtolower($alphabet));
-        }
-        $result = substr(str_shuffle($password), 0, $size);
-        if ($symbols && $size >= 10 && !boolval(preg_match('@[0-9]@', $result))) {
-            $result = self::generatePassword($size, $uppercase, $lowercase, $numbers, $symbols);
-        }
-        return $result;
+        return self::isValidPassword($password, $uppercase, $lowercase, $numbers, $symbols)
+            ? $password
+            : self::generatePassword($size, $uppercase, $lowercase, $numbers, $symbols);
     }
 
-    /*
-    * @return string -> Cadeia URL completa
-    * @param string $host -> Dominio do sistema
-    * @param string $absolutePath -> Caminho absoluto
-    * @param string $https -> 'on' para gerar url https, outro valor, gera url http
-    */
     public static function buildUrl(string $host, string $absolutePath = '', ?string $https = ''): string
     {
         $protocol = ((isset($https) && ($https === 'on')) ? 'https' : 'http');

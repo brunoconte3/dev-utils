@@ -74,15 +74,17 @@ class Arrays
     {
         foreach ($array as $key => $value) {
             if (is_numeric($key)) {
-                $key = $value['@attr'];
+                if (is_array($value) && isset($value['@attr'])) {
+                    $key = $value['@attr'];
+                }
             }
             if (is_array($value)) {
                 unset($value['@attr']);
-                $subnode = $xml->addChild($key);
+                $subnode = $xml->addChild(strval($key));
 
                 self::convertArrayToXml($value, $subnode);
             } else {
-                $xml->addChild("$key", strtoupper(htmlspecialchars("$value")));
+                $xml->addChild(strval($key), strtoupper(htmlspecialchars(strval($value))));
             }
         }
     }

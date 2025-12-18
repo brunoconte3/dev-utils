@@ -53,7 +53,7 @@ class Format extends FormatAux
 
     private static function generateFileName(?string $nameFile): string
     {
-        return date("d-m-Y_s_") . uniqid(random_int(0, PHP_INT_MAX) . random_int(0, PHP_INT_MAX)
+        return date('d-m-Y_s_') . uniqid(random_int(0, PHP_INT_MAX) . random_int(0, PHP_INT_MAX)
             . random_int(0, PHP_INT_MAX) . time()) . '_' . $nameFile;
     }
 
@@ -61,6 +61,9 @@ class Format extends FormatAux
     {
         $error = [];
         foreach ($rules as $key => $value) {
+            if (!is_string($value)) {
+                continue;
+            }
             $arrRules = explode('|', $value);
             $type = parent::returnTypeToConvert($arrRules);
             if (in_array('convert', $arrRules) && !empty($type)) {
@@ -69,7 +72,8 @@ class Format extends FormatAux
                         $data[$key] = parent::executeConvert($type, $data[$key]);
                     }
                 } catch (Exception) {
-                    $error[] = "falhar ao tentar converter {$data[$key]} para $type";
+                    $dataValue = isset($data[$key]) ? strval($data[$key]) : 'null';
+                    $error[] = "falhar ao tentar converter {$dataValue} para $type";
                 }
             }
         }
@@ -151,12 +155,12 @@ class Format extends FormatAux
 
     public static function arrayToIntReference(array &$array): void
     {
-        $array = array_map('intval', $array);
+        $array = array_map(fn($v) => intval($v), $array);
     }
 
     public static function arrayToInt(array $array): array
     {
-        return array_map('intval', $array);
+        return array_map(fn($v) => intval($v), $array);
     }
 
     public static function currency(float | int | string $value, ?string $coinType = ''): string
@@ -201,8 +205,8 @@ class Format extends FormatAux
             if (isset($value) && is_array($value)) {
                 return count($value) > 0 ? $value : null;
             }
-            return (isset($value) && empty(trim($value))
-                && $value !== $exception || $value === 'null') ? null : $value;
+            return ((isset($value) && empty(trim(strval($value))) && $value !== $exception)
+                || $value === 'null') ? null : $value;
         }, $array);
     }
 
@@ -210,9 +214,12 @@ class Format extends FormatAux
     {
         $str = str_replace(' ', '', $str);
         for ($i = 0; $i < strlen($str); $i++) {
-            $mask[strpos($mask, "#")] = $str[$i];
+            $pos = strpos($mask, "#");
+            if ($pos !== false) {
+                $mask[$pos] = $str[$i];
+            }
         }
-        return gettype($mask) === 'string' ? strval($mask) : '';
+        return $mask;
     }
 
     public static function onlyNumbers(string $str): string
@@ -339,15 +346,18 @@ class Format extends FormatAux
             if (!empty($fileError)) {
                 return $fileError;
             }
-            if (isset($file['name'])) {
+            if (isset($file['name']) && is_array($file['name'])) {
                 foreach ($file['name'] as $key => $name) {
+                    if (!is_string($name)) {
+                        continue;
+                    }
                     $name = self::formatFileName($name);
                     $params = [
                         'name'     => $name,
-                        'type'     => $file['type'][$key],
-                        'tmp_name' => $file['tmp_name'][$key],
-                        'error'    => $file['error'][$key],
-                        'size'     => $file['size'][$key],
+                        'type'     => is_array($file['type']) && isset($file['type'][$key]) ? $file['type'][$key] : '',
+                        'tmp_name' => is_array($file['tmp_name']) && isset($file['tmp_name'][$key]) ? $file['tmp_name'][$key] : '',
+                        'error'    => is_array($file['error']) && isset($file['error'][$key]) ? $file['error'][$key] : 0,
+                        'size'     => is_array($file['size']) && isset($file['size'][$key]) ? $file['size'][$key] : 0,
                         'name_upload' => self::generateFileName($name),
                     ];
                     array_push($arrayFile, $params);
@@ -373,7 +383,9 @@ class Format extends FormatAux
         $binario = [];
         foreach ($characters as $character) {
             $data = unpack('H*', $character) ?: [];
-            $binario[] = base_convert($data[1], 16, 2);
+            if (isset($data[1]) && is_string($data[1])) {
+                $binario[] = base_convert($data[1], 16, 2);
+            }
         }
         return implode(' ', $binario);
     }

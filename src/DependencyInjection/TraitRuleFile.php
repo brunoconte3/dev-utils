@@ -10,6 +10,9 @@ trait TraitRuleFile
     {
         if (!is_numeric($rule) || ($rule <= 0)) {
             $text = "O parâmetro do validador '$label', deve ser numérico e maior ou igual a zero!";
+            if (!isset($this->errors[$field]) || !is_array($this->errors[$field])) {
+                $this->errors[$field] = [];
+            }
             $this->errors[$field][0] = $text;
         }
     }
@@ -47,6 +50,9 @@ trait TraitRuleFile
     protected function validateFileName(string $field = '', array $value = [], ?string $message = ''): void
     {
         if (empty($value)) {
+            if (!isset($this->errors[$field]) || !is_array($this->errors[$field])) {
+                $this->errors[$field] = [];
+            }
             $this->errors[$field][0] = !empty($message) ? $message : "O campo $field não pode ser vazio!";
             return;
         }
@@ -131,24 +137,45 @@ trait TraitRuleFile
         return null;
     }
 
+    private function validateImageDimension(
+        string $rule,
+        string $field,
+        array $value,
+        ?string $message,
+        string $validationType,
+        callable $validationMethod
+    ): void {
+        $rule = trim($rule);
+        $this->validateRuleFile($rule, $field, $validationType);
+        $msg = $this->validateFileCalculateSize($field);
+
+        if (!empty($msg)) {
+            if (!isset($this->errors[$field]) || !is_array($this->errors[$field])) {
+                $this->errors[$field] = [];
+            }
+            $this->errors[$field][0] = $msg;
+        } else {
+            $result = $validationMethod($field, intval($rule), $value, $message);
+            if (is_array($result)) {
+                $this->validateHandleErrorsInArray($result, $field);
+            }
+        }
+    }
+
     protected function validateMinWidth(
         string $rule = '',
         string $field = '',
         array $value = [],
         ?string $message = '',
     ): void {
-        $rule = trim($rule);
-        $this->validateRuleFile($rule, $field, 'minWidth');
-        $msg = $this->validateFileCalculateSize($field);
-
-        if (!empty($msg)) {
-            $this->errors[$field][0] = $msg;
-        } else {
-            $this->validateHandleErrorsInArray(
-                ValidateFile::validateMinWidth($field, intval($rule), $value, $message),
-                $field
-            );
-        }
+        $this->validateImageDimension(
+            $rule,
+            $field,
+            $value,
+            $message,
+            'minWidth',
+            fn(string $f, ?int $r, array $v, ?string $m): array => ValidateFile::validateMinWidth($f, $r, $v, $m)
+        );
     }
 
     protected function validateMinHeight(
@@ -157,18 +184,14 @@ trait TraitRuleFile
         array $value = [],
         ?string $message = '',
     ): void {
-        $rule = trim($rule);
-        $this->validateRuleFile($rule, $field, 'minHeight');
-        $msg = $this->validateFileCalculateSize($field);
-
-        if (!empty($msg)) {
-            $this->errors[$field][0] = $msg;
-        } else {
-            $this->validateHandleErrorsInArray(
-                ValidateFile::validateMinHeight($field, intval($rule), $value, $message),
-                $field
-            );
-        }
+        $this->validateImageDimension(
+            $rule,
+            $field,
+            $value,
+            $message,
+            'minHeight',
+            fn(string $f, ?int $r, array $v, ?string $m): array => ValidateFile::validateMinHeight($f, $r, $v, $m)
+        );
     }
 
     protected function validateMaxWidth(
@@ -177,18 +200,14 @@ trait TraitRuleFile
         array $value = [],
         ?string $message = '',
     ): void {
-        $rule = trim($rule);
-        $this->validateRuleFile($rule, $field, 'minWidth');
-        $msg = $this->validateFileCalculateSize($field);
-
-        if (!empty($msg)) {
-            $this->errors[$field][0] = $msg;
-        } else {
-            $this->validateHandleErrorsInArray(
-                ValidateFile::validateMaxWidth($field, intval($rule), $value, $message),
-                $field
-            );
-        }
+        $this->validateImageDimension(
+            $rule,
+            $field,
+            $value,
+            $message,
+            'minWidth',
+            fn(string $f, ?int $r, array $v, ?string $m): array => ValidateFile::validateMaxWidth($f, $r, $v, $m)
+        );
     }
 
     protected function validateMaxHeight(
@@ -197,17 +216,13 @@ trait TraitRuleFile
         array $value = [],
         ?string $message = '',
     ): void {
-        $rule = trim($rule);
-        $this->validateRuleFile($rule, $field, 'maxHeight');
-        $msg = $this->validateFileCalculateSize($field);
-
-        if (!empty($msg)) {
-            $this->errors[$field][0] = $msg;
-        } else {
-            $this->validateHandleErrorsInArray(
-                ValidateFile::validateMaxHeight($field, intval($rule), $value, $message),
-                $field
-            );
-        }
+        $this->validateImageDimension(
+            $rule,
+            $field,
+            $value,
+            $message,
+            'maxHeight',
+            fn(string $f, ?int $r, array $v, ?string $m): array => ValidateFile::validateMaxHeight($f, $r, $v, $m)
+        );
     }
 }

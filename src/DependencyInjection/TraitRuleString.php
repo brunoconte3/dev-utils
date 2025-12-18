@@ -91,7 +91,8 @@ trait TraitRuleString
             }
 
             if (!empty($rule) && array_key_exists($rule, $arrayDdd)) {
-                if (in_array($value, $arrayDdd[$rule])) {
+                $ruleValues = $arrayDdd[$rule];
+                if (is_array($ruleValues) && in_array($value, $ruleValues)) {
                     return;
                 }
                 $this->errors[$field] = !empty($message) ? $message : 'O campo ' . $field .
