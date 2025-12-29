@@ -2,7 +2,6 @@
 
 namespace DevUtils\DependencyInjection;
 
-use DevUtils\Format;
 use InvalidArgumentException;
 
 abstract class FormatAux
@@ -63,8 +62,16 @@ abstract class FormatAux
         $singular = ['centavo', 'real', 'mil', 'milhão', 'bilhão', 'trilhão', 'quatrilhão',];
         $plural = ['centavos', 'reais', 'mil', 'milhões', 'bilhões', 'trilhões', 'quatrilhões',];
         $hundred = [
-            '', 'cem', 'duzentos', 'trezentos', 'quatrocentos', 'quinhentos', 'seiscentos', 'setecentos',
-            'oitocentos', 'novecentos',
+            '',
+            'cem',
+            'duzentos',
+            'trezentos',
+            'quatrocentos',
+            'quinhentos',
+            'seiscentos',
+            'setecentos',
+            'oitocentos',
+            'novecentos',
         ];
         $ten = ['', 'dez', 'vinte', 'trinta', 'quarenta', 'cinquenta', 'sessenta', 'setenta', 'oitenta', 'noventa',];
         $ten10 = ['dez', 'onze', 'doze', 'treze', 'quatorze', 'quinze', 'dezesseis', 'dezesete', 'dezoito', 'dezenove'];

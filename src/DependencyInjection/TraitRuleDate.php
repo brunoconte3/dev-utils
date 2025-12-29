@@ -2,11 +2,9 @@
 
 namespace DevUtils\DependencyInjection;
 
-use DevUtils\{
-    Format,
-    ValidateDate,
-    ValidateHour,
-};
+use DevUtils\Format;
+use DevUtils\ValidateDate;
+use DevUtils\ValidateHour;
 
 trait TraitRuleDate
 {
