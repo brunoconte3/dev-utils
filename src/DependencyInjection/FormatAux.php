@@ -2,7 +2,6 @@
 
 namespace DevUtils\DependencyInjection;
 
-use DevUtils\Format;
 use InvalidArgumentException;
 
 abstract class FormatAux

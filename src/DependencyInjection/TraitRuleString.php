@@ -2,15 +2,13 @@
 
 namespace DevUtils\DependencyInjection;
 
-use DevUtils\{
-    Format,
-    ValidateCnpj,
-    ValidateCpf,
-    ValidatePhone,
-    ValidateString,
-};
 use DevUtils\DependencyInjection\data\DataDdds;
+use DevUtils\Format;
 use DevUtils\resource\Common;
+use DevUtils\ValidateCnpj;
+use DevUtils\ValidateCpf;
+use DevUtils\ValidatePhone;
+use DevUtils\ValidateString;
 
 trait TraitRuleString
 {

@@ -2,8 +2,6 @@
 
 namespace DevUtils;
 
-use DevUtils\Format;
-
 class ValidatePhone
 {
     public static function validate(string $phone): bool
