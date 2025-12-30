@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace DevUtils;
 
-use DevUtils\Format;
-
 class Arrays
 {
     public static function searchKey(array $array, string $key): ?int

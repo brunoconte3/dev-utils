@@ -2,15 +2,8 @@
 
 namespace DevUtils;
 
-use DevUtils\{
-    ValidateDate,
-    ValidatePhone,
-    ValidateFile,
-};
-use DevUtils\DependencyInjection\{
-    FormatAux,
-    StrfTime,
-};
+use DevUtils\DependencyInjection\FormatAux;
+use DevUtils\DependencyInjection\StrfTime;
 use Exception;
 use InvalidArgumentException;
 
