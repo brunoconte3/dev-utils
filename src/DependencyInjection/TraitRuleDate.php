@@ -65,4 +65,22 @@ trait TraitRuleDate
                 "O campo $field não pode ser uma data maior que a atual";
         }
     }
+
+    protected function validateDateIso8601(string $field = '', string $value = '', ?string $message = ''): void
+    {
+        if (!ValidateDate::validateDateIso8601($value)) {
+            $this->errors[$field] = !empty($message) ? $message : "O campo $field não é uma data válida!";
+        }
+    }
+
+
+    protected function validateDateUTCWithoutTimezone(
+        string $field = '',
+        string $value = '',
+        ?string $message = ''
+    ): void {
+        if (!ValidateDate::validateDateUTCWithoutTimezone($value)) {
+            $this->errors[$field] = !empty($message) ? $message : "O campo $field não é uma data válida!";
+        }
+    }
 }
