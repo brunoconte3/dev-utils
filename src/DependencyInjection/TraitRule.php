@@ -14,7 +14,8 @@ trait TraitRule
             'validateIntegerTyped', 'validateNumeric', 'validateNumMonth', 'validateFileName',
             'validateFileUploadMandatory', 'validateDateBrazil', 'validateDateAmerican', 'validateHour',
             'validateTimestamp', 'validateWeekend', 'validateArray', 'validateFieldMandatory', 'validateBoolean',
-            'validateFloating', 'validateJson', 'validateDateNotFuture',
+            'validateFloating', 'validateJson', 'validateDateNotFuture', 'validateDateIso8601',
+            'validateDateUTCWithoutTimezone',
         ];
     }
 
@@ -44,6 +45,8 @@ trait TraitRule
             'ip' => 'validateIp',
             'json' => 'validateJson',
             'lower' => 'validateLower',
+            'dateIso8601' => 'validateDateIso8601',
+            'dateUTCWithoutTimezone' => 'validateDateUTCWithoutTimezone',
         ];
     }
 

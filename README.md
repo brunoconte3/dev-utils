@@ -20,7 +20,7 @@ composer require brunoconte3/dev-utils
 Or add to your `composer.json`:
 
 ```json
-"brunoconte3/dev-utils": "2.11.0"
+"brunoconte3/dev-utils": "2.12.0"
 ```
 
 ## Data Validation Example
@@ -138,6 +138,8 @@ maxWidth and requiredFile, you can set the minimum and maximum size (bytes) of t
 - companyIdentification: `Validates if the CNPJ is valid, passing CNPJ with or without mask`
 - dateAmerican: `Validates if the American date is valid`
 - dateBrazil: `Validates if the Brazilian date is valid`
+- dateIso8601: `Validates dates in ISO 8601 format, e.g.: 2025-11-20T10:30:00Z`
+- dateUTCWithoutTimezone: `Validates dates in UTC format without the letter Z, e.g.: 2025-11-20T10:30:00`
 - dateNotFuture: `Validates if the date not greater than date current (accepts Brazilian or American format)`
 - ddd: `Validates ddd informed in YYY or YY format, by UF or in general` `Ex: ddd:pr, ddd do Paraná/Brazil, or just ddd`
 - email: `Check if it's a valid email`
@@ -444,6 +446,8 @@ use DevUtils\ValidateDate;
 ValidateDate::validateDateBrazil('29/04/2021'); //Return boolean [Format dd/mm/yyyy]
 ValidateDate::validateDateAmerican('2021-04-29'); //Return boolean [Format yyyy-mm-dd]
 ValidateDate::validateTimeStamp('2021-04-29 11:17:12'); //Return boolean [Format yyyy-mm-dd hh:mm:ss]
+ValidateDate::validateDateIso8601('2025-11-20T10:30:00Z'); //Return boolean [Format ISO 8601: 2025-11-20T10:30:00Z]
+ValidateDate::validateDateUTCWithoutTimezone('2025-11-20T10:30:00'); //Return boolean [Format UTC without Z: 2025-11-20T10:30:00]
 
 use DevUtils\ValidateHour;
 ValidateHour::validateHour('08:50'); //Return boolean [Format YY:YY]

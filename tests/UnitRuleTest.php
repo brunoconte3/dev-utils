@@ -759,4 +759,30 @@ class UnitRuleTest extends TestCase
             self::assertFalse(extension_loaded('gd'));
         }
     }
+
+    public function testDateUTCWithoutTimezone(): void
+    {
+        $array = [
+            'dateError' => '2024-13-01T12:00:00',
+            'dateValid' => '2024-12-01T12:00:00',
+        ];
+        $rules = [
+            'dateError' => 'dateUTCWithoutTimezone',
+            'dateValid' => 'dateUTCWithoutTimezone',
+        ];
+        self::assertErrorCount(1, $array, $rules);
+    }
+
+    public function testDateIso8601(): void
+    {
+        $array = [
+            'dateError' => '2024-13-01T12:00:00+00:00',
+            'dateValid' => '2024-12-01T12:00:00+00:00',
+        ];
+        $rules = [
+            'dateError' => 'dateIso8601',
+            'dateValid' => 'dateIso8601',
+        ];
+        self::assertErrorCount(1, $array, $rules);
+    }
 }
