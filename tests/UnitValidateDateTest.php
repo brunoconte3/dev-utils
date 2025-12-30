@@ -12,42 +12,6 @@ use PHPUnit\Framework\TestCase;
 
 class UnitValidateDateTest extends TestCase
 {
-    public function testValidateDateBrazil(): void
-    {
-        self::assertEquals(true, ValidateDate::validateDateBrazil('29/04/2021'));
-        self::assertEquals(false, ValidateDate::validateDateBrazil('31/04/2021'));
-    }
-
-    public function testValidateDateAmerican(): void
-    {
-        self::assertEquals(true, ValidateDate::validateDateAmerican('2021-04-29'));
-        self::assertEquals(false, ValidateDate::validateDateAmerican('2021-04-31'));
-    }
-
-    public function testValidateTimeStamp(): void
-    {
-        self::assertEquals(true, ValidateDate::validateTimeStamp('2021-04-29 11:17:12'));
-        self::assertEquals(false, ValidateDate::validateTimeStamp('2021-04-31 11:1'));
-    }
-
-    public function testValidateDateNotFuture(): void
-    {
-        $dateNow = new DateTimeImmutable();
-        $newDateFuture = $dateNow->add(new DateInterval('P32D'))->format('Y-m-d');
-        self::assertEquals(true, ValidateDate::validateDateNotFuture(Format::dateAmerican('28/12/2022')));
-        self::assertEquals(false, ValidateDate::validateDateNotFuture($newDateFuture));
-    }
-
-    public function testValidateDateUTCWithoutTimezone(): void
-    {
-        self::assertTrue(ValidateDate::validateDateUTCWithoutTimezone('2025-11-20T10:30:00'));
-        self::assertTrue(ValidateDate::validateDateUTCWithoutTimezone('1999-01-01T00:00:00'));
-        self::assertFalse(ValidateDate::validateDateUTCWithoutTimezone('2025-11-20T10:30'));
-        self::assertFalse(ValidateDate::validateDateUTCWithoutTimezone('2025-11-20 10:30:00'));
-        self::assertFalse(ValidateDate::validateDateUTCWithoutTimezone('2025-11-20T10:30:00Z'));
-        self::assertFalse(ValidateDate::validateDateUTCWithoutTimezone('2025-11-20T10:30:00+00:00'));
-    }
-
     private static function biuldDataTestDateIso8601Z(): array
     {
         return [
@@ -86,6 +50,42 @@ class UnitValidateDateTest extends TestCase
             '2025-324',
             ...self::biuldDataTestDateIso8601Z(),
         ];
+    }
+
+    public function testValidateDateBrazil(): void
+    {
+        self::assertEquals(true, ValidateDate::validateDateBrazil('29/04/2021'));
+        self::assertEquals(false, ValidateDate::validateDateBrazil('31/04/2021'));
+    }
+
+    public function testValidateDateAmerican(): void
+    {
+        self::assertEquals(true, ValidateDate::validateDateAmerican('2021-04-29'));
+        self::assertEquals(false, ValidateDate::validateDateAmerican('2021-04-31'));
+    }
+
+    public function testValidateTimeStamp(): void
+    {
+        self::assertEquals(true, ValidateDate::validateTimeStamp('2021-04-29 11:17:12'));
+        self::assertEquals(false, ValidateDate::validateTimeStamp('2021-04-31 11:1'));
+    }
+
+    public function testValidateDateNotFuture(): void
+    {
+        $dateNow = new DateTimeImmutable();
+        $newDateFuture = $dateNow->add(new DateInterval('P32D'))->format('Y-m-d');
+        self::assertEquals(true, ValidateDate::validateDateNotFuture(Format::dateAmerican('28/12/2022')));
+        self::assertEquals(false, ValidateDate::validateDateNotFuture($newDateFuture));
+    }
+
+    public function testValidateDateUTCWithoutTimezone(): void
+    {
+        self::assertTrue(ValidateDate::validateDateUTCWithoutTimezone('2025-11-20T10:30:00'));
+        self::assertTrue(ValidateDate::validateDateUTCWithoutTimezone('1999-01-01T00:00:00'));
+        self::assertFalse(ValidateDate::validateDateUTCWithoutTimezone('2025-11-20T10:30'));
+        self::assertFalse(ValidateDate::validateDateUTCWithoutTimezone('2025-11-20 10:30:00'));
+        self::assertFalse(ValidateDate::validateDateUTCWithoutTimezone('2025-11-20T10:30:00Z'));
+        self::assertFalse(ValidateDate::validateDateUTCWithoutTimezone('2025-11-20T10:30:00+00:00'));
     }
 
     public function testValidateDateIso8601AllFormats(): void
