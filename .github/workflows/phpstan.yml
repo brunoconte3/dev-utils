@@ -23,4 +23,4 @@ jobs:
 
       # Run PHPStan
       - name: Run PHPStan
-        run: vendor/bin/phpstan analyse conf src --level=9 --configuration=phpstan.neon --autoload-file=src/resource/ConstantPhpStan.php --memory-limit=512M
+        run: vendor/bin/phpstan analyse conf src --level=10 --configuration=phpstan.neon --autoload-file=src/resource/ConstantPhpStan.php --memory-limit=512M
