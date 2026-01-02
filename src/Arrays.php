@@ -8,30 +8,40 @@ class Arrays
 {
     public static function searchKey(array $array, string $key): ?int
     {
-        $result = array_search(key([$key => null]), array_keys($array), true);
-        return $result === false ? null : $result;
+        $position = array_search($key, array_keys($array), true);
+        return $position !== false ? $position : null;
     }
 
     public static function renameKey(array &$array, string $oldKey, string $newKey): bool
     {
-        $offset = self::searchKey($array, $oldKey);
-        if ($offset === null) {
+        if (!array_key_exists($oldKey, $array)) {
             return false;
         }
-        $val = &$array[$oldKey];
+
+        $position = self::searchKey($array, $oldKey);
+        if ($position === null) {
+            return false;
+        }
+
         $keys = array_keys($array);
-        $keys[$offset] = $newKey;
-        $array = array_combine($keys, $array);
-        $array[$newKey] = &$val;
+        $keys[$position] = $newKey;
+        $values = array_values($array);
+        $array = array_combine($keys, $values);
+
         return true;
     }
 
     public static function checkExistIndexByValue(array $arrayCollection, string $search): bool
     {
-        foreach ($arrayCollection as $array) {
-            $indice = (!is_array($array) && ($search === strval($array))) ? true : false;
-            if ((is_array($array) && self::checkExistIndexByValue($array, $search)) || $indice) {
-                unset($indice);
+        foreach ($arrayCollection as $item) {
+            if (!is_array($item)) {
+                if ($search === strval($item)) {
+                    return true;
+                }
+                continue;
+            }
+
+            if (self::checkExistIndexByValue($item, $search)) {
                 return true;
             }
         }
@@ -40,50 +50,60 @@ class Arrays
 
     public static function findValueByKey(array $array, string $searchKey): array
     {
-        $retorno = [];
+        $result = [];
+        $normalizedSearchKey = strtolower($searchKey);
+
         foreach ($array as $key => $value) {
-            if (strval(strtolower($key)) === strtolower($searchKey)) {
-                $retorno[$key] = $value;
-            } else {
-                if (is_array($value)) {
-                    $retorno[$key] = self::findValueByKey($value, $searchKey);
+            if (strtolower(strval($key)) === $normalizedSearchKey) {
+                $result[$key] = $value;
+                continue;
+            }
+
+            if (is_array($value)) {
+                $nestedResult = self::findValueByKey($value, $searchKey);
+                if ($nestedResult !== []) {
+                    $result[$key] = $nestedResult;
                 }
             }
         }
-        return array_filter($retorno);
+        return $result;
     }
 
     public static function findIndexByValue(array $array, string | int | bool $searchValue): array
     {
-        $retorno = [];
+        $result = [];
+
         foreach ($array as $key => $value) {
-            if (!is_array($value) && ($value === $searchValue)) {
-                $retorno[$key] = $value;
-            } else {
-                if (is_array($value)) {
-                    $retorno[$key] = self::findIndexByValue($value, $searchValue);
+            if (!is_array($value)) {
+                if ($value === $searchValue) {
+                    $result[$key] = $value;
                 }
+                continue;
+            }
+
+            $nestedResult = self::findIndexByValue($value, $searchValue);
+            if ($nestedResult !== []) {
+                $result[$key] = $nestedResult;
             }
         }
-        return array_filter($retorno);
+        return $result;
     }
 
-    public static function convertArrayToXml(array $array, object &$xml): void
+    public static function convertArrayToXml(array $array, \SimpleXMLElement &$xml): void
     {
         foreach ($array as $key => $value) {
-            if (is_numeric($key)) {
-                if (is_array($value) && isset($value['@attr'])) {
-                    $key = $value['@attr'];
-                }
+            if (is_numeric($key) && is_array($value) && isset($value['@attr'])) {
+                $key = $value['@attr'];
             }
+
             if (is_array($value)) {
                 unset($value['@attr']);
                 $subnode = $xml->addChild(strval($key));
-
                 self::convertArrayToXml($value, $subnode);
-            } else {
-                $xml->addChild(strval($key), strtoupper(htmlspecialchars(strval($value))));
+                continue;
             }
+
+            $xml->addChild(strval($key), htmlspecialchars(strval($value)));
         }
     }
 
@@ -103,20 +123,22 @@ class Arrays
         });
     }
 
-    public static function checkExistIndexArrayRecursive(
-        ?array $array,
-        ?string $needle,
-        bool &$aux = false,
-    ): bool {
-        if (!empty($array)) {
-            foreach ($array as $key => $value) {
-                if ($key === $needle) {
-                    $aux = true;
-                } elseif (is_array($value)) {
-                    self::checkExistIndexArrayRecursive($value, $needle, $aux);
-                }
+    public static function checkExistIndexArrayRecursive(?array $array, ?string $needle): bool
+    {
+        if ($array === null || $needle === null) {
+            return false;
+        }
+
+        foreach ($array as $key => $value) {
+            if ($key === $needle) {
+                return true;
+            }
+
+            if (is_array($value) && self::checkExistIndexArrayRecursive($value, $needle)) {
+                return true;
             }
         }
-        return $aux;
+
+        return false;
     }
 }

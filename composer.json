@@ -106,8 +106,7 @@
         }
     },
     "require-dev": {
-        "phpunit/phpunit": "^12.1",
-        "phpstan/phpstan": "^2.1"
+        "phpunit/phpunit": "^12.1"
     },
     "minimum-stability": "stable",
     "prefer-stable": true
