@@ -4,47 +4,64 @@ namespace DevUtils;
 
 class ValidateCnpj
 {
+    private const INVALID_SEQUENCES = [
+        '00000000000000',
+        '11111111111111',
+        '22222222222222',
+        '33333333333333',
+        '44444444444444',
+        '55555555555555',
+        '66666666666666',
+        '77777777777777',
+        '88888888888888',
+        '99999999999999',
+    ];
+
+    private static function isInvalidSequence(string $cnpj): bool
+    {
+        return ctype_digit($cnpj) && in_array($cnpj, self::INVALID_SEQUENCES, true);
+    }
+
+    private static function isException(string $cnpj, string | array | bool $cnpjException): bool
+    {
+        if (is_string($cnpjException)) {
+            return $cnpj === $cnpjException;
+        }
+
+        if (is_array($cnpjException)) {
+            return in_array($cnpj, $cnpjException, true);
+        }
+
+        return false;
+    }
+
     private static function validateCnpjSequenceInvalidate(
         string $cnpj,
         string | array | bool $cnpjException = '',
     ): bool {
-        if (!ctype_digit($cnpj)) {
+        if (!self::isInvalidSequence($cnpj)) {
             return true;
         }
-        $cnpjInvalidate = [
-            '00000000000000',
-            '11111111111111',
-            '22222222222222',
-            '33333333333333',
-            '44444444444444',
-            '55555555555555',
-            '66666666666666',
-            '77777777777777',
-            '88888888888888',
-            '99999999999999',
-        ];
 
-        if ((empty($cnpjException) || is_bool($cnpjException)) && in_array($cnpj, $cnpjInvalidate, true)) {
-            return false;
-        }
-        if (
-            is_string($cnpjException) &&
-            in_array($cnpj, $cnpjInvalidate, true) &&
-            in_array($cnpjException, $cnpjInvalidate, true)
-        ) {
-            return true;
-        }
-        if (is_array($cnpjException) && (count($cnpjException) > 0)) {
-            $cnpjExceptionValid = [];
-            foreach ($cnpjException as $key => $nrInscricao) {
-                $cnpjExceptionValid[$key] = false;
-                if (in_array($nrInscricao, $cnpjInvalidate, true) && in_array($cnpj, $cnpjInvalidate, true)) {
-                    $cnpjExceptionValid[$key] = true;
-                }
+        return self::isException($cnpj, $cnpjException);
+    }
+
+    private static function calculateDigit(string $cnpj, int $length, int $startWeight): int
+    {
+        $sum = 0;
+        $weight = $startWeight;
+
+        for ($i = 0; $i < $length; $i++) {
+            $value = self::cnpjCharValue($cnpj[$i]);
+            if ($value < 0) {
+                return -1;
             }
-            return (in_array(false, $cnpjExceptionValid, true)) ? false : true;
+            $sum += $value * $weight;
+            $weight = ($weight === 2) ? 9 : $weight - 1;
         }
-        return true;
+
+        $remainder = $sum % 11;
+        return ($remainder < 2) ? 0 : 11 - $remainder;
     }
 
     private static function validateRuleCnpj(string $cnpj): bool
@@ -53,32 +70,17 @@ class ValidateCnpj
             return false;
         }
 
-        for ($i = 0, $j = 5, $sum = 0; $i < 12; $i++) {
-            $v = self::cnpjCharValue($cnpj[$i]);
-            if ($v < 0) {
-                return false;
-            }
-            $sum += $v * $j;
-            $j = ($j == 2) ? 9 : $j - 1;
-        }
-        $rest = $sum % 11;
-        $dv1  = ($rest < 2) ? 0 : 11 - $rest;
-        if ((int)$cnpj[12] !== $dv1) {
+        $firstDigit = self::calculateDigit($cnpj, 12, 5);
+        if ($firstDigit < 0 || (int) $cnpj[12] !== $firstDigit) {
             return false;
         }
 
-        for ($i = 0, $j = 6, $sum = 0; $i < 13; $i++) {
-            $v = ($i < 12) ? self::cnpjCharValue($cnpj[$i]) : $dv1;
-            if ($v < 0) {
-                return false;
-            }
-            $sum += $v * $j;
-            $j = ($j == 2) ? 9 : $j - 1;
+        $secondDigit = self::calculateDigit($cnpj . $firstDigit, 13, 6);
+        if ($secondDigit < 0 || (int) $cnpj[13] !== $secondDigit) {
+            return false;
         }
-        $rest = $sum % 11;
-        $dv2  = ($rest < 2) ? 0 : 11 - $rest;
 
-        return (int)$cnpj[13] === $dv2;
+        return true;
     }
 
     private static function dealCnpj(string $cnpj): string
@@ -88,13 +90,16 @@ class ValidateCnpj
 
     private static function cnpjCharValue(string $ch): int
     {
-        $o = ord($ch);
-        if ($o >= 48 && $o <= 57) {
-            return $o - 48;
+        $ascii = ord($ch);
+
+        if ($ascii >= 48 && $ascii <= 57) {
+            return $ascii - 48;
         }
-        if ($o >= 65 && $o <= 90) {
-            return $o - 48;
+
+        if ($ascii >= 65 && $ascii <= 90) {
+            return $ascii - 48;
         }
+
         return -1;
     }
 
@@ -103,10 +108,13 @@ class ValidateCnpj
         if (empty($cnpj)) {
             return false;
         }
+
         $cnpj = self::dealCnpj($cnpj);
+
         if (!self::validateCnpjSequenceInvalidate($cnpj, $cnpjException)) {
             return false;
         }
+
         return self::validateRuleCnpj($cnpj);
     }
 }

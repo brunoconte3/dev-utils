@@ -52,16 +52,20 @@ class Utility
     }
 
 
-    public static function captureClientIp(): mixed
+    public static function captureClientIp(): ?string
     {
-        if (!empty(filter_input(INPUT_SERVER, 'HTTP_CLIENT_IP'))) {
-            $ip = $_SERVER['HTTP_CLIENT_IP'];
-        } elseif (!empty(filter_input(INPUT_SERVER, 'HTTP_X_FORWARDED_FOR'))) {
-            $ip = filter_input(INPUT_SERVER, 'HTTP_X_FORWARDED_FOR');
-        } else {
-            $ip = filter_input(INPUT_SERVER, 'REMOTE_ADDR');
+        $clientIp = filter_input(INPUT_SERVER, 'HTTP_CLIENT_IP');
+        if (!empty($clientIp)) {
+            return $clientIp;
         }
-        return $ip;
+
+        $forwardedFor = filter_input(INPUT_SERVER, 'HTTP_X_FORWARDED_FOR');
+        if (!empty($forwardedFor)) {
+            return $forwardedFor;
+        }
+
+        $remoteAddr = filter_input(INPUT_SERVER, 'REMOTE_ADDR');
+        return $remoteAddr ?: null;
     }
 
     public static function generatePassword(
@@ -72,16 +76,22 @@ class Utility
         bool $symbols = true,
     ): string {
         $charset = self::buildCharset($uppercase, $lowercase, $numbers, $symbols);
-        $password = substr(str_shuffle($charset), 0, $size);
+        $maxAttempts = 100;
 
-        return self::isValidPassword($password, $uppercase, $lowercase, $numbers, $symbols)
-            ? $password
-            : self::generatePassword($size, $uppercase, $lowercase, $numbers, $symbols);
+        for ($attempt = 0; $attempt < $maxAttempts; $attempt++) {
+            $password = substr(str_shuffle($charset), 0, $size);
+
+            if (self::isValidPassword($password, $uppercase, $lowercase, $numbers, $symbols)) {
+                return $password;
+            }
+        }
+
+        return substr(str_shuffle($charset), 0, $size);
     }
 
-    public static function buildUrl(string $host, string $absolutePath = '', ?string $https = ''): string
+    public static function buildUrl(string $host, string $absolutePath = '', ?string $https = null): string
     {
-        $protocol = ((isset($https) && ($https === 'on')) ? 'https' : 'http');
-        return $protocol . '://' . $host . $absolutePath;
+        $protocol = ($https === 'on') ? 'https' : 'http';
+        return sprintf('%s://%s%s', $protocol, $host, $absolutePath);
     }
 }
