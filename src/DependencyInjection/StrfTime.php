@@ -17,7 +17,7 @@ class StrfTime
         ?string $locale = null
     ): string {
         if (!($timestamp instanceof DateTimeInterface)) {
-            $timestamp = is_int($timestamp) ? '@' . $timestamp : strval($timestamp);
+            $timestamp = is_int($timestamp) ? '@' . $timestamp : (string) $timestamp;
 
             try {
                 $timestamp = new DateTime($timestamp);
@@ -29,7 +29,7 @@ class StrfTime
         if (empty($locale)) {
             $locale = setlocale(LC_TIME, '0');
         }
-        $locale = preg_replace('/[^\w-].*$/', '', strval($locale));
+        $locale = preg_replace('/[^\w-].*$/', '', (string) $locale);
 
         $intlFormats = [
             '%a' => 'EEE',
@@ -189,6 +189,6 @@ class StrfTime
             (string)$format
         );
 
-        return str_replace('%%', '%', strval($out));
+        return str_replace('%%', '%', (string) $out);
     }
 }

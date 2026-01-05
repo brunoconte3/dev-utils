@@ -9,45 +9,68 @@ use InvalidArgumentException;
 
 class Format extends FormatAux
 {
+    private static function normalizeDateToBrazilian(string $date): string
+    {
+        if (str_contains($date, '/')) {
+            return implode('-', array_reverse(explode('/', $date)));
+        }
+        return $date;
+    }
+
     private static function formatCurrencyForFloat(float | int | string $value): float
     {
         if (is_string($value)) {
-            $separador = str_contains($value, ',') ? ',' : '.';
-            $value = explode($separador, $value);
-            if (isset($value[1]) && strlen(strval($value[1])) === 1) {
-                $value[1] = strval($value[1]) . '0';
+            $separator = str_contains($value, ',') ? ',' : '.';
+            $valueParts = explode($separator, $value);
+
+            if (isset($valueParts[1]) && strlen((string) $valueParts[1]) === 1) {
+                $valueParts[1] = (string) $valueParts[1] . '0';
             }
-            $value = implode($separador, $value);
+
+            $value = implode($separator, $valueParts);
+            $onlyNumbers = self::onlyNumbers($value);
+            $numericValue = strlen($onlyNumbers) > 0 ? $onlyNumbers : '000';
+
             if (preg_match('/(\,|\.)/', substr(substr($value, -3), 0, 1))) {
-                $value = (strlen(self::onlyNumbers($value)) > 0) ? self::onlyNumbers($value) : '000';
-                $value = substr_replace($value, '.', -2, 0);
+                $value = substr_replace($numericValue, '.', -2, 0);
             } else {
-                $value = (strlen(self::onlyNumbers($value)) > 0) ? self::onlyNumbers($value) : '000';
+                $value = $numericValue;
             }
         }
-        return floatval($value);
+        return (float) $value;
     }
 
     private static function formatFileName(string $fileName = ''): string
     {
-        $dataName = explode('.', trim($fileName));
-        $ext  = end($dataName);
+        $parts = explode('.', trim($fileName));
+        $extension = end($parts);
 
-        if (count($dataName) > 1) {
-            unset($dataName[count($dataName) - 1]);
+        if (count($parts) > 1) {
+            unset($parts[count($parts) - 1]);
         }
 
-        $dataName = implode('_', $dataName);
-        $stringNoSpecial = self::removeSpecialCharacters($dataName) ?? '';
-        $dataName = preg_replace('/\W/', '_', strtolower($stringNoSpecial));
+        $baseName = implode('_', $parts);
+        $withoutSpecialChars = self::removeSpecialCharacters($baseName) ?? '';
+        $normalized = preg_replace('/\W/', '_', strtolower($withoutSpecialChars));
 
-        return "{$dataName}.{$ext}";
+        return "{$normalized}.{$extension}";
     }
 
     private static function generateFileName(?string $nameFile): string
     {
-        return date('d-m-Y_s_') . uniqid(random_int(0, PHP_INT_MAX) . random_int(0, PHP_INT_MAX)
-            . random_int(0, PHP_INT_MAX) . time()) . '_' . $nameFile;
+        $randomPart = random_int(0, PHP_INT_MAX) . random_int(0, PHP_INT_MAX) . random_int(0, PHP_INT_MAX) . time();
+        return date('d-m-Y_s_') . uniqid($randomPart) . '_' . $nameFile;
+    }
+
+    private static function formatCurrency(
+        float $value,
+        string $decimalSeparator,
+        string $thousandsSeparator,
+        string $prefix = ''
+    ): string {
+        return (!empty($value) || $value === 0.0)
+            ? $prefix . number_format($value, 2, $decimalSeparator, $thousandsSeparator)
+            : '';
     }
 
     public static function convertTypes(array &$data, array $rules): void
@@ -65,7 +88,7 @@ class Format extends FormatAux
                         $data[$key] = parent::executeConvert($type, $data[$key]);
                     }
                 } catch (Exception) {
-                    $dataValue = isset($data[$key]) ? strval($data[$key]) : 'null';
+                    $dataValue = isset($data[$key]) ? (string) $data[$key] : 'null';
                     $error[] = "falhar ao tentar converter {$dataValue} para $type";
                 }
             }
@@ -74,7 +97,7 @@ class Format extends FormatAux
 
     public static function companyIdentification(string $cnpj): string
     {
-        $companyIdentification = strtoupper(strval(preg_replace('/[^A-Z0-9]/', '', $cnpj)));
+        $companyIdentification = strtoupper((string) preg_replace('/[^A-Z0-9]/', '', $cnpj));
 
         if (!preg_match('/^[A-Z0-9]{12}\d{2}$/', $companyIdentification)) {
             throw new InvalidArgumentException(
@@ -140,44 +163,47 @@ class Format extends FormatAux
         if (strlen($date) < 8 || strlen($date) > 10) {
             throw new InvalidArgumentException('dateAmerican precisa conter 8 à 10 dígitos!');
         }
-        if (strpos($date, '/') > -1) {
-            return implode('-', array_reverse(explode('/', $date)));
+
+        if (str_contains($date, '/')) {
+            return self::normalizeDateToBrazilian($date);
         }
-        return date('Y-m-d', (strtotime($date) ?: null));
+
+        return date('Y-m-d', strtotime($date) ?: 0);
     }
 
     public static function arrayToIntReference(array &$array): void
     {
-        $array = array_map(fn($v) => intval($v), $array);
+        $array = array_map(fn($v) => (int) $v, $array);
     }
 
     public static function arrayToInt(array $array): array
     {
-        return array_map(fn($v) => intval($v), $array);
+        return array_map(fn($v) => (int) $v, $array);
     }
 
-    public static function currency(float | int | string $value, ?string $coinType = ''): string
+    public static function currency(float | int | string $value, string $coinType = ''): string
     {
-        $value = self::formatCurrencyForFloat($value);
-        return (!empty($value) || $value === 0 || $value === '0')  ?
-            $coinType . number_format(floatval($value), 2, ',', '.') : '';
+        $normalizedValue = self::formatCurrencyForFloat($value);
+        return self::formatCurrency($normalizedValue, ',', '.', $coinType);
     }
 
-    public static function currencyUsd(float | int | string $value, ?string $coinType = ''): string
+    public static function currencyUsd(float | int | string $value, string $coinType = ''): string
     {
-        $value = self::formatCurrencyForFloat($value);
-        return (!empty($value)) ?  $coinType . number_format(floatval($value), 2, '.', ',') : '';
+        $normalizedValue = self::formatCurrencyForFloat($value);
+        return self::formatCurrency($normalizedValue, '.', ',', $coinType);
     }
 
     public static function returnPhoneOrAreaCode(string $phone, bool $areaCode = false): string | bool
     {
-        $phone = self::onlyNumbers($phone);
-        if (!empty($phone) && ValidatePhone::validate($phone)) {
-            $retorno = ($areaCode) ? preg_replace('/\A.{2}?\K[\d]+/', '', $phone)
-                : preg_replace('/^\d{2}/', '', $phone);
-            return $retorno ?? '';
+        $numericPhone = self::onlyNumbers($phone);
+
+        if (empty($numericPhone) || !ValidatePhone::validate($numericPhone)) {
+            return false;
         }
-        return false;
+
+        return $areaCode
+            ? preg_replace('/\A.{2}?\K[\d]+/', '', $numericPhone) ?? ''
+            : preg_replace('/^\d{2}/', '', $numericPhone) ?? '';
     }
 
     public static function ucwordsCharset(string $string, string $charset = 'UTF-8'): string
@@ -185,11 +211,10 @@ class Format extends FormatAux
         return mb_convert_case(mb_strtolower($string, $charset), MB_CASE_TITLE, 'UTF-8');
     }
 
-    public static function pointOnlyValue(string $str): string
+    public static function pointOnlyValue(string $value): string
     {
-        $str = preg_replace('/[^0-9,]/', '', $str) ?? '';
-        $retorno = preg_replace('/[^0-9]/', '.', $str);
-        return $retorno ?? '';
+        $withComma = preg_replace('/[^0-9,]/', '', $value) ?? '';
+        return preg_replace('/[^0-9]/', '.', $withComma) ?? '';
     }
 
     public static function emptyToNull(array $array, ?string $exception = null): array
@@ -198,33 +223,33 @@ class Format extends FormatAux
             if (isset($value) && is_array($value)) {
                 return count($value) > 0 ? $value : null;
             }
-            return ((isset($value) && empty(trim(strval($value))) && $value !== $exception)
+            return ((isset($value) && empty(trim((string) $value)) && $value !== $exception)
                 || $value === 'null') ? null : $value;
         }, $array);
     }
 
-    public static function mask(string $mask, string $str): string
+    public static function mask(string $mask, string $value): string
     {
-        $str = str_replace(' ', '', $str);
-        for ($i = 0; $i < strlen($str); $i++) {
-            $pos = strpos($mask, "#");
-            if ($pos !== false) {
-                $mask[$pos] = $str[$i];
+        $cleanValue = str_replace(' ', '', $value);
+
+        for ($i = 0; $i < strlen($cleanValue); $i++) {
+            $position = strpos($mask, "#");
+            if ($position !== false) {
+                $mask[$position] = $cleanValue[$i];
             }
         }
+
         return $mask;
     }
 
-    public static function onlyNumbers(string $str): string
+    public static function onlyNumbers(string $value): string
     {
-        $retorno = preg_replace('/[^0-9]/', '', $str);
-        return $retorno ?? '';
+        return preg_replace('/[^0-9]/', '', $value) ?? '';
     }
 
-    public static function onlyLettersNumbers(string $str): string
+    public static function onlyLettersNumbers(string $value): string
     {
-        $retorno = preg_replace('/[^a-zA-Z0-9]/', '', $str);
-        return $retorno ?? '';
+        return preg_replace('/[^a-zA-Z0-9]/', '', $value) ?? '';
     }
 
     public static function upper(string $string, string $charset = 'UTF-8'): string
@@ -311,13 +336,13 @@ class Format extends FormatAux
 
     public static function writeDateExtensive(string $date): string
     {
-        if (strpos($date, '/') > -1) {
-            $date = implode('-', array_reverse(explode('/', $date)));
-        }
-        $timestamp = strtotime($date);
+        $normalizedDate = self::normalizeDateToBrazilian($date);
+        $timestamp = strtotime($normalizedDate);
+
         if ($timestamp === false) {
             throw new InvalidArgumentException('Invalid date format for writeDateExtensive.');
         }
+
         return StrfTime::strftime('%A, %d de %B de %Y', $timestamp, 'pt_BR');
     }
 
@@ -331,35 +356,38 @@ class Format extends FormatAux
 
     public static function restructFileArray(array $file = []): array
     {
-        $arrayFile = [];
-
-        if (!empty($file)) {
-            $fileError = ValidateFile::validateFileErrorPhp($file);
-
-            if (!empty($fileError)) {
-                return $fileError;
-            }
-            if (isset($file['name']) && is_array($file['name'])) {
-                foreach ($file['name'] as $key => $name) {
-                    if (!is_string($name)) {
-                        continue;
-                    }
-                    $name = self::formatFileName($name);
-                    $params = [
-                        'name'     => $name,
-                        'type'     => is_array($file['type']) && isset($file['type'][$key]) ? $file['type'][$key] : '',
-                        'tmp_name' => is_array($file['tmp_name']) && isset($file['tmp_name'][$key])
-                            ? $file['tmp_name'][$key] : '',
-                        'error'    => is_array($file['error']) && isset($file['error'][$key])
-                            ? $file['error'][$key] : 0,
-                        'size'     => is_array($file['size']) && isset($file['size'][$key]) ? $file['size'][$key] : 0,
-                        'name_upload' => self::generateFileName($name),
-                    ];
-                    array_push($arrayFile, $params);
-                }
-            }
+        if (empty($file)) {
+            return [];
         }
-        return $arrayFile;
+
+        $fileError = ValidateFile::validateFileErrorPhp($file);
+        if (!empty($fileError)) {
+            return $fileError;
+        }
+
+        if (!isset($file['name']) || !is_array($file['name'])) {
+            return [];
+        }
+
+        $restructuredFiles = [];
+        foreach ($file['name'] as $key => $name) {
+            if (!is_string($name)) {
+                continue;
+            }
+
+            $formattedName = self::formatFileName($name);
+            $restructuredFiles[] = [
+                'name'        => $formattedName,
+                'type'        => is_array($file['type']) && isset($file['type'][$key]) ? $file['type'][$key] : '',
+                'tmp_name'    => is_array($file['tmp_name'])
+                    && isset($file['tmp_name'][$key]) ? $file['tmp_name'][$key] : '',
+                'error'       => is_array($file['error']) && isset($file['error'][$key]) ? $file['error'][$key] : 0,
+                'size'        => is_array($file['size']) && isset($file['size'][$key]) ? $file['size'][$key] : 0,
+                'name_upload' => self::generateFileName($formattedName),
+            ];
+        }
+
+        return $restructuredFiles;
     }
 
     public static function convertTimestampBrazilToAmerican(string $dt): string
@@ -369,20 +397,22 @@ class Format extends FormatAux
         }
 
         $dateTime = \DateTime::createFromFormat('d/m/Y H:i:s', $dt);
-        return !empty($dateTime) ? $dateTime->format('Y-m-d H:i:s') : '';
+        return $dateTime !== false ? $dateTime->format('Y-m-d H:i:s') : '';
     }
 
     public static function convertStringToBinary(string $string): string
     {
         $characters = str_split($string);
-        $binario = [];
+        $binaryParts = [];
+
         foreach ($characters as $character) {
-            $data = unpack('H*', $character) ?: [];
-            if (isset($data[1]) && is_string($data[1])) {
-                $binario[] = base_convert($data[1], 16, 2);
+            $hexData = unpack('H*', $character) ?: [];
+            if (isset($hexData[1]) && is_string($hexData[1])) {
+                $binaryParts[] = base_convert($hexData[1], 16, 2);
             }
         }
-        return implode(' ', $binario);
+
+        return implode(' ', $binaryParts);
     }
 
     public static function slugfy(string $text): string

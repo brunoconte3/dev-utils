@@ -16,7 +16,7 @@ class ValidateDate
             ctype_digit($mes) &&
             ctype_digit($dia) &&
             ctype_digit($ano) &&
-            checkdate(intval($mes), intval($dia), intval($ano))
+            checkdate((int) $mes, (int) $dia, (int) $ano)
         ) {
             return true;
         }
@@ -98,7 +98,7 @@ class ValidateDate
             $dia = $partes[0];
             $mes = $partes[1];
             $ano = isset($partes[2]) ? $partes[2] : 0;
-            return self::validateYear(strval($ano), $mes, $dia);
+            return self::validateYear((string) $ano, $mes, $dia);
         }
         return false;
     }
@@ -114,7 +114,7 @@ class ValidateDate
                 $mes = $partes[1];
                 $ano = $partes[0] ?: 0;
 
-                return self::validateYear(strval($ano), $mes, $dia);
+                return self::validateYear((string) $ano, $mes, $dia);
             }
             return false;
         }

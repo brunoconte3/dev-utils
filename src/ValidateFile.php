@@ -46,7 +46,7 @@ class ValidateFile
             foreach ($file['size'] as $key => $size) {
                 if ($condition($size, $rule)) {
                     $fileName = (is_array($file['name']) && isset($file['name'][$key]))
-                        ? strval($file['name'][$key]) : 'arquivo';
+                        ? (string) $file['name'][$key] : 'arquivo';
                     $defaultMsg = "O arquivo {$fileName} deve conter, no {$type} {$rule} bytes!";
                     $msg = (!empty($message)) ? $message : $defaultMsg;
                     array_push($arrayFileError, $msg);
@@ -79,7 +79,7 @@ class ValidateFile
         foreach ($file['error'] as $key => $codeError) {
             if (($codeError > 0) && is_int($codeError) && (array_key_exists($codeError, $phpFileErrors))) {
                 $fileName = (is_array($file['name']) && isset($file['name'][$key])) ? $file['name'][$key] : '';
-                $nameFile = empty($fileName) ? '' : '[' . strval($fileName) . '] - ';
+                $nameFile = empty($fileName) ? '' : '[' . (string) $fileName . '] - ';
                 $message = (!empty($message)) ? $nameFile . $message : $nameFile . $phpFileErrors[$codeError];
 
                 array_push($arrayFileError, $message);

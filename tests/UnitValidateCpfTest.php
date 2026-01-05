@@ -13,14 +13,14 @@ final class UnitValidateCpfTest extends TestCase
     {
         $firstDigitSum = 0;
         for ($position = 0, $multiplier = 10; $position < 9; $position++, $multiplier--) {
-            $firstDigitSum += intval($cpfRoot[$position]) * $multiplier;
+            $firstDigitSum += (int) $cpfRoot[$position] * $multiplier;
         }
         $firstRemainder = $firstDigitSum % 11;
         $firstVerificationDigit = ($firstRemainder < 2) ? 0 : 11 - $firstRemainder;
 
         $secondDigitSum = 0;
         for ($position = 0, $multiplier = 11; $position < 9; $position++, $multiplier--) {
-            $secondDigitSum += intval($cpfRoot[$position]) * $multiplier;
+            $secondDigitSum += (int) $cpfRoot[$position] * $multiplier;
         }
         $secondDigitSum += $firstVerificationDigit * 2;
         $secondRemainder = $secondDigitSum % 11;

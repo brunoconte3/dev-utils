@@ -83,7 +83,7 @@ class ValidateCnpj
 
     private static function dealCnpj(string $cnpj): string
     {
-        return strtoupper(strval(preg_replace('/[^A-Z0-9]/i', '', $cnpj)));
+        return strtoupper((string) preg_replace('/[^A-Z0-9]/i', '', $cnpj));
     }
 
     private static function cnpjCharValue(string $ch): int

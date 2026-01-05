@@ -20,10 +20,10 @@ class UnitUtilityTest extends TestCase
         $passWordFull = Utility::generatePassword(10);
 
         self::assertEquals(10, strlen($passWordFull));
-        self::assertTrue(boolval(preg_match('@[A-Z]@', $passWordFull)));
-        self::assertTrue(boolval(preg_match('@[a-z]@', $passWordFull)));
-        self::assertTrue(boolval(preg_match('@[0-9]@', $passWordFull)));
-        self::assertTrue(boolval(preg_match("/(?=.*[^A-Za-z\\d])/", $passWordFull)));
+        self::assertTrue((bool) preg_match('@[A-Z]@', $passWordFull));
+        self::assertTrue((bool) preg_match('@[a-z]@', $passWordFull));
+        self::assertTrue((bool) preg_match('@[0-9]@', $passWordFull));
+        self::assertTrue((bool) preg_match("/(?=.*[^A-Za-z\\d])/", $passWordFull));
     }
 
     public function testBuildUrl(): void

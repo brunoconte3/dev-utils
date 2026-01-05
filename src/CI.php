@@ -6,10 +6,10 @@ if ($argc !== 3) {
 }
 
 $file = $argv[1];
-$threshold = floatval($argv[2]);
+$threshold = (float) $argv[2];
 
 $coverage = simplexml_load_file($file);
-$ratio = !empty($coverage) ? floatval($coverage->project->directory->totals->lines["percent"]) : 0;
+$ratio = !empty($coverage) ? (float) $coverage->project->directory->totals->lines["percent"] : 0;
 
 if ($ratio < $threshold) {
     throw new InvalidArgumentException("[FAIL] Code coverage is $ratio% (required minimum is $threshold%)");

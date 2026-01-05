@@ -49,7 +49,7 @@ trait TraitRuleInteger
         if (!is_numeric($value)) {
             $this->errors[$field] = !empty($message) ?
                 $message : "O campo $field precisa ser do valor inteiro e maior que 0!";
-        } elseif ($value > 12 || $value <= 0 || strlen(strval($value)) > 2) {
+        } elseif ($value > 12 || $value <= 0 || strlen((string) $value) > 2) {
             $this->errors[$field] = !empty($message) ?
                 $message : "O campo $field não é um mês válido!";
         }
@@ -64,11 +64,11 @@ trait TraitRuleInteger
         if (!is_numeric($value)) {
             $this->errors[$field] = !empty($message) ? $message : "O campo $field não é um inteiro!";
         }
-        if (intval($value) < $rule) {
+        if ((int) $value < $rule) {
             $this->errors[$field] = !empty($message) ?
                 $message : "O campo $field deve ter o valor mínimo de $rule!";
         }
-        if (intval($value) < 0) {
+        if ((int) $value < 0) {
             $this->errors[$field] = !empty($message) ?
                 $message : "O campo $field deve ter o valor mínimo de zero!";
         }

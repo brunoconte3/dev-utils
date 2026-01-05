@@ -82,7 +82,7 @@ trait TraitRuleString
                 $arrayDdd = array_map(function ($value) {
                     if (is_array($value)) {
                         return array_map(function ($value) {
-                            return '0' . strval($value);
+                            return '0' . (string) $value;
                         }, $value);
                     }
                 }, $arrayDdd);
@@ -148,7 +148,7 @@ trait TraitRuleString
         string $value = '',
         ?string $message = '',
     ): void {
-        $value = strtoupper(strval(preg_replace('/[^A-Z0-9]/', '', $value)));
+        $value = strtoupper((string) preg_replace('/[^A-Z0-9]/', '', $value));
         $errorMessage = ($message !== null && $message !== '') ? $message : "O campo $field é inválido!";
 
         if ($value === '') {

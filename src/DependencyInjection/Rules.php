@@ -27,7 +27,7 @@ class Rules
             $msg .= $rule;
         }
         if (!empty($value)) {
-            $msg .= strval($value);
+            $msg .= (string) $value;
         }
         if (!empty($message)) {
             $msg .= $message;
@@ -56,9 +56,9 @@ class Rules
         if (!is_callable($call, true, $method)) {
             if (is_array($this->errors[$field] ?? null)) {
                 $this->errors[$field][$field] = 'Há regras de validação não implementadas no campo '
-                    . strval($field) . '!';
+                    . (string) $field . '!';
             } else {
-                $this->errors[$field] = 'Há regras de validação não implementadas no campo ' . strval($field) . '!';
+                $this->errors[$field] = 'Há regras de validação não implementadas no campo ' . (string) $field . '!';
             }
             return;
         }
@@ -160,7 +160,7 @@ class Rules
         if (
             !isset($value)
             ||  $value === false
-            || (is_string($value) && empty(trim($value))) && strval($value) !== '0'
+            || (is_string($value) && empty(trim($value))) && (string) $value !== '0'
         ) {
             return $this->errors[$field] = !empty($message) ? $message : "O campo $field é obrigatório!";
         }
@@ -242,7 +242,7 @@ class Rules
                 }
             }
             //valida campos filhos required, porém não existe no array de dados
-            if (empty($data) && is_array($val) && (strpos(trim(strtolower(strval(json_encode($val)))), 'required'))) {
+            if (empty($data) && is_array($val) && (strpos(trim(strtolower((string) json_encode($val))), 'required'))) {
                 $this->errors[$key] = "Não foi encontrado o indice $key, campos filhos são obrigatórios!";
                 return false;
             }
@@ -288,7 +288,7 @@ class Rules
                             }
                             $keyConf = $ruleArrayConf[0];
                             if (is_string($keyConf)) {
-                                $rulesArray[strval($keyConf)] = $ruleArrayConf[1] ?? true;
+                                $rulesArray[(string) $keyConf] = $ruleArrayConf[1] ?? true;
                             }
                         }
                     }
@@ -301,7 +301,7 @@ class Rules
                 unset($rulesArray['mensagem']);
             }
             foreach ($rulesArray as $key => $val) {
-                $val = is_numeric($val) ? intval($val) : $val;
+                $val = is_numeric($val) ? (int) $val : $val;
                 $ruleValue = (!empty($val) || ($val === 0)) ? true : false;
                 if (!in_array('optional', $rulesArray) || (in_array('optional', $rulesArray) && $ruleValue)) {
                     if (in_array(trim(strtolower($key)), self::RULES_WITHOUT_FUNCS)) {
@@ -322,7 +322,8 @@ class Rules
                                 && (is_string($auxValue) && Compare::contains($auxValue, 'obrigatório!'))
                             ) {
                                 if (is_array($this->errors[$field])) {
-                                    $this->errors[$field][$chaveErro] = 'O campo ' . strval($field) . ' é obrigatório!';
+                                    $this->errors[$field][$chaveErro] = 'O campo ' . (string) $field .
+                                        ' é obrigatório!';
                                 }
                             } else {
                                 $method = $this->getValidationMethod($key);
@@ -335,7 +336,7 @@ class Rules
 
                     if (is_string($auxValue)) {
                         if (!empty($this->errors[$field]) && Compare::contains($auxValue, 'obrigatório!')) {
-                            $this->errors[$field] = 'O campo ' . strval($field) . ' é obrigatório!';
+                            $this->errors[$field] = 'O campo ' . (string) $field . ' é obrigatório!';
                         } else {
                             $method = $this->getValidationMethod($key);
                             //chama a função de validação, de cada parametro json
@@ -365,15 +366,15 @@ class Rules
             }
             $rulesArray = is_array($rulesArray) ? $rulesArray : [];
             $jsonRules = $this->levelSubLevelsArrayReturnJson($rulesArray);
-            $compareA = strpos(trim(strtolower(strval($jsonRules))), 'required');
+            $compareA = strpos(trim(strtolower((string) $jsonRules)), 'required');
             if ($compareA !== false) {
-                $msg = 'O campo: ' . strval($field) . ' não foi encontrado nos dados de entrada, indices filhos são ';
+                $msg = 'O campo: ' . (string) $field . ' não foi encontrado nos dados de entrada, indices filhos são ';
                 $msg .= 'obrigatórios!';
                 if (
-                    count(array_filter(array_values((array) json_decode(strval($jsonRules), true)), 'is_array'))
+                    count(array_filter(array_values((array) json_decode((string) $jsonRules, true)), 'is_array'))
                     === 0
                 ) {
-                    $msg = 'O campo obrigatório ' . strval($field) . ' não foi encontrado nos dados de entrada!';
+                    $msg = 'O campo obrigatório ' . (string) $field . ' não foi encontrado nos dados de entrada!';
                 }
                 $this->errors[$field] = $msg;
             }

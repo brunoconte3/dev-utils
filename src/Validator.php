@@ -8,7 +8,7 @@ class Validator extends Rules
 {
     public function set(array $data, array $rules): bool
     {
-        $data = (array) json_decode(strval($this->levelSubLevelsArrayReturnJson($data)), true);
+        $data = (array) json_decode((string) $this->levelSubLevelsArrayReturnJson($data), true);
         if (empty($data)) {
             $this->errors['erro'] = 'informe os dados!';
             return false;

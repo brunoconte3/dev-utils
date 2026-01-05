@@ -35,7 +35,7 @@ class Arrays
     {
         foreach ($arrayCollection as $item) {
             if (!is_array($item)) {
-                if ($search === strval($item)) {
+                if ($search === (string) $item) {
                     return true;
                 }
                 continue;
@@ -54,7 +54,7 @@ class Arrays
         $normalizedSearchKey = strtolower($searchKey);
 
         foreach ($array as $key => $value) {
-            if (strtolower(strval($key)) === $normalizedSearchKey) {
+            if (strtolower((string) $key) === $normalizedSearchKey) {
                 $result[$key] = $value;
                 continue;
             }
@@ -98,12 +98,12 @@ class Arrays
 
             if (is_array($value)) {
                 unset($value['@attr']);
-                $subnode = $xml->addChild(strval($key));
+                $subnode = $xml->addChild((string) $key);
                 self::convertArrayToXml($value, $subnode);
                 continue;
             }
 
-            $xml->addChild(strval($key), htmlspecialchars(strval($value)));
+            $xml->addChild((string) $key, htmlspecialchars((string) $value));
         }
     }
 

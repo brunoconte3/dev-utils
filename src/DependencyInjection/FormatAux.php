@@ -37,11 +37,11 @@ abstract class FormatAux
                 return self::returnTypeBool($value);
             case 'int':
                 return (is_int($value) || filter_var($value, FILTER_VALIDATE_INT) || $value === '0')
-                    ? intval($value) : $value;
+                    ? (int) $value : $value;
             case 'float':
             case 'numeric':
                 return filter_var($value, FILTER_VALIDATE_FLOAT) ?
-                    floatval($value) : $value;
+                    (float) $value : $value;
             default:
                 return $value;
         }

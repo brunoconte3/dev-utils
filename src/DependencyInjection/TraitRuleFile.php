@@ -27,7 +27,7 @@ trait TraitRuleFile
         $this->validateRuleFile($rule, $field, 'maxUploadSize');
 
         $this->validateHandleErrorsInArray(
-            ValidateFile::validateMaxUploadSize(intval($rule), $value, $message),
+            ValidateFile::validateMaxUploadSize((int) $rule, $value, $message),
             $field
         );
     }
@@ -42,7 +42,7 @@ trait TraitRuleFile
         $this->validateRuleFile($rule, $field, 'minUploadSize');
 
         $this->validateHandleErrorsInArray(
-            ValidateFile::validateMinUploadSize(intval($rule), $value, $message),
+            ValidateFile::validateMinUploadSize((int) $rule, $value, $message),
             $field
         );
     }
@@ -89,7 +89,7 @@ trait TraitRuleFile
         array $value = [],
         ?string $message = '',
     ): void {
-        $rule = intval(trim($rule));
+        $rule = (int) trim($rule);
         $this->validateRuleFile($rule, $field, 'maxFile');
 
         $validateResult = ValidateFile::validateMaximumFileNumbers($rule, $field, $value, $message);
@@ -155,7 +155,7 @@ trait TraitRuleFile
             }
             $this->errors[$field][0] = $msg;
         } else {
-            $result = $validationMethod($field, intval($rule), $value, $message);
+            $result = $validationMethod($field, (int) $rule, $value, $message);
             if (is_array($result)) {
                 $this->validateHandleErrorsInArray($result, $field);
             }
