@@ -109,7 +109,8 @@ class UnitArrayTest extends TestCase
     public function testConvertJsonIndexToArray(): void
     {
         $array = $this->fruitArray;
-        $array['verduras'] = '{"verdura_1": "' . self::VEGETABLE_RUCULA . '", "verdura_2": "Acelga", "verdura_3": "Alface"}';
+        $array['verduras'] = '{"verdura_1": "' . self::VEGETABLE_RUCULA .
+            '", "verdura_2": "Acelga", "verdura_3": "Alface"}';
 
         Arrays::convertJsonIndexToArray($array);
 

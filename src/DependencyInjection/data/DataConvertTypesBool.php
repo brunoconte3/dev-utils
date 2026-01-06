@@ -32,23 +32,6 @@ class DataConvertTypesBool
 
     public function arrayRule(): array
     {
-        return [
-            'tratandoClasse' => 'convert|bool',
-            'tratandoArray' => 'convert|bool',
-            'tratandoInteiroPositivo' => 'convert|bool',
-            'tratandoInteiroNegativo' => 'convert|bool',
-            'tratandoStringTrue' => 'convert|bool',
-            'tratandoStringOn' => 'convert|bool',
-            'tratandoStringOff' => 'convert|bool',
-            'tratandoStringYes' => 'convert|bool',
-            'tratandoStringNo' => 'convert|bool',
-            'tratandoStringUm' => 'convert|bool',
-            'tratandoNull' => 'convert|bool',
-            'tratandoInteiroZero' => 'convert|bool',
-            'tratandoStringFalse' => 'convert|bool',
-            'tratandoQualquerString' => 'convert|bool',
-            'tratandoStringZero' => 'convert|bool',
-            'tratandoStringVazio' => 'convert|bool',
-        ];
+        return array_fill_keys(array_keys($this->arrayData()), 'convert|bool');
     }
 }
