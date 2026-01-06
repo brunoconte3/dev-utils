@@ -6,6 +6,8 @@ namespace DevUtils;
 
 class Arrays
 {
+    private const XML_ATTR_KEY = '@attr';
+
     public static function searchKey(array $array, string $key): ?int
     {
         $position = array_search($key, array_keys($array), true);
@@ -92,12 +94,12 @@ class Arrays
     public static function convertArrayToXml(array $array, \SimpleXMLElement &$xml): void
     {
         foreach ($array as $key => $value) {
-            if (is_numeric($key) && is_array($value) && isset($value['@attr'])) {
-                $key = $value['@attr'];
+            if (is_numeric($key) && is_array($value) && isset($value[self::XML_ATTR_KEY])) {
+                $key = $value[self::XML_ATTR_KEY];
             }
 
             if (is_array($value)) {
-                unset($value['@attr']);
+                unset($value[self::XML_ATTR_KEY]);
                 $subnode = $xml->addChild((string) $key);
                 self::convertArrayToXml($value, $subnode);
                 continue;

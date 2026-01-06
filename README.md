@@ -9,6 +9,21 @@ A complete library, with PSR standard and guarantee of all methods unit tested b
 - Validate Data in General
 - Validate Upload Files
 
+## Table of Contents
+
+- [Installation](#installation)
+- [Data Validation](#data-validation-example)
+- [File Upload Validation](#validating-files-upload)
+- [Validation Types](#validation-types-validators)
+- [Custom Messages](#defining-custom-message)
+- [Formatting](#formatting-examples)
+- [Comparisons](#comparisons-examples)
+- [Validations Methods](#validations-in-the-form-of-methods)
+- [Generation Utilities](#generation-utilities)
+- [Arrays Manipulation](#manipulate-arrays)
+- [Utilities](#utilities)
+- [CI/CD Coverage](#check-the-minimum-coverage-of-cicd-unit-tests-using-phpunit)
+
 ## Installation
 
 Install using Composer:
@@ -20,7 +35,7 @@ composer require brunoconte3/dev-utils
 Or add to your `composer.json`:
 
 ```json
-"brunoconte3/dev-utils": "2.12.0"
+"brunoconte3/dev-utils": "2.13.0"
 ```
 
 ## Data Validation Example
@@ -460,6 +475,47 @@ ValidateString::minWords('Bruno Conte', 2) //Return boolean
 ValidateString::maxWords('Bruno Conte', 2) //Return boolean
 ```
 
+## Generation Utilities
+
+### UUID v7 - Generate and Validate
+
+```php
+<?php
+
+require 'vendor/autoload.php';
+
+use DevUtils\Uuid;
+
+// Generate UUID v7 (timestamp-based, sortable, unique)
+$uuid = Uuid::generate(); // ==> 01890f87-4f0b-7f6b-8b1d-9f4f9d7c3b5a
+
+// Validate any UUID version (v1 to v8)
+Uuid::isValid('550e8400-e29b-41d4-a716-446655440000'); // ==> true
+
+// Validate specific version
+Uuid::isValid('01890f87-4f0b-7f6b-8b1d-9f4f9d7c3b5a', 7); // ==> true
+
+```
+
+### Password Generation
+
+```php
+<?php
+
+use DevUtils\Utility;
+
+/*
+Generate secure passwords
+int $size       ==> Number of characters (Required)
+bool $uppercase ==> Include uppercase letters (default: true)
+bool $lowercase ==> Include lowercase letters (default: true)
+bool $numbers   ==> Include numbers (default: true)
+bool $symbols   ==> Include symbols (default: true)
+*/
+Utility::generatePassword(10); // ==> aB3$xY9!zK
+Utility::generatePassword(16, true, true, true, false); // Without symbols
+```
+
 ## Manipulate Arrays
 
 ```php
@@ -467,7 +523,7 @@ ValidateString::maxWords('Bruno Conte', 2) //Return boolean
 
 require 'vendor/autoload.php';
 
-use DevUtils\Array;
+use DevUtils\Arrays;
 
 $array = ['primeiro' => 15, 'segundo' => 25];
 var_dump(Arrays::searchKey($array, 'primeiro'));   // Search for key in array, and Return position ==> returns 0
@@ -532,16 +588,6 @@ require 'vendor/autoload.php';
 use DevUtils\Utility;
 
 Utility::captureClientIp(); // Return user IP, capture per layer available, eg 201.200.25.40
-
-/*
-Return an automatically generated password, there are 5 parameters, only the first one is mandatory
-int $size       ==> Number of characters in the password (Required)
-bool $uppercase ==> If there will be capital letters
-bool $lowercase ==> If there will be lowercase letters
-bool $numbers   ==> if there will be numbers
-bool $symbols   ==> if there will be symbols
-*/
-Utility::generatePassword(10);
 
 /*
 * @return string -> Full URL string

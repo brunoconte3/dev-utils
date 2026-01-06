@@ -12,15 +12,19 @@ use PHPUnit\Framework\TestCase;
 
 class UnitValidateDateTest extends TestCase
 {
+    private const UTC_DATETIME_WITH_TIMEZONE = '2025-11-20T10:30:00+00:00';
+    private const UTC_DATETIME_WITH_MILLISECONDS = '2025-11-20T10:30:00.123+00:00';
+    private const UTC_DATETIME_WITHOUT_TIMEZONE = '2025-11-20T10:30:00';
+
     private static function biuldDataTestDateIso8601Z(): array
     {
         return [
             '2025-11-20T10:30:00Z',
-            '2025-11-20T10:30:00+00:00',
+            self::UTC_DATETIME_WITH_TIMEZONE,
             '2025-11-20T10:30:00-03:00',
             '2025-11-20T10:30:00+03:30',
             '2025-11-20T10:30:00.123Z',
-            '2025-11-20T10:30:00.123+00:00',
+            self::UTC_DATETIME_WITH_MILLISECONDS,
             '2025-11-20T10:30:00.123456789Z',
             '2025-11-20T10:30:00.1234567Z',
             '20251120T103000Z',
@@ -37,12 +41,12 @@ class UnitValidateDateTest extends TestCase
             '20251120',
             '2025-11-20T10:30',
             '2025-11-20T10:30+03:00',
-            '2025-11-20T10:30:00',
-            '2025-11-20T10:30:00+00:00',
+            self::UTC_DATETIME_WITHOUT_TIMEZONE,
+            self::UTC_DATETIME_WITH_TIMEZONE,
             '2025-11-20T10:30:00-03:00',
             '2025-11-20T10:30:00+03:30',
             '2025-11-20T10:30:00.123',
-            '2025-11-20T10:30:00.123+00:00',
+            self::UTC_DATETIME_WITH_MILLISECONDS,
             '20251120T103000',
             '20251120T103000+00:00',
             '2025-W48',
@@ -80,12 +84,12 @@ class UnitValidateDateTest extends TestCase
 
     public function testValidateDateUTCWithoutTimezone(): void
     {
-        self::assertTrue(ValidateDate::validateDateUTCWithoutTimezone('2025-11-20T10:30:00'));
+        self::assertTrue(ValidateDate::validateDateUTCWithoutTimezone(self::UTC_DATETIME_WITHOUT_TIMEZONE));
         self::assertTrue(ValidateDate::validateDateUTCWithoutTimezone('1999-01-01T00:00:00'));
         self::assertFalse(ValidateDate::validateDateUTCWithoutTimezone('2025-11-20T10:30'));
         self::assertFalse(ValidateDate::validateDateUTCWithoutTimezone('2025-11-20 10:30:00'));
         self::assertFalse(ValidateDate::validateDateUTCWithoutTimezone('2025-11-20T10:30:00Z'));
-        self::assertFalse(ValidateDate::validateDateUTCWithoutTimezone('2025-11-20T10:30:00+00:00'));
+        self::assertFalse(ValidateDate::validateDateUTCWithoutTimezone(self::UTC_DATETIME_WITH_TIMEZONE));
     }
 
     public function testValidateDateIso8601AllFormats(): void

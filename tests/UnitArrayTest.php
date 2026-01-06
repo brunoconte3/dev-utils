@@ -11,6 +11,8 @@ use SimpleXMLElement;
 
 class UnitArrayTest extends TestCase
 {
+    private const VEGETABLE_RUCULA = 'Rúcula';
+
     private array $fruitArray;
     private array $simpleArray;
 
@@ -34,7 +36,7 @@ class UnitArrayTest extends TestCase
 
     private function assertXmlVerduras(SimpleXMLElement $xml): void
     {
-        self::assertSame('Rúcula', (string) $xml->verduras->verdura_1);
+        self::assertSame(self::VEGETABLE_RUCULA, (string) $xml->verduras->verdura_1);
         self::assertSame('Acelga', (string) $xml->verduras->verdura_2);
         self::assertSame('Alface', (string) $xml->verduras->verdura_3);
         self::assertCount(3, $xml->verduras->children());
@@ -49,7 +51,7 @@ class UnitArrayTest extends TestCase
                 'fruta_3' => 'fruta',
                 'fruta_4' => 'Uva',
             ],
-            'verduras' => ['verdura_1' => 'Rúcula', 'verdura_2' => 'Acelga', 'verdura_3' => 'Alface'],
+            'verduras' => ['verdura_1' => self::VEGETABLE_RUCULA, 'verdura_2' => 'Acelga', 'verdura_3' => 'Alface'],
             'legume' => 'Tomate',
         ];
 
@@ -82,7 +84,7 @@ class UnitArrayTest extends TestCase
 
     public function testFindIndexByValue(): void
     {
-        self::assertIsArray(Arrays::findIndexByValue($this->fruitArray, 'Rúcula'));
+        self::assertIsArray(Arrays::findIndexByValue($this->fruitArray, self::VEGETABLE_RUCULA));
     }
 
     public function testConvertArrayToXml(): void
@@ -107,13 +109,13 @@ class UnitArrayTest extends TestCase
     public function testConvertJsonIndexToArray(): void
     {
         $array = $this->fruitArray;
-        $array['verduras'] = '{"verdura_1": "Rúcula", "verdura_2": "Acelga", "verdura_3": "Alface"}';
+        $array['verduras'] = '{"verdura_1": "' . self::VEGETABLE_RUCULA . '", "verdura_2": "Acelga", "verdura_3": "Alface"}';
 
         Arrays::convertJsonIndexToArray($array);
 
         self::assertIsArray($array);
         self::assertIsArray($array['verduras']);
-        self::assertSame('Rúcula', $array['verduras']['verdura_1']);
+        self::assertSame(self::VEGETABLE_RUCULA, $array['verduras']['verdura_1']);
     }
 
     public function testCheckExistsIndexArrayRecursive(): void
