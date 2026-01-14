@@ -7,7 +7,7 @@ namespace DevUtils\Test;
 use DevUtils\Uuid;
 use PHPUnit\Framework\TestCase;
 
-class UnitUuidTest extends TestCase
+class UuidTest extends TestCase
 {
     public function testGenerate(): void
     {

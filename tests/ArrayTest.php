@@ -9,7 +9,7 @@ use DOMDocument;
 use PHPUnit\Framework\TestCase;
 use SimpleXMLElement;
 
-class UnitArrayTest extends TestCase
+class ArrayTest extends TestCase
 {
     private const VEGETABLE_RUCULA = 'Rúcula';
 

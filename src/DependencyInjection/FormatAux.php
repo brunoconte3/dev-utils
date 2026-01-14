@@ -258,7 +258,13 @@ abstract class FormatAux
 
         $position = $totalParts - 1 - $index;
         $extensiveString = self::addScaleToExtensiveString($extensiveString, $part, $position, $words);
-        $extensiveString = self::addSpecialThousandSuffix($extensiveString, $position, $zeroCounter, $integerParts, $words);
+        $extensiveString = self::addSpecialThousandSuffix(
+            $extensiveString,
+            $position,
+            $zeroCounter,
+            $integerParts,
+            $words
+        );
 
         $newZeroCounter = $zeroCounter > 0 ? $zeroCounter - 1 : 0;
 

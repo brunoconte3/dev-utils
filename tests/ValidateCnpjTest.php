@@ -7,7 +7,7 @@ namespace DevUtils\Test;
 use DevUtils\ValidateCnpj;
 use PHPUnit\Framework\TestCase;
 
-final class UnitValidateCnpjTest extends TestCase
+final class ValidateCnpjTest extends TestCase
 {
     private static function charValue(string $ch): int
     {

@@ -10,7 +10,7 @@ use DevUtils\Format;
 use DevUtils\ValidateDate;
 use PHPUnit\Framework\TestCase;
 
-class UnitValidateDateTest extends TestCase
+class ValidateDateTest extends TestCase
 {
     private const UTC_DATETIME_WITH_TIMEZONE = '2025-11-20T10:30:00+00:00';
     private const UTC_DATETIME_WITH_MILLISECONDS = '2025-11-20T10:30:00.123+00:00';

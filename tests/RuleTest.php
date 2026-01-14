@@ -7,7 +7,7 @@ namespace DevUtils\Test;
 use DevUtils\Validator;
 use PHPUnit\Framework\TestCase;
 
-class UnitRuleTest extends TestCase
+class RuleTest extends TestCase
 {
     private function validate(array $data, array $rules): Validator
     {

@@ -7,7 +7,7 @@ namespace DevUtils\Test;
 use DevUtils\ValidateCpf;
 use PHPUnit\Framework\TestCase;
 
-final class UnitValidateCpfTest extends TestCase
+final class ValidateCpfTest extends TestCase
 {
     private static function calculateVerificationDigits(string $cpfRoot): array
     {

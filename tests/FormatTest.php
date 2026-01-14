@@ -8,7 +8,7 @@ use DevUtils\DependencyInjection\data\DataConvertTypesBool;
 use DevUtils\Format;
 use PHPUnit\Framework\TestCase;
 
-class UnitFormatTest extends TestCase
+class FormatTest extends TestCase
 {
     public static function setUpBeforeClass(): void
     {

@@ -7,7 +7,7 @@ namespace DevUtils\Test;
 use DevUtils\ValidateHour;
 use PHPUnit\Framework\TestCase;
 
-class UnitValidateHourTest extends TestCase
+class ValidateHourTest extends TestCase
 {
     public function testValidateHour(): void
     {

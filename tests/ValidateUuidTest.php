@@ -7,7 +7,7 @@ namespace DevUtils\Test;
 use DevUtils\ValidateUuid;
 use PHPUnit\Framework\TestCase;
 
-final class UnitValidateUuidTest extends TestCase
+final class ValidateUuidTest extends TestCase
 {
     public function testValidV4(): void
     {

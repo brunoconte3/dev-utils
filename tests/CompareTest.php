@@ -7,7 +7,7 @@ namespace DevUtils\Test;
 use DevUtils\Compare;
 use PHPUnit\Framework\TestCase;
 
-class UnitCompareTest extends TestCase
+class CompareTest extends TestCase
 {
     public function testDaysDifferenceBetweenData(): void
     {
