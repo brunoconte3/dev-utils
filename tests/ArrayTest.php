@@ -132,4 +132,130 @@ class ArrayTest extends TestCase
         self::assertTrue(Arrays::checkExistIndexArrayRecursive($array, 'subcategoria1'));
         self::assertFalse(Arrays::checkExistIndexArrayRecursive($array, 'mercado'));
     }
+
+    public function testCheckExistsIndexArrayRecursiveWithNull(): void
+    {
+        self::assertFalse(Arrays::checkExistIndexArrayRecursive(null, 'key'));
+        self::assertFalse(Arrays::checkExistIndexArrayRecursive(['key' => 'value'], null));
+        self::assertFalse(Arrays::checkExistIndexArrayRecursive(null, null));
+    }
+
+    public function testSearchKeyReturnsCorrectPosition(): void
+    {
+        self::assertSame(0, Arrays::searchKey($this->simpleArray, 'primeiro'));
+        self::assertSame(1, Arrays::searchKey($this->simpleArray, 'segundo'));
+    }
+
+    public function testRenameKeyPreservesOrder(): void
+    {
+        $array = ['a' => 1, 'b' => 2, 'c' => 3];
+        Arrays::renameKey($array, 'b', 'novo_b');
+        $keys = array_keys($array);
+        self::assertSame(['a', 'novo_b', 'c'], $keys);
+        self::assertSame(2, $array['novo_b']);
+    }
+
+    public function testCheckExistIndexByValueInNestedArray(): void
+    {
+        self::assertTrue(Arrays::checkExistIndexByValue($this->fruitArray, 'Maçã'));
+        self::assertTrue(Arrays::checkExistIndexByValue($this->fruitArray, 'Acelga'));
+        self::assertFalse(Arrays::checkExistIndexByValue($this->fruitArray, 'Banana'));
+    }
+
+    public function testFindValueByKeyCaseInsensitive(): void
+    {
+        $result = Arrays::findValueByKey($this->fruitArray, 'FRUTA_1');
+        self::assertNotEmpty($result);
+    }
+
+    public function testFindValueByKeyNested(): void
+    {
+        $result = Arrays::findValueByKey($this->fruitArray, 'verdura_1');
+        self::assertArrayHasKey('verduras', $result);
+    }
+
+    public function testFindValueByKeyNotFound(): void
+    {
+        $result = Arrays::findValueByKey($this->fruitArray, 'nao_existe');
+        self::assertEmpty($result);
+    }
+
+    public function testFindIndexByValueWithInt(): void
+    {
+        $array = ['a' => 1, 'b' => 2, 'nested' => ['c' => 3]];
+        $result = Arrays::findIndexByValue($array, 2);
+        self::assertArrayHasKey('b', $result);
+        self::assertSame(2, $result['b']);
+    }
+
+    public function testFindIndexByValueWithBool(): void
+    {
+        $array = ['ativo' => true, 'inativo' => false];
+        $result = Arrays::findIndexByValue($array, true);
+        self::assertArrayHasKey('ativo', $result);
+    }
+
+    public function testFindIndexByValueNested(): void
+    {
+        $array = ['nivel1' => ['nivel2' => ['chave' => 'valor_buscado']]];
+        $result = Arrays::findIndexByValue($array, 'valor_buscado');
+        self::assertNotEmpty($result);
+        self::assertArrayHasKey('nivel1', $result);
+    }
+
+    public function testFindIndexByValueNotFound(): void
+    {
+        $result = Arrays::findIndexByValue($this->fruitArray, 'nao_existe');
+        self::assertEmpty($result);
+    }
+
+    public function testConvertArrayToXmlWithAttrKey(): void
+    {
+        $array = [
+            ['@attr' => 'item', 'nome' => 'Produto 1'],
+            ['@attr' => 'item', 'nome' => 'Produto 2'],
+        ];
+        $xml = new SimpleXMLElement('<root/>');
+        Arrays::convertArrayToXml($array, $xml);
+        $xmlString = $xml->asXML();
+        self::assertIsString($xmlString);
+        self::assertTrue($this->isValidXml($xmlString));
+        self::assertStringContainsString('<item>', $xmlString);
+    }
+
+    public function testConvertArrayToXmlWithSpecialChars(): void
+    {
+        $array = ['texto' => 'Valor com <tag> & "aspas"'];
+        $xml = new SimpleXMLElement('<root/>');
+        Arrays::convertArrayToXml($array, $xml);
+        $xmlString = $xml->asXML();
+        self::assertIsString($xmlString);
+        self::assertTrue($this->isValidXml($xmlString));
+    }
+
+    public function testConvertJsonIndexToArrayInvalidJson(): void
+    {
+        $array = ['campo' => 'texto normal não é json'];
+        Arrays::convertJsonIndexToArray($array);
+        self::assertSame('texto normal não é json', $array['campo']);
+    }
+
+    public function testConvertJsonIndexToArrayEmptyString(): void
+    {
+        $array = ['campo' => ''];
+        Arrays::convertJsonIndexToArray($array);
+        self::assertSame('', $array['campo']);
+    }
+
+    public function testConvertJsonIndexToArrayNestedJson(): void
+    {
+        $array = [
+            'nivel1' => [
+                'dados' => '{"chave": "valor"}',
+            ],
+        ];
+        Arrays::convertJsonIndexToArray($array);
+        self::assertIsArray($array['nivel1']['dados']);
+        self::assertSame('valor', $array['nivel1']['dados']['chave']);
+    }
 }

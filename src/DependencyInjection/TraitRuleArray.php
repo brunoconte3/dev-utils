@@ -4,10 +4,15 @@ namespace DevUtils\DependencyInjection;
 
 trait TraitRuleArray
 {
+    private function setArrayError(string $field, ?string $message, string $defaultMessage): void
+    {
+        $this->errors[$field] = !empty($message) ? $message : $defaultMessage;
+    }
+
     protected function validateArray(string $field = '', mixed $value = null, ?string $message = ''): void
     {
         if (!is_array($value)) {
-            $this->errors[$field] = !empty($message) ? $message : "A variável $field não é um array!";
+            $this->setArrayError($field, $message, "A variável $field não é um array!");
         }
     }
 
@@ -18,11 +23,9 @@ trait TraitRuleArray
         ?string $message = '',
     ): void {
         $ruleArray = explode('-', $rule);
-
-        if (!in_array(trim($value), $ruleArray)) {
-            $this->errors[$field] = !empty($message)
-                ? $message
-                : "O campo $field precisa conter uma das opções [" . str_replace('-', ',', $rule) . '] !';
+        if (!in_array(trim($value), $ruleArray, true)) {
+            $options = str_replace('-', ',', $rule);
+            $this->setArrayError($field, $message, "O campo $field precisa conter uma das opções [$options] !");
         }
     }
 }

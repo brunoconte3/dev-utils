@@ -93,4 +93,110 @@ class CompareTest extends TestCase
             'Erro ao executar a função compareStringFrom!',
         );
     }
+
+    public function testDaysDifferenceBetweenDataAmericanFormat(): void
+    {
+        self::assertEquals('+10', Compare::daysDifferenceBetweenData('2020-10-01', '2020-10-11'));
+        self::assertEquals('-5', Compare::daysDifferenceBetweenData('2020-10-10', '2020-10-05'));
+    }
+
+    public function testDaysDifferenceBetweenDataSameDay(): void
+    {
+        self::assertEquals('+0', Compare::daysDifferenceBetweenData('15/10/2020', '15/10/2020'));
+    }
+
+    public function testStartDateLessThanEndEmptyStrings(): void
+    {
+        self::assertFalse(Compare::startDateLessThanEnd('', '24/10/2020'));
+        self::assertFalse(Compare::startDateLessThanEnd('27/11/2020', ''));
+        self::assertFalse(Compare::startDateLessThanEnd('', ''));
+    }
+
+    public function testStartHourLessThanEndEqual(): void
+    {
+        self::assertNull(Compare::startHourLessThanEnd('10:00:00', '10:00:00', 'Erro'));
+    }
+
+    public function testStartHourLessThanEndEmptySecondHour(): void
+    {
+        $msgVazio = 'Um ou mais campos horas não foram preenchidos!';
+        self::assertEquals($msgVazio, Compare::startHourLessThanEnd('10:00:00', '', $msgVazio));
+    }
+
+    public function testCalculateAgeInYearsAmericanFormat(): void
+    {
+        $age = Compare::calculateAgeInYears('1989-04-17');
+        self::assertSame(36, $age);
+    }
+
+    public function testDifferenceBetweenHoursZero(): void
+    {
+        self::assertEquals('00:00:00', Compare::differenceBetweenHours('10:00:00', '10:00:00'));
+    }
+
+    public function testDifferenceBetweenHoursPositive(): void
+    {
+        self::assertEquals('02:30:00', Compare::differenceBetweenHours('08:00:00', '10:30:00'));
+    }
+
+    public function testCheckDataEqualitySameCaseSensitive(): void
+    {
+        self::assertTrue(Compare::checkDataEquality('Teste', 'Teste'));
+        self::assertTrue(Compare::checkDataEquality('', ''));
+    }
+
+    public function testContainsAtBeginning(): void
+    {
+        self::assertTrue(Compare::contains('Açafrão', 'Aça'));
+    }
+
+    public function testContainsAtEnd(): void
+    {
+        self::assertTrue(Compare::contains('Açafrão', 'rão'));
+    }
+
+    public function testContainsEmptySearch(): void
+    {
+        self::assertTrue(Compare::contains('Açafrão', ''));
+    }
+
+    public function testContainsEmptyValue(): void
+    {
+        self::assertFalse(Compare::contains('', 'teste'));
+    }
+
+    public function testCompareStringFromExactMatch(): void
+    {
+        self::assertTrue(Compare::compareStringFrom('sistema', 'sistema', 0, 7));
+    }
+
+    public function testCompareStringFromMiddlePosition(): void
+    {
+        self::assertTrue(Compare::compareStringFrom('teste', 'um_teste_aqui', 3, 5));
+    }
+
+    public function testCompareStringFromNoMatch(): void
+    {
+        self::assertFalse(Compare::compareStringFrom('xyz', 'abcdef', 0, 3));
+    }
+
+    public function testBeginUrlWithExactMatch(): void
+    {
+        self::assertTrue(Compare::beginUrlWith('/teste', '/teste'));
+    }
+
+    public function testBeginUrlWithCaseInsensitive(): void
+    {
+        self::assertTrue(Compare::beginUrlWith('/TESTE', '/teste/variavel'));
+    }
+
+    public function testFinishUrlWithExactMatch(): void
+    {
+        self::assertTrue(Compare::finishUrlWith('/teste', '/teste'));
+    }
+
+    public function testFinishUrlWithCaseInsensitive(): void
+    {
+        self::assertTrue(Compare::finishUrlWith('/TESTE', 'sistema/teste'));
+    }
 }

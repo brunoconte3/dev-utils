@@ -785,4 +785,186 @@ class RuleTest extends TestCase
         ];
         self::assertErrorCount(1, $array, $rules);
     }
+
+    public function testDateNotFuture(): void
+    {
+        $futureDate = date('d/m/Y', strtotime('+1 year'));
+        $pastDate = date('d/m/Y', strtotime('-1 year'));
+        $today = date('d/m/Y');
+        $array = [
+            'futureError' => $futureDate,
+            'pastValid' => $pastDate,
+            'todayValid' => $today,
+        ];
+        $rules = [
+            'futureError' => 'dateNotFuture',
+            'pastValid' => 'dateNotFuture',
+            'todayValid' => 'dateNotFuture',
+        ];
+        self::assertErrorCount(1, $array, $rules);
+    }
+
+    public function testDateNotFutureAmerican(): void
+    {
+        $futureDate = date('Y-m-d', strtotime('+1 month'));
+        $pastDate = date('Y-m-d', strtotime('-1 month'));
+        $array = [
+            'futureError' => $futureDate,
+            'pastValid' => $pastDate,
+        ];
+        $rules = [
+            'futureError' => 'dateNotFuture',
+            'pastValid' => 'dateNotFuture',
+        ];
+        self::assertErrorCount(1, $array, $rules);
+    }
+
+    public function testDdd(): void
+    {
+        $array = [
+            'dddError' => '00',
+            'dddValid' => '44',
+            'dddValidThreeDigits' => '044',
+        ];
+        $rules = [
+            'dddError' => 'ddd',
+            'dddValid' => 'ddd',
+            'dddValidThreeDigits' => 'ddd',
+        ];
+        self::assertErrorCount(1, $array, $rules);
+    }
+
+    public function testDddByState(): void
+    {
+        $array = [
+            'dddPrValid' => '44',
+            'dddPrError' => '11',
+            'dddSpValid' => '11',
+        ];
+        $rules = [
+            'dddPrValid' => 'ddd:pr',
+            'dddPrError' => 'ddd:pr',
+            'dddSpValid' => 'ddd:sp',
+        ];
+        self::assertErrorCount(1, $array, $rules);
+    }
+
+    public function testRgbColor(): void
+    {
+        $array = [
+            'rgbError' => '300, 100, 50',
+            'rgbValid' => '255, 100, 50',
+            'rgbValidNoSpaces' => '0,0,0',
+            'rgbValidMax' => '255,255,255',
+            'rgbInvalidNegative' => '-1, 100, 50',
+        ];
+        $rules = [
+            'rgbError' => 'rgbColor',
+            'rgbValid' => 'rgbColor',
+            'rgbValidNoSpaces' => 'rgbColor',
+            'rgbValidMax' => 'rgbColor',
+            'rgbInvalidNegative' => 'rgbColor',
+        ];
+        self::assertErrorCount(2, $array, $rules);
+    }
+
+    public function testMultipleRulesOnSameField(): void
+    {
+        $array = [
+            'email' => 'test@',
+            'password' => 'ab',
+        ];
+        $rules = [
+            'email' => 'required|email|max:50',
+            'password' => 'required|min:6|max:20',
+        ];
+        self::assertErrorCount(2, $array, $rules);
+    }
+
+    public function testValidatorWithEmptyData(): void
+    {
+        $validator = new Validator();
+        $validator->set([], ['campo' => 'required']);
+        self::assertArrayHasKey('erro', $validator->getErros());
+    }
+
+    public function testValidatorWithNestedArray(): void
+    {
+        $array = [
+            ['nome' => 'Bruno', 'idade' => 30],
+            ['nome' => '', 'idade' => 25],
+        ];
+        $rules = [
+            'nome' => 'required|min:2',
+            'idade' => 'required|int',
+        ];
+        $validator = new Validator();
+        $validator->set($array, $rules);
+        self::assertCount(1, $validator->getErros());
+    }
+
+    public function testOptionalWithValue(): void
+    {
+        $array = ['campo' => 'ab'];
+        $rules = ['campo' => 'optional|min:5'];
+        $validator = new Validator();
+        $validator->set($array, $rules);
+        self::assertCount(1, $validator->getErros());
+    }
+
+    public function testOptionalWithEmptyValue(): void
+    {
+        $array = ['campo' => ''];
+        $rules = ['campo' => 'optional|min:5'];
+        $validator = new Validator();
+        $validator->set($array, $rules);
+        self::assertCount(0, $validator->getErros());
+    }
+
+    public function testEmailWithMax(): void
+    {
+        $longEmail = str_repeat('a', 50) . '@teste.com';
+        $array = ['email' => $longEmail];
+        $rules = ['email' => 'email|max:50'];
+        self::assertErrorCount(1, $array, $rules);
+    }
+
+    public function testPhoneWithMask(): void
+    {
+        $array = [
+            'phone1' => '(44) 99999-8888',
+            'phone2' => '(11) 3333-4444',
+        ];
+        $rules = [
+            'phone1' => 'phone',
+            'phone2' => 'phone',
+        ];
+        self::assertErrorCount(0, $array, $rules);
+    }
+
+    public function testIdentifierWithMask(): void
+    {
+        $array = [
+            'cpfValid' => '556.344.058-31',
+            'cpfInvalid' => '111.111.111-11',
+        ];
+        $rules = [
+            'cpfValid' => 'identifier',
+            'cpfInvalid' => 'identifier',
+        ];
+        self::assertErrorCount(1, $array, $rules);
+    }
+
+    public function testCompanyIdentificationWithMask(): void
+    {
+        $array = [
+            'cnpjValid' => '21.111.527/0001-63',
+            'cnpjInvalid' => '11.111.111/1111-11',
+        ];
+        $rules = [
+            'cnpjValid' => 'companyIdentification',
+            'cnpjInvalid' => 'companyIdentification',
+        ];
+        self::assertErrorCount(1, $array, $rules);
+    }
 }

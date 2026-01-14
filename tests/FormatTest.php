@@ -331,4 +331,207 @@ class FormatTest extends TestCase
     {
         self::assertEquals('polenta-frita-com-bacon-e-parmesao', Format::slugfy('Polenta frita com Bacon e Parmesão'));
     }
+
+    public function testCompanyIdentificationInvalidThrowsException(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        Format::companyIdentification('123');
+    }
+
+    public function testIdentifierInvalidThrowsException(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        Format::identifier('123');
+    }
+
+    public function testIdentifierOrCompanyInvalidLengthThrowsException(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        Format::identifierOrCompany('12345');
+    }
+
+    public function testTelephoneWith10Digits(): void
+    {
+        self::assertEquals('(44) 3333-8888', Format::telephone('4433338888'));
+    }
+
+    public function testTelephoneInvalidLengthThrowsException(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        Format::telephone('123456789');
+    }
+
+    public function testTelephoneNonNumericThrowsException(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        Format::telephone('44abc998888');
+    }
+
+    public function testZipCodeInvalidThrowsException(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        Format::zipCode('123');
+    }
+
+    public function testDateBrazilInvalidLengthThrowsException(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        Format::dateBrazil('2020');
+    }
+
+    public function testDateAmericanInvalidLengthThrowsException(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        Format::dateAmerican('10/10');
+    }
+
+    public function testDateAmericanWithoutSlash(): void
+    {
+        self::assertEquals('2020-10-10', Format::dateAmerican('2020-10-10'));
+    }
+
+    public function testCurrencyUsdWithFloat(): void
+    {
+        self::assertEquals('1,123.45', Format::currencyUsd(1123.45));
+        self::assertEquals('123.00', Format::currencyUsd(123));
+    }
+
+    public function testReturnPhoneOrAreaCodeInvalidPhone(): void
+    {
+        self::assertFalse(Format::returnPhoneOrAreaCode('123'));
+    }
+
+    public function testReturnPhoneOrAreaCodeEmptyPhone(): void
+    {
+        self::assertFalse(Format::returnPhoneOrAreaCode(''));
+    }
+
+    public function testPointOnlyValueWithoutDecimal(): void
+    {
+        self::assertEquals('1350', Format::pointOnlyValue('1.350'));
+    }
+
+    public function testPointOnlyValueSimple(): void
+    {
+        self::assertEquals('100.50', Format::pointOnlyValue('100,50'));
+    }
+
+    public function testMaskStringHiddenQtdGreaterThanStringThrowsException(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        Format::maskStringHidden('abc', 10, 0, '*');
+    }
+
+    public function testMaskStringHiddenQtdLessThanOneThrowsException(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        Format::maskStringHidden('abc', 0, 0, '*');
+    }
+
+    public function testReverseWithAccents(): void
+    {
+        self::assertEquals('oãrfaçA', Format::reverse('Açafrão'));
+    }
+
+    public function testFalseToNullWithTrueValue(): void
+    {
+        self::assertTrue(Format::falseToNull(true));
+    }
+
+    public function testFalseToNullWithStringValue(): void
+    {
+        self::assertEquals('teste', Format::falseToNull('teste'));
+    }
+
+    public function testFalseToNullWithZero(): void
+    {
+        self::assertEquals(0, Format::falseToNull(0));
+    }
+
+    public function testWriteCurrencyExtensiveZeroThrowsException(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        Format::writeCurrencyExtensive(0);
+    }
+
+    public function testWriteCurrencyExtensiveNegativeThrowsException(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        Format::writeCurrencyExtensive(-100);
+    }
+
+    public function testConvertTimestampBrazilToAmericanInvalidThrowsException(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        Format::convertTimestampBrazilToAmerican('data-invalida');
+    }
+
+    public function testSlugfyWithMultipleSpaces(): void
+    {
+        self::assertEquals('teste--aqui', Format::slugfy('Teste  Aqui'));
+    }
+
+    public function testSlugfyWithDashes(): void
+    {
+        self::assertEquals('teste-aqui', Format::slugfy('Teste-Aqui'));
+    }
+
+    public function testMaskWithDifferentPatterns(): void
+    {
+        self::assertEquals('123-456', Format::mask('###-###', '123456'));
+        self::assertEquals('(12) 3456-7890', Format::mask('(##) ####-####', '1234567890'));
+    }
+
+    public function testOnlyNumbersEmpty(): void
+    {
+        self::assertEquals('', Format::onlyNumbers('abc'));
+    }
+
+    public function testOnlyLettersNumbersWithSpaces(): void
+    {
+        self::assertEquals('Abc123', Format::onlyLettersNumbers('Abc 123!'));
+    }
+
+    public function testUpperWithAccents(): void
+    {
+        self::assertEquals('AÇAFRÃO', Format::upper('açafrão'));
+    }
+
+    public function testLowerWithAccents(): void
+    {
+        self::assertEquals('açafrão', Format::lower('AÇAFRÃO'));
+    }
+
+    public function testUcwordsCharsetWithNumbers(): void
+    {
+        self::assertEquals('Teste 123 Aqui', Format::ucwordsCharset('TESTE 123 AQUI'));
+    }
+
+    public function testEmptyToNullWithNestedArray(): void
+    {
+        $result = Format::emptyToNull(['nested' => [1, 2, 3]]);
+        self::assertSame([1, 2, 3], $result['nested']);
+    }
+
+    public function testConvertStringToBinaryEmpty(): void
+    {
+        self::assertEquals('', Format::convertStringToBinary(''));
+    }
+
+    public function testArrayToIntWithNegativeNumbers(): void
+    {
+        $result = Format::arrayToInt(['a' => '-10', 'b' => '-5']);
+        self::assertSame(['a' => -10, 'b' => -5], $result);
+    }
+
+    public function testCurrencyWithZero(): void
+    {
+        self::assertEquals('0,00', Format::currency(0));
+        self::assertEquals('0,00', Format::currency('0'));
+    }
+
+    public function testCurrencyUsdWithZero(): void
+    {
+        self::assertEquals('0.00', Format::currencyUsd(0));
+    }
 }
