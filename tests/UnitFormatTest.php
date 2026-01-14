@@ -284,6 +284,14 @@ class UnitFormatTest extends TestCase
     public function testWriteCurrencyExtensive(): void
     {
         self::assertEquals('um real e noventa e sete centavos', Format::writeCurrencyExtensive(1.97));
+        self::assertEquals(
+            'um milhão, quinhentos mil e vinte e três centavos',
+            Format::writeCurrencyExtensive(1500000.23)
+        );
+        self::assertEquals(
+            'três mil, quatrocentos e cinquenta e seis reais e setenta e oito centavos',
+            Format::writeCurrencyExtensive(3456.78)
+        );
     }
 
     public function testRestructFileArray(): void
