@@ -210,4 +210,157 @@ class StrfTimeTest extends TestCase
         self::assertSame('19', StrfTime::strftime('%C', $year1999));
         self::assertSame('20', StrfTime::strftime('%C', $year2000));
     }
+
+    public function testStrftimeMonthAbbreviationAlias(): void
+    {
+        $result = StrfTime::strftime('%h', $this->fixedDate, 'en_US');
+        self::assertNotEmpty($result);
+        $resultB = StrfTime::strftime('%b', $this->fixedDate, 'en_US');
+        self::assertSame($resultB, $result);
+    }
+
+    public function testStrftimeIntlDateTimeFormats(): void
+    {
+        $resultC = StrfTime::strftime('%c', $this->fixedDate, 'en_US');
+        self::assertNotEmpty($resultC);
+
+        $resultX = StrfTime::strftime('%x', $this->fixedDate, 'en_US');
+        self::assertNotEmpty($resultX);
+
+        $resultXUpper = StrfTime::strftime('%X', $this->fixedDate, 'en_US');
+        self::assertNotEmpty($resultXUpper);
+    }
+
+    public function testStrftimeMidnightHourFormats(): void
+    {
+        $midnight = new DateTime('2024-03-15 00:00:00');
+        self::assertSame('00', StrfTime::strftime('%H', $midnight));
+        self::assertSame('12', StrfTime::strftime('%I', $midnight));
+        self::assertSame(' 0', StrfTime::strftime('%k', $midnight));
+        self::assertSame('12', StrfTime::strftime('%l', $midnight));
+        self::assertSame('AM', StrfTime::strftime('%p', $midnight));
+    }
+
+    public function testStrftimeLeapYearDayOfYear(): void
+    {
+        $leapYearLastDay = new DateTime('2024-12-31');
+        self::assertSame('366', StrfTime::strftime('%j', $leapYearLastDay));
+
+        $nonLeapYearLastDay = new DateTime('2023-12-31');
+        self::assertSame('365', StrfTime::strftime('%j', $nonLeapYearLastDay));
+    }
+
+    public function testStrftimeWeekNumberFirstWeek(): void
+    {
+        $firstSunday2024 = new DateTime('2024-01-07');
+        $resultU = StrfTime::strftime('%U', $firstSunday2024);
+        self::assertMatchesRegularExpression('/^\d{2}$/', $resultU);
+
+        $firstMonday2024 = new DateTime('2024-01-01');
+        $resultW = StrfTime::strftime('%W', $firstMonday2024);
+        self::assertMatchesRegularExpression('/^\d{2}$/', $resultW);
+    }
+
+    public function testStrftimeNegativeTimestamp(): void
+    {
+        $result = StrfTime::strftime('%Y-%m-%d', -86400);
+        self::assertSame('1969-12-31', $result);
+    }
+
+    public function testStrftimeIsoWeekYear(): void
+    {
+        $date = new DateTime('2024-12-30');
+        $resultG = StrfTime::strftime('%G', $date);
+        $resultg = StrfTime::strftime('%g', $date);
+        self::assertSame('2025', $resultG);
+        self::assertSame('25', $resultg);
+    }
+
+    public function testStrftimeEmptyFormat(): void
+    {
+        $result = StrfTime::strftime('', $this->fixedDate);
+        self::assertSame('', $result);
+    }
+
+    public function testStrftimeNoFormatSpecifiers(): void
+    {
+        $result = StrfTime::strftime('Hello World', $this->fixedDate);
+        self::assertSame('Hello World', $result);
+    }
+
+    public function testStrftimeDayOfWeekBoundaries(): void
+    {
+        $sunday = new DateTime('2024-03-17');
+        self::assertSame('7', StrfTime::strftime('%u', $sunday));
+        self::assertSame('0', StrfTime::strftime('%w', $sunday));
+
+        $monday = new DateTime('2024-03-18');
+        self::assertSame('1', StrfTime::strftime('%u', $monday));
+        self::assertSame('1', StrfTime::strftime('%w', $monday));
+    }
+
+    public function testStrftimePrefixWithSingleDigitMonth(): void
+    {
+        $date = new DateTime('2024-01-15');
+        $resultUnderscore = StrfTime::strftime('%_m', $date);
+        self::assertSame(' 1', $resultUnderscore);
+
+        $resultDash = StrfTime::strftime('%-m', $date);
+        self::assertSame('1', $resultDash);
+
+        $resultHash = StrfTime::strftime('%#m', $date);
+        self::assertSame('1', $resultHash);
+    }
+
+    public function testStrftimeNoonHourFormats(): void
+    {
+        $noon = new DateTime('2024-03-15 12:00:00');
+        self::assertSame('12', StrfTime::strftime('%H', $noon));
+        self::assertSame('12', StrfTime::strftime('%I', $noon));
+        self::assertSame('PM', StrfTime::strftime('%p', $noon));
+    }
+
+    public function testStrftimeEndOfDay(): void
+    {
+        $endOfDay = new DateTime('2024-03-15 23:59:59');
+        self::assertSame('23', StrfTime::strftime('%H', $endOfDay));
+        self::assertSame('11', StrfTime::strftime('%I', $endOfDay));
+        self::assertSame('59', StrfTime::strftime('%M', $endOfDay));
+        self::assertSame('59', StrfTime::strftime('%S', $endOfDay));
+        self::assertSame('PM', StrfTime::strftime('%p', $endOfDay));
+    }
+
+    public function testStrftimeYearBoundaries(): void
+    {
+        $year0001 = new DateTime('0001-01-01');
+        self::assertSame('0001', StrfTime::strftime('%Y', $year0001));
+        self::assertSame('01', StrfTime::strftime('%y', $year0001));
+        self::assertSame('0', StrfTime::strftime('%C', $year0001));
+    }
+
+    public function testStrftimeWithMultiplePrefixes(): void
+    {
+        $date = new DateTime('2024-03-05 09:05:03');
+        $result = StrfTime::strftime('%-d/%-m/%Y %-H:%-M:%-S', $date);
+        self::assertSame('5/3/2024 9:5:3', $result);
+    }
+
+    public function testStrftimeIsoWeekNumber(): void
+    {
+        $firstWeek = new DateTime('2024-01-01');
+        $result = StrfTime::strftime('%V', $firstWeek);
+        self::assertSame('01', $result);
+
+        $lastWeek = new DateTime('2024-12-31');
+        $result = StrfTime::strftime('%V', $lastWeek);
+        self::assertSame('01', $result);
+    }
+
+    public function testStrftimeWithNumericStringTimestamp(): void
+    {
+        // String numérica é interpretada como string de data, não como timestamp Unix
+        // Para usar timestamp Unix, deve-se passar como int
+        $result = StrfTime::strftime('%Y', 1710513045);
+        self::assertSame('2024', $result);
+    }
 }

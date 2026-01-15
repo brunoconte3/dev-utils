@@ -967,4 +967,668 @@ class RuleTest extends TestCase
         ];
         self::assertErrorCount(1, $array, $rules);
     }
+
+    public function testIntegerTyped(): void
+    {
+        $array = [
+            'testError' => '123',
+            'testValid' => 123,
+        ];
+        $rules = [
+            'testError' => 'integer',
+            'testValid' => 'integer',
+        ];
+        self::assertErrorCount(1, $array, $rules);
+    }
+
+    public function testIntegerTypedWithZero(): void
+    {
+        $array = [
+            'testValid' => 0,
+            'testValidNegative' => -5,
+        ];
+        $rules = [
+            'testValid' => 'integer',
+            'testValidNegative' => 'integer',
+        ];
+        self::assertErrorCount(0, $array, $rules);
+    }
+
+    public function testAlphaWithSpecialChars(): void
+    {
+        $array = [
+            'testError' => 'Bruno@123',
+            'testValid' => 'Bruno Çonte Áéíóú',
+        ];
+        $rules = [
+            'testError' => 'alpha',
+            'testValid' => 'alpha',
+        ];
+        self::assertErrorCount(1, $array, $rules);
+    }
+
+    public function testAlphaNumWithNumbers(): void
+    {
+        $array = [
+            'testError' => 'Bruno@123!',
+            'testValid' => 'Bruno 123 Çonte',
+        ];
+        $rules = [
+            'testError' => 'alphaNum',
+            'testValid' => 'alphaNum',
+        ];
+        self::assertErrorCount(1, $array, $rules);
+    }
+
+    public function testFloatWithNegative(): void
+    {
+        $array = [
+            'testValid' => '-10.5',
+            'testValidPositive' => '3.14159',
+            'testError' => 'abc',
+        ];
+        $rules = [
+            'testValid' => 'float',
+            'testValidPositive' => 'float',
+            'testError' => 'float',
+        ];
+        self::assertErrorCount(1, $array, $rules);
+    }
+
+    public function testBoolWithDifferentValues(): void
+    {
+        $array = [
+            'testValidTrue' => true,
+            'testValidOne' => '1',
+            'testValidYes' => 'yes',
+            'testError' => 'invalid',
+        ];
+        $rules = [
+            'testValidTrue' => 'bool',
+            'testValidOne' => 'bool',
+            'testValidYes' => 'bool',
+            'testError' => 'bool',
+        ];
+        self::assertErrorCount(1, $array, $rules);
+    }
+
+    public function testJsonWithArray(): void
+    {
+        $array = [
+            'testValidArray' => ['key' => 'value'],
+            'testValidString' => '{"nome": "Bruno", "idade": 30}',
+            'testError' => 'not a json',
+        ];
+        $rules = [
+            'testValidArray' => 'json',
+            'testValidString' => 'json',
+            'testError' => 'json',
+        ];
+        self::assertErrorCount(1, $array, $rules);
+    }
+
+    public function testUrlWithDifferentProtocols(): void
+    {
+        $array = [
+            'testValidHttps' => 'https://www.example.com',
+            'testValidHttp' => 'http://example.com/path',
+            'testValidFtp' => 'ftp://files.example.com',
+            'testError' => 'not-a-url',
+        ];
+        $rules = [
+            'testValidHttps' => 'url',
+            'testValidHttp' => 'url',
+            'testValidFtp' => 'url',
+            'testError' => 'url',
+        ];
+        self::assertErrorCount(1, $array, $rules);
+    }
+
+    public function testIpWithDifferentFormats(): void
+    {
+        // @codingStandardsIgnoreStart
+        $array = [
+            'testValidIpv4' => '192.168.1.1', // NOSONAR - Test not actual IP addresses
+            'testValidIpv6' => '2001:0db8:85a3:0000:0000:8a2e:0370:7334', // NOSONAR
+            'testError' => '999.999.999.999', // NOSONAR
+        ];
+        // @codingStandardsIgnoreEnd
+        $rules = [
+            'testValidIpv4' => 'ip',
+            'testValidIpv6' => 'ip',
+            'testError' => 'ip',
+        ];
+        self::assertErrorCount(1, $array, $rules);
+    }
+
+    public function testMacWithDifferentFormats(): void
+    {
+        $array = [
+            'testValidDash' => '00-D0-56-F2-B5-12',
+            'testValidColon' => '00:D0:56:F2:B5:12',
+            'testError' => '00-D0-56-F2-B5',
+        ];
+        $rules = [
+            'testValidDash' => 'mac',
+            'testValidColon' => 'mac',
+            'testError' => 'mac',
+        ];
+        self::assertErrorCount(1, $array, $rules);
+    }
+
+    public function testZipcodeWithMask(): void
+    {
+        $array = [
+            'testValidWithMask' => '87047-510',
+            'testValidNoMask' => '87047510',
+            'testError' => '8704751',
+        ];
+        $rules = [
+            'testValidWithMask' => 'zipcode',
+            'testValidNoMask' => 'zipcode',
+            'testError' => 'zipcode',
+        ];
+        self::assertErrorCount(1, $array, $rules);
+    }
+
+    public function testPlateMercosul(): void
+    {
+        $array = [
+            'testValidOld' => 'ABC-1234',
+            'testErrorMercosul' => 'ABC1D23',
+            'testErrorLower' => 'abc-1234',
+        ];
+        $rules = [
+            'testValidOld' => 'plate',
+            'testErrorMercosul' => 'plate',
+            'testErrorLower' => 'plate',
+        ];
+        self::assertErrorCount(2, $array, $rules);
+    }
+
+    public function testNumericWithDifferentTypes(): void
+    {
+        $array = [
+            'testValidInt' => 123,
+            'testValidString' => '456',
+            'testValidFloat' => '78.90',
+            'testValidNegative' => '-123',
+            'testError' => 'abc',
+        ];
+        $rules = [
+            'testValidInt' => 'numeric',
+            'testValidString' => 'numeric',
+            'testValidFloat' => 'numeric',
+            'testValidNegative' => 'numeric',
+            'testError' => 'numeric',
+        ];
+        self::assertErrorCount(1, $array, $rules);
+    }
+
+    public function testDateBrazilWithMask(): void
+    {
+        $array = [
+            'testValidWithMask' => '31/12/2024',
+            'testValidNoMask' => '31122024',
+            'testError' => '32/12/2024',
+        ];
+        $rules = [
+            'testValidWithMask' => 'dateBrazil',
+            'testValidNoMask' => 'dateBrazil',
+            'testError' => 'dateBrazil',
+        ];
+        self::assertErrorCount(1, $array, $rules);
+    }
+
+    public function testDateAmericanWithMask(): void
+    {
+        $array = [
+            'testValidWithMask' => '2024-12-31',
+            'testValidNoMask' => '20241231',
+            'testError' => '2024-13-01',
+        ];
+        $rules = [
+            'testValidWithMask' => 'dateAmerican',
+            'testValidNoMask' => 'dateAmerican',
+            'testError' => 'dateAmerican',
+        ];
+        self::assertErrorCount(1, $array, $rules);
+    }
+
+    public function testHourWithDifferentFormats(): void
+    {
+        $array = [
+            'testValid' => '23:59',
+            'testValidMidnight' => '00:00',
+            'testError' => '25:00',
+            'testErrorFormat' => '12:60',
+        ];
+        $rules = [
+            'testValid' => 'hour',
+            'testValidMidnight' => 'hour',
+            'testError' => 'hour',
+            'testErrorFormat' => 'hour',
+        ];
+        self::assertErrorCount(2, $array, $rules);
+    }
+
+    public function testMinMaxCombined(): void
+    {
+        $array = [
+            'testValid' => 'Bruno',
+            'testErrorMin' => 'AB',
+            'testErrorMax' => 'Bruno Conte Developer',
+        ];
+        $rules = [
+            'testValid' => 'min:3|max:10',
+            'testErrorMin' => 'min:3|max:10',
+            'testErrorMax' => 'min:3|max:10',
+        ];
+        self::assertErrorCount(2, $array, $rules);
+    }
+
+    public function testNumMinMaxCombined(): void
+    {
+        $array = [
+            'testValid' => 50,
+            'testErrorMin' => 5,
+            'testErrorMax' => 150,
+        ];
+        $rules = [
+            'testValid' => 'numMin:10|numMax:100',
+            'testErrorMin' => 'numMin:10|numMax:100',
+            'testErrorMax' => 'numMin:10|numMax:100',
+        ];
+        self::assertErrorCount(2, $array, $rules);
+    }
+
+    public function testRegexWithComplexPatterns(): void
+    {
+        $array = [
+            'testValidCep' => '12345-678',
+            'testValidPhone' => '(11) 99999-8888',
+            'testError' => '123-45-6789',
+        ];
+        $rules = [
+            'testValidCep' => 'regex:/^\d{5}-\d{3}$/',
+            'testValidPhone' => 'regex:/^\(\d{2}\) \d{5}-\d{4}$/',
+            'testError' => 'regex:/^\d{5}-\d{3}$/',
+        ];
+        self::assertErrorCount(1, $array, $rules);
+    }
+
+    public function testEqualsWithSameValues(): void
+    {
+        $array = [
+            'password' => 'secret123',
+            'confirmPassword' => 'secret123',
+        ];
+        $rules = [
+            'password' => 'required|min:6',
+            'confirmPassword' => 'required|min:6|equals:password',
+        ];
+        self::assertErrorCount(0, $array, $rules);
+    }
+
+    public function testLowerWithMixedChars(): void
+    {
+        $array = [
+            'testValid' => 'texto todo minúsculo',
+            'testError' => 'Texto Com Maiúsculo',
+        ];
+        $rules = [
+            'testValid' => 'lower',
+            'testError' => 'lower',
+        ];
+        self::assertErrorCount(1, $array, $rules);
+    }
+
+    public function testUpperWithMixedChars(): void
+    {
+        $array = [
+            'testValid' => 'TEXTO TODO MAIÚSCULO',
+            'testError' => 'Texto com Minúsculo',
+        ];
+        $rules = [
+            'testValid' => 'upper',
+            'testError' => 'upper',
+        ];
+        self::assertErrorCount(1, $array, $rules);
+    }
+
+    public function testRequiredWithZeroValue(): void
+    {
+        $array = [
+            'testValidZeroString' => '0',
+            'testValidZeroInt' => 0,
+            'testEmpty' => '',
+        ];
+        $rules = [
+            'testValidZeroString' => 'required',
+            'testValidZeroInt' => 'required',
+            'testEmpty' => 'required',
+        ];
+        self::assertErrorCount(1, $array, $rules);
+    }
+
+    public function testArrayValuesWithMultipleOptions(): void
+    {
+        $array = [
+            'testValidS' => 'S',
+            'testValidN' => 'N',
+            'testValidT' => 'T',
+            'testError' => 'X',
+        ];
+        $rules = [
+            'testValidS' => 'arrayValues:S-N-T',
+            'testValidN' => 'arrayValues:S-N-T',
+            'testValidT' => 'arrayValues:S-N-T',
+            'testError' => 'arrayValues:S-N-T',
+        ];
+        self::assertErrorCount(1, $array, $rules);
+    }
+
+    public function testOptionalWithValidValue(): void
+    {
+        $array = [
+            'testOptionalValid' => 'Bruno',
+            'testOptionalEmpty' => '',
+            'testOptionalNull' => null,
+        ];
+        $rules = [
+            'testOptionalValid' => 'optional|min:3',
+            'testOptionalEmpty' => 'optional|min:3',
+            'testOptionalNull' => 'optional|min:3',
+        ];
+        self::assertErrorCount(0, $array, $rules);
+    }
+
+    public function testOptionalWithInvalidValue(): void
+    {
+        $array = [
+            'testOptionalInvalid' => 'AB',
+        ];
+        $rules = [
+            'testOptionalInvalid' => 'optional|min:5',
+        ];
+        self::assertErrorCount(1, $array, $rules);
+    }
+
+    public function testCustomMessageWithMultipleRules(): void
+    {
+        $customMsg = 'Este campo é inválido, verifique os requisitos!';
+        $array = [
+            'campo' => 'ab',
+        ];
+        $rules = [
+            'campo' => 'required|min:5, ' . $customMsg,
+        ];
+        $validator = new Validator();
+        $validator->set($array, $rules);
+        self::assertCount(1, $validator->getErros());
+        self::assertEquals($customMsg, $validator->getErros()['campo']);
+    }
+
+    public function testMinWordsWithExactMatch(): void
+    {
+        $array = [
+            'testExact' => 'Bruno Conte',
+            'testMore' => 'Bruno Conte Developer PHP',
+            'testLess' => 'Bruno',
+        ];
+        $rules = [
+            'testExact' => 'minWords:2',
+            'testMore' => 'minWords:2',
+            'testLess' => 'minWords:2',
+        ];
+        self::assertErrorCount(1, $array, $rules);
+    }
+
+    public function testMaxWordsWithExactMatch(): void
+    {
+        $array = [
+            'testExact' => 'Bruno Conte',
+            'testLess' => 'Bruno',
+            'testMore' => 'Bruno Conte Developer PHP',
+        ];
+        $rules = [
+            'testExact' => 'maxWords:2',
+            'testLess' => 'maxWords:2',
+            'testMore' => 'maxWords:2',
+        ];
+        self::assertErrorCount(1, $array, $rules);
+    }
+
+    public function testNumMonthBoundaries(): void
+    {
+        $array = [
+            'testValidOne' => 1,
+            'testValidTwelve' => 12,
+            'testErrorZero' => 0,
+            'testErrorThirteen' => 13,
+            'testErrorNegative' => -1,
+        ];
+        $rules = [
+            'testValidOne' => 'numMonth',
+            'testValidTwelve' => 'numMonth',
+            'testErrorZero' => 'numMonth',
+            'testErrorThirteen' => 'numMonth',
+            'testErrorNegative' => 'numMonth',
+        ];
+        self::assertErrorCount(3, $array, $rules);
+    }
+
+    public function testIdentifierWithAllZeros(): void
+    {
+        $array = [
+            'testError' => '000.000.000-00',
+            'testValid' => '556.344.058-31',
+        ];
+        $rules = [
+            'testError' => 'identifier',
+            'testValid' => 'identifier',
+        ];
+        self::assertErrorCount(1, $array, $rules);
+    }
+
+    public function testCompanyIdentificationWithAllZeros(): void
+    {
+        $array = [
+            'testError' => '00.000.000/0000-00',
+            'testValid' => '21.111.527/0001-63',
+        ];
+        $rules = [
+            'testError' => 'companyIdentification',
+            'testValid' => 'companyIdentification',
+        ];
+        self::assertErrorCount(1, $array, $rules);
+    }
+
+    public function testTimestampWithDifferentFormats(): void
+    {
+        $array = [
+            'testValidAmerican' => '2024-12-31 23:59:59',
+            'testValidBrazil' => '31/12/2024 23:59:59',
+            'testErrorNoSeconds' => '2024-12-31 23:59',
+            'testErrorInvalidTime' => '2024-12-31 25:00:00',
+        ];
+        $rules = [
+            'testValidAmerican' => 'timestamp',
+            'testValidBrazil' => 'timestamp',
+            'testErrorNoSeconds' => 'timestamp',
+            'testErrorInvalidTime' => 'timestamp',
+        ];
+        self::assertErrorCount(2, $array, $rules);
+    }
+
+    public function testNoWeekendWithDifferentFormats(): void
+    {
+        $nextMonday = date('d/m/Y', strtotime('next monday'));
+        $nextSaturday = date('d/m/Y', strtotime('next saturday'));
+        $nextSunday = date('d/m/Y', strtotime('next sunday'));
+        $array = [
+            'testValidWeekday' => $nextMonday,
+            'testErrorSaturday' => $nextSaturday,
+            'testErrorSunday' => $nextSunday,
+        ];
+        $rules = [
+            'testValidWeekday' => 'noWeekend',
+            'testErrorSaturday' => 'noWeekend',
+            'testErrorSunday' => 'noWeekend',
+        ];
+        self::assertErrorCount(2, $array, $rules);
+    }
+
+    public function testNotSpaceWithMultipleSpaces(): void
+    {
+        // Espaços no início e fim são removidos durante o processamento (trim/sanitização)
+        // Apenas espaços no meio da string são detectados pela regra notSpace
+        $array = [
+            'testValid' => 'BrunoConteDevelope',
+            'testErrorMiddle' => 'Bruno Conte',
+            'testErrorMultiple' => 'Bruno Conte Developer',
+            'testErrorDouble' => 'Bruno  Conte',
+        ];
+        $rules = [
+            'testValid' => 'notSpace',
+            'testErrorMiddle' => 'notSpace',
+            'testErrorMultiple' => 'notSpace',
+            'testErrorDouble' => 'notSpace',
+        ];
+        self::assertErrorCount(3, $array, $rules);
+    }
+
+    public function testDddWithInvalidValues(): void
+    {
+        $array = [
+            'testValid' => '11',
+            'testValidThreeDigits' => '011',
+            'testErrorSingleDigit' => '1',
+            'testErrorFourDigits' => '1234',
+        ];
+        $rules = [
+            'testValid' => 'ddd',
+            'testValidThreeDigits' => 'ddd',
+            'testErrorSingleDigit' => 'ddd',
+            'testErrorFourDigits' => 'ddd',
+        ];
+        self::assertErrorCount(2, $array, $rules);
+    }
+
+    public function testRgbColorBoundaries(): void
+    {
+        $array = [
+            'testValidMin' => '0, 0, 0',
+            'testValidMax' => '255, 255, 255',
+            'testValidMid' => '128, 128, 128',
+            'testErrorOver' => '256, 0, 0',
+            'testErrorNegative' => '-1, 0, 0',
+        ];
+        $rules = [
+            'testValidMin' => 'rgbColor',
+            'testValidMax' => 'rgbColor',
+            'testValidMid' => 'rgbColor',
+            'testErrorOver' => 'rgbColor',
+            'testErrorNegative' => 'rgbColor',
+        ];
+        self::assertErrorCount(2, $array, $rules);
+    }
+
+    public function testJsonParamWithMultipleRules(): void
+    {
+        $array = [
+            'campo' => 'Bruno123',
+        ];
+        $rules = [
+            'campo' => '{"required":"true","type":"alphaNum","min":"5","max":"20"}',
+        ];
+        self::assertErrorCount(0, $array, $rules);
+    }
+
+    public function testJsonParamWithInvalidValue(): void
+    {
+        $array = [
+            'campo' => 'AB',
+        ];
+        $rules = [
+            'campo' => '{"required":"true","type":"alphaNum","min":"5"}',
+        ];
+        self::assertErrorCount(1, $array, $rules);
+    }
+
+    public function testFileNameWithValidFiles(): void
+    {
+        $fileValid = [
+            'name' => 'valid-file-name.pdf',
+            'type' => 'application/pdf',
+            'tmp_name' => '/tmp/phpTest',
+            'error' => 0,
+            'size' => 1024,
+        ];
+        $array = ['file' => $fileValid];
+        $rules = ['file' => 'fileName'];
+        $validator = new Validator();
+        $validator->set($array, $rules);
+        self::assertFalse(!empty($validator->getErros()));
+    }
+
+    public function testMaxWithUnicodeChars(): void
+    {
+        $array = [
+            'testValid' => 'Açúcar',
+            'testError' => 'Açúcar doce especial',
+        ];
+        $rules = [
+            'testValid' => 'max:10',
+            'testError' => 'max:10',
+        ];
+        self::assertErrorCount(1, $array, $rules);
+    }
+
+    public function testMinWithUnicodeChars(): void
+    {
+        $array = [
+            'testValid' => 'Açúcar',
+            'testError' => 'Açú',
+        ];
+        $rules = [
+            'testValid' => 'min:5',
+            'testError' => 'min:5',
+        ];
+        self::assertErrorCount(1, $array, $rules);
+    }
+
+    public function testEmailWithInvalidFormats(): void
+    {
+        $array = [
+            'testValid' => 'test@example.com',
+            'testErrorNoAt' => 'testexample.com',
+            'testErrorNoDomain' => 'test@',
+            'testErrorNoUser' => '@example.com',
+        ];
+        $rules = [
+            'testValid' => 'email',
+            'testErrorNoAt' => 'email',
+            'testErrorNoDomain' => 'email',
+            'testErrorNoUser' => 'email',
+        ];
+        self::assertErrorCount(3, $array, $rules);
+    }
+
+    public function testPhoneWithDifferentLengths(): void
+    {
+        $array = [
+            'testValid10' => '1133334444',
+            'testValid11' => '11999998888',
+            'testError9' => '113333444',
+            'testError12' => '119999988880',
+        ];
+        $rules = [
+            'testValid10' => 'phone',
+            'testValid11' => 'phone',
+            'testError9' => 'phone',
+            'testError12' => 'phone',
+        ];
+        self::assertErrorCount(2, $array, $rules);
+    }
 }
