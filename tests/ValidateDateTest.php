@@ -96,7 +96,8 @@ class ValidateDateTest extends TestCase
     {
         $valid = self::biuldDataDateIsoTest();
         foreach ($valid as $v) {
-            self::assertTrue(ValidateDate::validateDateIso8601($v), "Falhou para: $v");
+            self::assertIsString($v);
+            self::assertTrue(ValidateDate::validateDateIso8601($v), 'Falhou para: ' . $v);
         }
         $invalid = [
             '2025-13-40',

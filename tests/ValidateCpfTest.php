@@ -32,7 +32,7 @@ final class ValidateCpfTest extends TestCase
     private static function generateRawCpf(string $cpfRoot): string
     {
         [$firstDigit, $secondDigit] = self::calculateVerificationDigits($cpfRoot);
-        return $cpfRoot . $firstDigit . $secondDigit;
+        return $cpfRoot . (string) $firstDigit . (string) $secondDigit;
     }
 
     private static function formatCpfWithMask(string $rawCpf): string

@@ -79,12 +79,14 @@ class ArrayTest extends TestCase
 
     public function testFindValueByKey(): void
     {
-        self::assertIsArray(Arrays::findValueByKey($this->fruitArray, 'fruta_2'));
+        $result = Arrays::findValueByKey($this->fruitArray, 'fruta_2');
+        self::assertNotEmpty($result);
     }
 
     public function testFindIndexByValue(): void
     {
-        self::assertIsArray(Arrays::findIndexByValue($this->fruitArray, self::VEGETABLE_RUCULA));
+        $result = Arrays::findIndexByValue($this->fruitArray, self::VEGETABLE_RUCULA);
+        self::assertNotEmpty($result);
     }
 
     public function testConvertArrayToXml(): void
@@ -114,7 +116,6 @@ class ArrayTest extends TestCase
 
         Arrays::convertJsonIndexToArray($array);
 
-        self::assertIsArray($array);
         self::assertIsArray($array['verduras']);
         self::assertSame(self::VEGETABLE_RUCULA, $array['verduras']['verdura_1']);
     }
@@ -255,7 +256,10 @@ class ArrayTest extends TestCase
             ],
         ];
         Arrays::convertJsonIndexToArray($array);
-        self::assertIsArray($array['nivel1']['dados']);
-        self::assertSame('valor', $array['nivel1']['dados']['chave']);
+        $nivel1 = $array['nivel1'];
+        self::assertIsArray($nivel1);
+        $dados = $nivel1['dados'];
+        self::assertIsArray($dados);
+        self::assertSame('valor', $dados['chave']);
     }
 }

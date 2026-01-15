@@ -46,7 +46,7 @@ final class ValidateCnpjTest extends TestCase
     private static function makeRawCnpj(string $root): string
     {
         [$dv1, $dv2] = self::calcDv($root);
-        return strtoupper($root) . $dv1 . $dv2;
+        return strtoupper($root) . (string) $dv1 . (string) $dv2;
     }
 
     private static function maskCnpj(string $raw): string
@@ -112,8 +112,8 @@ final class ValidateCnpjTest extends TestCase
     {
         $root = 'A1B2C3D45E6F';
         [$dv1, $dv2] = self::calcDv($root);
-        $withLetterAtDv1 = $root . 'A' . $dv2;
-        $withLetterAtDv2 = $root . $dv1 . 'B';
+        $withLetterAtDv1 = $root . 'A' . (string) $dv2;
+        $withLetterAtDv2 = $root . (string) $dv1 . 'B';
 
         self::assertFalse(ValidateCnpj::validateCnpj($withLetterAtDv1));
         self::assertFalse(ValidateCnpj::validateCnpj($withLetterAtDv2));
@@ -128,6 +128,8 @@ final class ValidateCnpjTest extends TestCase
         $noisyRaw = preg_replace('/(.)/', '$1!@', $raw);
         $noisyMasked = preg_replace('/(.)/', '#$1 ', $masked);
 
+        self::assertIsString($noisyRaw);
+        self::assertIsString($noisyMasked);
         self::assertTrue(ValidateCnpj::validateCnpj($noisyRaw));
         self::assertTrue(ValidateCnpj::validateCnpj($noisyMasked));
     }

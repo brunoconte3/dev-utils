@@ -1,5 +1,6 @@
 parameters:
   reportUnmatchedIgnoredErrors: false
+
   ignoreErrors:
     - '#no value type specified in iterable type array#'
     - '#Cannot cast mixed to string#'
@@ -23,9 +24,7 @@ parameters:
       path: tests/UnitArrayTest.php
     -
       message: "#Strict comparison using === between callable-string and#"
-      paths:
-        - DependencyInjection/Rules.php
-        - src/DependencyInjection/Rules.php
+      path: src/DependencyInjection/Rules.php
     -
       message: "#invalidRule\\(\\) is unused#"
       path: src/DependencyInjection/Rules.php
@@ -46,3 +45,4 @@ parameters:
   paths:
     - conf
     - src
+    - tests

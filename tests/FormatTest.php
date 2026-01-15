@@ -311,9 +311,14 @@ class FormatTest extends TestCase
             'error'    => ['0' => 0, '1' => 0],
             'size'     => ['0' => 8488, '1' => 818465],
         ];
-        self::assertArrayHasKey('name', Format::restructFileArray($fileUploadSingle)[0]);
-        self::assertArrayHasKey('name', Format::restructFileArray($fileUploadMultiple)[0]);
-        self::assertArrayHasKey('name', Format::restructFileArray($fileUploadMultiple)[1]);
+        $resultSingle = Format::restructFileArray($fileUploadSingle);
+        $resultMultiple = Format::restructFileArray($fileUploadMultiple);
+        self::assertIsArray($resultSingle[0]);
+        self::assertIsArray($resultMultiple[0]);
+        self::assertIsArray($resultMultiple[1]);
+        self::assertArrayHasKey('name', $resultSingle[0]);
+        self::assertArrayHasKey('name', $resultMultiple[0]);
+        self::assertArrayHasKey('name', $resultMultiple[1]);
     }
 
     public function testConvertTimestampBrazilToAmerican(): void
