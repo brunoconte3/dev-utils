@@ -179,4 +179,72 @@ final class ValidateCnpjTest extends TestCase
         $raw = self::makeRawCnpj($root);
         self::assertTrue(ValidateCnpj::validateCnpj($raw));
     }
+
+    public function testExceptionWithArrayMultipleValues(): void
+    {
+        self::assertFalse(ValidateCnpj::validateCnpj('00.000.000/0000-00', ['11111111111111', '22222222222222']));
+        self::assertFalse(ValidateCnpj::validateCnpj('11.111.111/1111-11', ['00000000000000', '22222222222222']));
+    }
+
+    public function testValidCnpjWithOnlyNumbers(): void
+    {
+        self::assertTrue(ValidateCnpj::validateCnpj('32063364000107'));
+        self::assertTrue(ValidateCnpj::validateCnpj('11444777000161'));
+    }
+
+    public function testValidCnpjWithMask(): void
+    {
+        self::assertTrue(ValidateCnpj::validateCnpj('32.063.364/0001-07'));
+        self::assertTrue(ValidateCnpj::validateCnpj('11.444.777/0001-61'));
+    }
+
+    public function testInvalidCnpjWithWrongFirstDigit(): void
+    {
+        self::assertFalse(ValidateCnpj::validateCnpj('32063364000117'));
+        self::assertFalse(ValidateCnpj::validateCnpj('32063364000197'));
+    }
+
+    public function testInvalidCnpjWithWrongSecondDigit(): void
+    {
+        self::assertFalse(ValidateCnpj::validateCnpj('32063364000108'));
+        self::assertFalse(ValidateCnpj::validateCnpj('32063364000109'));
+    }
+
+    public function testCnpjWithSpecialCharactersOnly(): void
+    {
+        self::assertFalse(ValidateCnpj::validateCnpj('..../-.'));
+        self::assertFalse(ValidateCnpj::validateCnpj('@#$%^&*()'));
+    }
+
+    public function testCnpjWithMixedValidAndInvalidChars(): void
+    {
+        self::assertTrue(ValidateCnpj::validateCnpj('32@063#364$000%107'));
+    }
+
+    public function testExceptionWithEmptyArray(): void
+    {
+        self::assertFalse(ValidateCnpj::validateCnpj('00.000.000/0000-00', []));
+    }
+
+    public function testExceptionWithEmptyString(): void
+    {
+        self::assertFalse(ValidateCnpj::validateCnpj('00.000.000/0000-00', ''));
+    }
+
+    public function testValidAlphanumericWithNumbers(): void
+    {
+        $root = '1A2B3C4D5E6F';
+        $raw = self::makeRawCnpj($root);
+        self::assertTrue(ValidateCnpj::validateCnpj($raw));
+    }
+
+    public function testCnpjTooShort(): void
+    {
+        self::assertFalse(ValidateCnpj::validateCnpj('1234567890123'));
+    }
+
+    public function testCnpjTooLong(): void
+    {
+        self::assertFalse(ValidateCnpj::validateCnpj('123456789012345'));
+    }
 }

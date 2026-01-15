@@ -201,4 +201,61 @@ final class ValidateCpfTest extends TestCase
             self::assertTrue(ValidateCpf::validateCpf($formattedCpf), "CPF mascarado $formattedCpf deveria ser válido");
         }
     }
+
+    public function testCpfWithSpecialCharactersOnly(): void
+    {
+        self::assertFalse(ValidateCpf::validateCpf('...-'));
+        self::assertFalse(ValidateCpf::validateCpf('@#$%^&*()'));
+    }
+
+    public function testCpfWithMixedValidAndInvalidChars(): void
+    {
+        $cpfRoot = '123456789';
+        $rawCpf = self::generateRawCpf($cpfRoot);
+        $cpfWithNoise = str_split($rawCpf);
+        $noisyCpf = implode('@', $cpfWithNoise);
+        self::assertTrue(ValidateCpf::validateCpf($noisyCpf));
+    }
+
+    public function testValidCpfWithOnlyNumbers(): void
+    {
+        self::assertTrue(ValidateCpf::validateCpf('52998224725'));
+        self::assertTrue(ValidateCpf::validateCpf('11144477735'));
+    }
+
+    public function testValidCpfWithMask(): void
+    {
+        self::assertTrue(ValidateCpf::validateCpf('529.982.247-25'));
+        self::assertTrue(ValidateCpf::validateCpf('111.444.777-35'));
+    }
+
+    public function testInvalidCpfWithWrongFirstDigit(): void
+    {
+        self::assertFalse(ValidateCpf::validateCpf('52998224715'));
+        self::assertFalse(ValidateCpf::validateCpf('52998224735'));
+    }
+
+    public function testInvalidCpfWithWrongSecondDigit(): void
+    {
+        self::assertFalse(ValidateCpf::validateCpf('52998224726'));
+        self::assertFalse(ValidateCpf::validateCpf('52998224724'));
+    }
+
+    public function testCpfTooLong(): void
+    {
+        self::assertFalse(ValidateCpf::validateCpf('123456789012'));
+        self::assertFalse(ValidateCpf::validateCpf('1234567890123'));
+    }
+
+    public function testCpfWithOnlyLetters(): void
+    {
+        self::assertFalse(ValidateCpf::validateCpf('ABCDEFGHIJK'));
+    }
+
+    public function testCpfStartingWithZero(): void
+    {
+        $cpfRoot = '001002003';
+        $rawCpf = self::generateRawCpf($cpfRoot);
+        self::assertTrue(ValidateCpf::validateCpf($rawCpf));
+    }
 }

@@ -106,4 +106,74 @@ class UuidTest extends TestCase
         self::assertTrue(Uuid::isValid($upperUuid));
         self::assertTrue(Uuid::isValid($upperUuid, 7));
     }
+
+    public function testIsValidWithMixedCaseUuid(): void
+    {
+        self::assertTrue(Uuid::isValid('550E8400-e29b-41D4-A716-446655440000'));
+        self::assertTrue(Uuid::isValid('550e8400-E29B-41d4-a716-446655440000'));
+    }
+
+    public function testIsValidWithNullVersion(): void
+    {
+        self::assertTrue(Uuid::isValid('550e8400-e29b-41d4-a716-446655440000', null));
+        self::assertTrue(Uuid::isValid('01890f87-4f0b-7f6b-8b1d-9f4f9d7c3b5a', null));
+    }
+
+    public function testIsValidWithVersionZero(): void
+    {
+        self::assertFalse(Uuid::isValid('550e8400-e29b-01d4-a716-446655440000', 0));
+    }
+
+    public function testIsValidWithVersionNine(): void
+    {
+        self::assertFalse(Uuid::isValid('550e8400-e29b-91d4-a716-446655440000', 9));
+    }
+
+    public function testGenerateFormat(): void
+    {
+        $uuid = Uuid::generate();
+        $parts = explode('-', $uuid);
+
+        self::assertCount(5, $parts);
+        self::assertEquals(8, strlen($parts[0]));
+        self::assertEquals(4, strlen($parts[1]));
+        self::assertEquals(4, strlen($parts[2]));
+        self::assertEquals(4, strlen($parts[3]));
+        self::assertEquals(12, strlen($parts[4]));
+    }
+
+    public function testGenerateVariantBits(): void
+    {
+        $uuid = Uuid::generate();
+        $variantChar = substr($uuid, 19, 1);
+
+        self::assertContains($variantChar, ['8', '9', 'a', 'b', 'A', 'B']);
+    }
+
+    public function testIsValidWithWhitespace(): void
+    {
+        self::assertFalse(Uuid::isValid(' 550e8400-e29b-41d4-a716-446655440000'));
+        self::assertFalse(Uuid::isValid('550e8400-e29b-41d4-a716-446655440000 '));
+        self::assertFalse(Uuid::isValid(' 550e8400-e29b-41d4-a716-446655440000 '));
+    }
+
+    public function testIsValidWithBraces(): void
+    {
+        self::assertFalse(Uuid::isValid('{550e8400-e29b-41d4-a716-446655440000}'));
+    }
+
+    public function testIsValidWithUrn(): void
+    {
+        self::assertFalse(Uuid::isValid('urn:uuid:550e8400-e29b-41d4-a716-446655440000'));
+    }
+
+    public function testIsValidWithNilUuid(): void
+    {
+        self::assertFalse(Uuid::isValid('00000000-0000-0000-0000-000000000000'));
+    }
+
+    public function testIsValidWithMaxUuid(): void
+    {
+        self::assertFalse(Uuid::isValid('ffffffff-ffff-ffff-ffff-ffffffffffff'));
+    }
 }
