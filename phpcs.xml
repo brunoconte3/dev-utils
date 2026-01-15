@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <ruleset name="PSR12">
     <!-- Test all PHP files except those in vendor/ -->
+    <!-- Used only in GitHub actions -->
     <file>./</file>
     <arg name="extensions" value="php"/>
     <exclude-pattern>vendor/*</exclude-pattern>
