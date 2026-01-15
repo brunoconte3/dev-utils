@@ -1,16 +1,20 @@
 vendor/
-.vscode
-.phpunit.result.cache
+composer.phar
 
-# ---- SonarQube
+.vscode/
+.idea/
+*.sublime-*
+.DS_Store
+Thumbs.db
+
 .sonar/
 .scannerwork/
 .sonarqube/
 
-# ---- PHPUnit
 .phpunit.result.cache
-/.phpunit.cache
+.phpunit.cache/
+.php-cs-fixer.cache
+phpstan.cache/
 
-# --- Coverage
 /coverage/
 clover.xml
