@@ -140,4 +140,92 @@ class ValidateStringTest extends TestCase
         self::assertTrue(ValidateString::maxWords('123 456 789', 3));
         self::assertFalse(ValidateString::maxWords('123 456 789', 2));
     }
+
+    public function testMinWordsWithUnicodeCharacters(): void
+    {
+        self::assertTrue(ValidateString::minWords('Olá Mundo Café', 3));
+        self::assertFalse(ValidateString::minWords('Olá Mundo', 3));
+    }
+
+    public function testMaxWordsWithUnicodeCharacters(): void
+    {
+        self::assertTrue(ValidateString::maxWords('Olá Mundo Café', 3));
+        self::assertFalse(ValidateString::maxWords('Olá Mundo Café', 2));
+    }
+
+    public function testMinWordsWithHyphenatedWords(): void
+    {
+        self::assertTrue(ValidateString::minWords('well-known fact', 2));
+        self::assertFalse(ValidateString::minWords('well-known fact', 3));
+    }
+
+    public function testMaxWordsWithHyphenatedWords(): void
+    {
+        self::assertTrue(ValidateString::maxWords('well-known fact', 2));
+        self::assertFalse(ValidateString::maxWords('well-known fact', 1));
+    }
+
+    public function testMinWordsWithMixedWhitespace(): void
+    {
+        self::assertTrue(ValidateString::minWords("word1\t\n  word2   word3", 3));
+        self::assertFalse(ValidateString::minWords("word1\t\n  word2   word3", 4));
+    }
+
+    public function testMaxWordsWithMixedWhitespace(): void
+    {
+        self::assertTrue(ValidateString::maxWords("word1\t\n  word2   word3", 3));
+        self::assertFalse(ValidateString::maxWords("word1\t\n  word2   word3", 2));
+    }
+
+    public function testMinWordsWithVeryLongText(): void
+    {
+        $words = implode(' ', array_fill(0, 100, 'word'));
+        self::assertTrue(ValidateString::minWords($words, 100));
+        self::assertTrue(ValidateString::minWords($words, 50));
+        self::assertFalse(ValidateString::minWords($words, 101));
+    }
+
+    public function testMaxWordsWithVeryLongText(): void
+    {
+        $words = implode(' ', array_fill(0, 100, 'word'));
+        self::assertTrue(ValidateString::maxWords($words, 100));
+        self::assertTrue(ValidateString::maxWords($words, 150));
+        self::assertFalse(ValidateString::maxWords($words, 99));
+    }
+
+    public function testMinWordsWithCarriageReturn(): void
+    {
+        self::assertTrue(ValidateString::minWords("word1\r\nword2\rword3", 3));
+        self::assertFalse(ValidateString::minWords("word1\r\nword2", 3));
+    }
+
+    public function testMaxWordsWithCarriageReturn(): void
+    {
+        self::assertTrue(ValidateString::maxWords("word1\r\nword2\rword3", 3));
+        self::assertFalse(ValidateString::maxWords("word1\r\nword2\rword3", 2));
+    }
+
+    public function testMinWordsWithEmoji(): void
+    {
+        self::assertTrue(ValidateString::minWords('Hello 👋 World', 3));
+        self::assertFalse(ValidateString::minWords('Hello 👋', 3));
+    }
+
+    public function testMaxWordsWithEmoji(): void
+    {
+        self::assertTrue(ValidateString::maxWords('Hello 👋 World', 3));
+        self::assertFalse(ValidateString::maxWords('Hello 👋 World', 2));
+    }
+
+    public function testMinWordsWithPunctuation(): void
+    {
+        self::assertTrue(ValidateString::minWords('Hello, World! How are you?', 5));
+        self::assertFalse(ValidateString::minWords('Hello, World!', 3));
+    }
+
+    public function testMaxWordsWithPunctuation(): void
+    {
+        self::assertTrue(ValidateString::maxWords('Hello, World!', 2));
+        self::assertFalse(ValidateString::maxWords('Hello, World! Test', 2));
+    }
 }

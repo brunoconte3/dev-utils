@@ -110,4 +110,150 @@ class ValidateDateTest extends TestCase
             self::assertFalse(ValidateDate::validateDateIso8601($v), "Aceitou inválido: $v");
         }
     }
+
+    public function testValidateDateBrazilWithInvalidFormats(): void
+    {
+        self::assertFalse(ValidateDate::validateDateBrazil(''));
+        self::assertFalse(ValidateDate::validateDateBrazil('29-04-2021'));
+        self::assertFalse(ValidateDate::validateDateBrazil('2021/04/29'));
+        self::assertFalse(ValidateDate::validateDateBrazil('29/04'));
+        self::assertFalse(ValidateDate::validateDateBrazil('29/04/21'));
+    }
+
+    public function testValidateDateBrazilLeapYear(): void
+    {
+        self::assertTrue(ValidateDate::validateDateBrazil('29/02/2024'));
+        self::assertFalse(ValidateDate::validateDateBrazil('29/02/2023'));
+    }
+
+    public function testValidateDateBrazilEdgeDays(): void
+    {
+        self::assertTrue(ValidateDate::validateDateBrazil('01/01/2021'));
+        self::assertTrue(ValidateDate::validateDateBrazil('31/12/2021'));
+        self::assertTrue(ValidateDate::validateDateBrazil('31/01/2021'));
+        self::assertFalse(ValidateDate::validateDateBrazil('32/01/2021'));
+        self::assertFalse(ValidateDate::validateDateBrazil('00/01/2021'));
+    }
+
+    public function testValidateDateAmericanWithInvalidFormats(): void
+    {
+        self::assertFalse(ValidateDate::validateDateAmerican(''));
+        self::assertFalse(ValidateDate::validateDateAmerican('2021/04/29'));
+        self::assertFalse(ValidateDate::validateDateAmerican('29-04-2021'));
+        self::assertFalse(ValidateDate::validateDateAmerican('2021-04'));
+        self::assertFalse(ValidateDate::validateDateAmerican('21-04-29'));
+    }
+
+    public function testValidateDateAmericanLeapYear(): void
+    {
+        self::assertTrue(ValidateDate::validateDateAmerican('2024-02-29'));
+        self::assertFalse(ValidateDate::validateDateAmerican('2023-02-29'));
+    }
+
+    public function testValidateDateAmericanEdgeDays(): void
+    {
+        self::assertTrue(ValidateDate::validateDateAmerican('2021-01-01'));
+        self::assertTrue(ValidateDate::validateDateAmerican('2021-12-31'));
+        self::assertFalse(ValidateDate::validateDateAmerican('2021-01-32'));
+        self::assertFalse(ValidateDate::validateDateAmerican('2021-00-15'));
+        self::assertFalse(ValidateDate::validateDateAmerican('2021-13-15'));
+    }
+
+    public function testValidateTimeStampWithInvalidFormats(): void
+    {
+        self::assertFalse(ValidateDate::validateTimeStamp(''));
+        self::assertFalse(ValidateDate::validateTimeStamp('2021-04-29'));
+        self::assertFalse(ValidateDate::validateTimeStamp('2021-04-29 11:17'));
+        self::assertFalse(ValidateDate::validateTimeStamp('29/04/2021'));
+    }
+
+    public function testValidateTimeStampBrazilFormat(): void
+    {
+        self::assertTrue(ValidateDate::validateTimeStamp('29/04/2021 11:17:12'));
+        self::assertFalse(ValidateDate::validateTimeStamp('29/04/2021 25:17:12'));
+    }
+
+    public function testValidateTimeStampEdgeTimes(): void
+    {
+        self::assertTrue(ValidateDate::validateTimeStamp('2021-04-29 00:00:00'));
+        self::assertTrue(ValidateDate::validateTimeStamp('2021-04-29 23:59:59'));
+        self::assertFalse(ValidateDate::validateTimeStamp('2021-04-29 24:00:00'));
+        self::assertFalse(ValidateDate::validateTimeStamp('2021-04-29 11:60:00'));
+        self::assertFalse(ValidateDate::validateTimeStamp('2021-04-29 11:17:60'));
+    }
+
+    public function testValidateDateNotFutureWithInvalidDate(): void
+    {
+        self::assertFalse(ValidateDate::validateDateNotFuture('invalid-date'));
+    }
+
+    public function testValidateDateNotFutureWithEmptyString(): void
+    {
+        self::assertTrue(ValidateDate::validateDateNotFuture(''));
+    }
+
+    public function testValidateDateNotFutureWithPastDates(): void
+    {
+        self::assertTrue(ValidateDate::validateDateNotFuture('2020-01-01'));
+        self::assertTrue(ValidateDate::validateDateNotFuture('1990-06-15'));
+        self::assertTrue(ValidateDate::validateDateNotFuture('2000-12-31'));
+    }
+
+    public function testValidateDateNotFutureWithToday(): void
+    {
+        $today = (new DateTimeImmutable())->format('Y-m-d');
+        self::assertTrue(ValidateDate::validateDateNotFuture($today));
+    }
+
+    public function testValidateDateUTCWithoutTimezoneEdgeCases(): void
+    {
+        self::assertTrue(ValidateDate::validateDateUTCWithoutTimezone('2000-01-01T00:00:00'));
+        self::assertTrue(ValidateDate::validateDateUTCWithoutTimezone('2099-12-31T23:59:59'));
+        self::assertFalse(ValidateDate::validateDateUTCWithoutTimezone(''));
+        self::assertFalse(ValidateDate::validateDateUTCWithoutTimezone('2025-11-20'));
+    }
+
+    public function testValidateDateIso8601Empty(): void
+    {
+        self::assertFalse(ValidateDate::validateDateIso8601(''));
+    }
+
+    public function testValidateDateIso8601Duration(): void
+    {
+        self::assertTrue(ValidateDate::validateDateIso8601('P1Y'));
+        self::assertTrue(ValidateDate::validateDateIso8601('P1M'));
+        self::assertTrue(ValidateDate::validateDateIso8601('P1D'));
+        self::assertTrue(ValidateDate::validateDateIso8601('PT1H'));
+        self::assertTrue(ValidateDate::validateDateIso8601('PT1M'));
+        self::assertTrue(ValidateDate::validateDateIso8601('PT1S'));
+        self::assertTrue(ValidateDate::validateDateIso8601('P1Y2M3DT4H5M6S'));
+        self::assertFalse(ValidateDate::validateDateIso8601('P'));
+    }
+
+    public function testValidateDateIso8601WeekDate(): void
+    {
+        self::assertTrue(ValidateDate::validateDateIso8601('2025-W01'));
+        self::assertTrue(ValidateDate::validateDateIso8601('2025-W52'));
+        self::assertTrue(ValidateDate::validateDateIso8601('2025-W01-1'));
+        self::assertTrue(ValidateDate::validateDateIso8601('2025-W01-7'));
+        self::assertFalse(ValidateDate::validateDateIso8601('2025-W00'));
+        self::assertFalse(ValidateDate::validateDateIso8601('2025-W54'));
+    }
+
+    public function testValidateDateIso8601OrdinalDate(): void
+    {
+        self::assertTrue(ValidateDate::validateDateIso8601('2025-001'));
+        self::assertTrue(ValidateDate::validateDateIso8601('2025-365'));
+        self::assertTrue(ValidateDate::validateDateIso8601('2024-366'));
+        self::assertFalse(ValidateDate::validateDateIso8601('2025-000'));
+        self::assertFalse(ValidateDate::validateDateIso8601('2025-366'));
+    }
+
+    public function testValidateDateIso8601Interval(): void
+    {
+        self::assertTrue(ValidateDate::validateDateIso8601('2025-01-01/2025-12-31'));
+        self::assertTrue(ValidateDate::validateDateIso8601('P1Y/2025-12-31'));
+        self::assertFalse(ValidateDate::validateDateIso8601('2025-01-01/'));
+        self::assertFalse(ValidateDate::validateDateIso8601('/2025-12-31'));
+    }
 }
