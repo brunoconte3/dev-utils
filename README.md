@@ -35,7 +35,7 @@ composer require brunoconte3/dev-utils
 Or add to your `composer.json`:
 
 ```json
-"brunoconte3/dev-utils": "2.13.0"
+"brunoconte3/dev-utils": "2.14.0"
 ```
 
 ## Data Validation Example
