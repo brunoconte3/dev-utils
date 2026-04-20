@@ -35,7 +35,7 @@ composer require brunoconte3/dev-utils
 Or add to your `composer.json`:
 
 ```json
-"brunoconte3/dev-utils": "2.14.0"
+"brunoconte3/dev-utils": "2.15.0"
 ```
 
 ## Data Validation Example
@@ -607,7 +607,7 @@ Add Lines:
 script:
     - composer install
     - ./vendor/bin/phpunit --coverage-xml coverage #Here generates the coverage file
-    - php ./vendor/brunoconte3/dev-utils/src/CI.php  coverage/index.xml 80 #Change the value 80 to your value
+    - php ./src/CI.php  coverage/index.xml 80 #Change the value 80 to your value
 
 
 file: .gitignore

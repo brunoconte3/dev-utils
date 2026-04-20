@@ -36,7 +36,7 @@ class CompareTest extends TestCase
 
     public function testCalculateAgeInYears(): void
     {
-        self::assertEquals('36', Compare::calculateAgeInYears('17/04/1989'));
+        self::assertEquals('37', Compare::calculateAgeInYears('17/04/1989'));
     }
 
     public function testDifferenceBetweenHours(): void
@@ -126,7 +126,7 @@ class CompareTest extends TestCase
     public function testCalculateAgeInYearsAmericanFormat(): void
     {
         $age = Compare::calculateAgeInYears('1989-04-17');
-        self::assertSame(36, $age);
+        self::assertSame(37, $age);
     }
 
     public function testDifferenceBetweenHoursZero(): void
