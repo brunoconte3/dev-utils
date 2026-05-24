@@ -1,32 +1,63 @@
 # dev-utils
+  **dev-utils** Pure PHP Data Validation & Formatting Library
 
-A complete library, with PSR standard and guarantee of all methods unit tested by phpunit and passed by phpstan.
+[![Latest Version](https://img.shields.io/badge/version-2.15.1-blue.svg)](https://github.com/brunoconte3/dev-utils)
+[![PHP Version](https://img.shields.io/badge/php-%3E%3D%208.3-blue.svg)](https://www.php.net/)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-- Class of Arrays
-- Comparison Class
-- Formatting Class
-- Utility Class
-- Validate Data in General
-- Validate Upload Files
+**Complete pure PHP library** for data validation, string formatting, array manipulation, and general utilities. Fully tested with **PHPUnit** and validated with **PHPStan level 10** and **SonarQube** and **PHPCS**.
 
-## Table of Contents
+### ✨ Key Features
 
+- **Robust data validation** - Email, CPF, CNPJ, dates, time, phone, file uploads and more
+- **String formatting** - Type conversion, currency, date and text formatting
+- **Array manipulation** - Search, filter, sort and transform arrays
+- **File upload validation** - File type, MIME type, image dimensions, size
+- **General utilities** - UUID, comparisons, arrays and string operations
+- **100% tested** - PHPUnit + PHPStan level 10 + SonarQube + PHPCS
+- **Code Quality** - Validated with industry-standard tools
+
+## Quick Navigation
+
+- [Quick Start](#quick-start)
 - [Installation](#installation)
+- [Common Use Cases](#common-use-cases)
 - [Data Validation](#data-validation-example)
 - [File Upload Validation](#validating-files-upload)
 - [Validation Types](#validation-types-validators)
 - [Custom Messages](#defining-custom-message)
-- [Formatting](#formatting-examples)
-- [Comparisons](#comparisons-examples)
-- [Validations Methods](#validations-in-the-form-of-methods)
+- [String Formatting](#formatting-examples)
+- [Data Comparison](#comparisons-examples)
+- [Validation Methods](#validations-in-the-form-of-methods)
 - [Generation Utilities](#generation-utilities)
-- [Arrays Manipulation](#manipulate-arrays)
-- [Utilities](#utilities)
-- [CI/CD Coverage](#check-the-minimum-coverage-of-cicd-unit-tests-using-phpunit)
+- [Array Manipulation](#manipulate-arrays)
+- [General Utilities](#utilities)
+
+## Quick Start
+
+```php
+<?php
+
+require 'vendor/autoload.php';
+
+use DevUtils\Validator;
+
+$data = ['email' => 'user@example.com'];
+$rules = ['email' => 'required|email'];
+
+$validator = new Validator();
+$validator->set($data, $rules);
+
+if (!$validator->getErros()) {
+    echo '✓ Validation successful!';
+} else {
+    var_dump($validator->getErros());
+}
+```
 
 ## Installation
 
-Install using Composer:
+Install using **Composer**:
 
 ```bash
 composer require brunoconte3/dev-utils
@@ -35,171 +66,249 @@ composer require brunoconte3/dev-utils
 Or add to your `composer.json`:
 
 ```json
-"brunoconte3/dev-utils": "2.15.1"
+{
+    "require": {
+        "brunoconte3/dev-utils": "2.15.1"
+    }
+}
 ```
+
+**Requirements:**
+- PHP >= 8.3
+- Composer
+
+### Why use dev-utils?
+
+- ✓ **Pure PHP** - Zero external dependencies
+- ✓ **Fully tested** - PHPUnit + PHPStan Level 10 + SonarQube
+- ✓ **Code Quality** - Validated with PHPCS standards
+- ✓ **Professional Code** - Production-ready quality
+- ✓ **Complete Documentation** - Examples for each validator
+- ✓ **Active Maintenance** - Regular updates
+
+<a id="common-use-cases"></a>
+## 🎯 Common Use Cases
+
+### Validate registration forms
+Validate email, CPF/CNPJ, phone and other data in a single validator.
+
+### Process file uploads
+Control file size, MIME type, image dimensions and filename.
+
+### Format data for display
+Format currencies, dates, strings and perform type conversions.
+
+### Validate API data
+Ensure received data meets your business criteria.
+
+### Manipulate complex arrays
+Search, sort, filter and transform arrays with ready-to-use methods.
 
 ## Data Validation Example
 
-`Data`
+### Sample Data
 
 ```php
 $data = [
-   'name'  => 'brunoconte3',
-   'email' => 'brunoconte3@gmail.com',
-   'validatePassingJson' => '@&451',
-   'newPassword' => 'min:5',
-   'confirmPassword' => 'min:5|equals:newPassword',
+   'name'  => 'Bruno Conte',
+   'email' => 'bruno@example.com',
+   'newPassword' => '123456',
 ];
 ```
 
-`Rules`
+### Validation Rules
 
 ```php
 $rules = [
-   'name'  => 'required|regex:/^[a-zA-Z\s]+$/',
-   'email' => 'required|email|max:50',
-   'validatePassingJson' => '{"required":"true","type":"alpha"}',
+   'name'  => 'required|alpha|min:7|max:100',
+   'email' => 'required|email|max:80',
+   'newPassword' => 'required|email|max:50',
 ];
 ```
 
-`Validating the data according to the rules`
+### Validate the Data
 
 ```php
-  require 'vendor/autoload.php';
+<?php
+require 'vendor/autoload.php';
 
-  $validator = new DevUtils\Validator();
-  $validator->set($data, $rules);
+use DevUtils\Validator;
 
-    if(!$validator->getErros()){
-       echo 'Data successfully validated';
-   } else {
-       var_dump($validator->getErros());
-   }
+$validator = new Validator();
+$validator->set($data, $rules);
+
+if (!$validator->getErros()) {
+   echo '✓ Validation successful!';
+} else {
+   var_dump($validator->getErros());
+}
 ```
 
 ## Validating File(s) Upload
 
-With validators fileName, maxFile, maxUploadSize, mimeType, minFile, minUploadSize, minHeight, minWidth, maxHeight,
-maxWidth and requiredFile, you can set the minimum and maximum size (bytes) of the file; minimum and maximum amount of files; allowed extensions; minimum and maximum height and length of images, validate the name of the file and define if the field of type "File" is mandatory.
+Validate file uploads with validators: **fileName**, **maxFile**, **maxUploadSize**, **mimeType**, **minFile**, **minUploadSize**, **minHeight**, **minWidth**, **maxHeight**, **maxWidth** and **requiredFile**.
 
-`Example:`
+Control minimum/maximum file size (bytes), number of files, allowed extensions, image dimensions, filename and field requirements.
+
+### HTML Form
 
 ```html
 <!DOCTYPE html>
 <html lang="pt-BR">
   <head>
-    ...
+    <meta charset="UTF-8">
+    <title>Upload de Arquivos</title>
   </head>
   <body>
     <form method="POST" enctype="multipart/form-data">
-      <!-- Upload a single file. -->
+      <!-- Upload a single file -->
       <input type="file" name="fileUploadSingle" />
 
-      <!-- Uploading single or multiple files. -->
+      <!-- Upload single or multiple files -->
       <input type="file" name="fileUploadMultiple[]" multiple="multiple" />
 
-      <button type="submit">Upload</button>
+      <button type="submit">Submit</button>
     </form>
   </body>
 </html>
 ```
 
+### PHP Validation
+
 ```php
 <?php
-    /**
-     * Comments
-     *
-     * maxFile, minFile, minHeight, minWidth, maxUploadSize, maxHeight, maxWidth and minUploadSize: They must be of the integer type.
-     * mimeType: To pass an array with the allowed extensions, just use the ';' between values.
-     */
-    if (filter_input(INPUT_SERVER, 'REQUEST_METHOD') === 'POST') {
-        $fileUploadSingle = $_FILES['fileUploadSingle'];
-        $fileUploadMultiple = $_FILES['fileUploadMultiple'];
+/**
+ * Notes:
+ * - maxFile, minFile, minHeight, minWidth, maxUploadSize, maxHeight, maxWidth, minUploadSize: Must be integers
+ * - mimeType: Pass an array with allowed extensions, separated by ';'
+ */
+if (filter_input(INPUT_SERVER, 'REQUEST_METHOD') === 'POST') {
+    $fileUploadSingle = $_FILES['fileUploadSingle'];
+    $fileUploadMultiple = $_FILES['fileUploadMultiple'];
 
-        $datas = [
-            'fileUploadSingle' => $fileUploadSingle,
-            'fileUploadMultiple' => $fileUploadMultiple,
-        ];
+    $datas = [
+        'fileUploadSingle' => $fileUploadSingle,
+        'fileUploadMultiple' => $fileUploadMultiple,
+    ];
 
-        $rules = [
-            'fileUploadSingle' => 'requiredFile|fileName|mimeType:jpeg;png;jpg;txt;docx;xlsx;pdf|minUploadSize:10|
-            maxUploadSize:100|minWidth:200|maxWidth:200',
-            'fileUploadMultiple' => 'fileName|mimeType:jpeg|minFile:1|maxFile:3|minUploadSize:10|
-            minWidth:200|maxWidth:200|maxUploadSize:100, Mensagem personalizada aqui',
-        ];
+    $rules = [
+        'fileUploadSingle' => 'requiredFile|fileName|mimeType:jpeg;png;jpg;txt;docx;xlsx;pdf|minUploadSize:10|maxUploadSize:100|minWidth:200|maxWidth:200',
+        'fileUploadMultiple' => 'fileName|mimeType:jpeg|minFile:1|maxFile:3|minUploadSize:10|minWidth:200|maxWidth:200|maxUploadSize:100',
+    ];
 
-        $validator = new DevUtils\Validator();
-        Format::convertTypes($datas, $rules);
-        $validator->set($datas, $rules);
+    $validator = new DevUtils\Validator();
+    DevUtils\Format::convertTypes($datas, $rules);
+    $validator->set($datas, $rules);
 
-        if (!$validator->getErros()) {
-            echo 'Data successfully validated';
-        } else {
-            echo '<pre>';
-            print_r($validator->getErros());
-        }
+    if (!$validator->getErros()) {
+        echo '✓ Files validated successfully!';
+    } else {
+        echo '<pre>';
+        print_r($validator->getErros());
     }
+}
+?>
 ```
 
 ## Validation types (validators)
 
-- alpha: `Checks that the field contains only alphabetic characters`
-- alphaNoSpecial: `Checks if the field contains regular text characters, it cannot have accents`
-- alphaNum: `Checks if the field contains alphanumeric characters`
-- alphaNumNoSpecial: `Checks if the field contains letters without accents, numbers, cannot special character`
-- array: `Checks if the variable is an array`
-- arrayValues: `Checks whether the variable has one of the options in the specified array`
-- bool: `Values of logical type.` `Ex: true or false, 1 or 0, yes or no`
-- companyIdentification: `Validates if the CNPJ is valid, passing CNPJ with or without mask`
-- dateAmerican: `Validates if the American date is valid`
-- dateBrazil: `Validates if the Brazilian date is valid`
-- dateIso8601: `Validates dates in ISO 8601 format, e.g.: 2025-11-20T10:30:00Z`
-- dateUTCWithoutTimezone: `Validates dates in UTC format without the letter Z, e.g.: 2025-11-20T10:30:00`
-- dateNotFuture: `Validates if the date not greater than date current (accepts Brazilian or American format)`
-- ddd: `Validates ddd informed in YYY or YY format, by UF or in general` `Ex: ddd:pr, ddd do Paraná/Brazil, or just ddd`
-- email: `Check if it's a valid email`
-- equals: `Checks if the field is the same as another field, example above in the documentation, look for equals`
-- fileName: `Checks that the filename is a valid name, and formats the name by removing special characters`
-- float: `Checks if the value is of type floating(real value)`
-- hour: `Validates if the time is valid`
-- identifier: `Validates if the CPF is valid, passing CPF with or without mask`
-- identifierOrCompany: `Validates if the CPF or CNPJ is valid, passing CPF or CNPJ with or without mask`
-- int: `Checks if the value is of type integer (If the format is String, it tries to parse it)`
-- integer: `Checks if the value is of type integer (here checks exact typing)`
-- ip: `Checks if the value is a valid IP address`
-- json: `Checks if the value is a valid json`
-- lower: `Checks if all characters are lowercase`
-- mac: `Checks if the value is a valid MAC address`
-- max: `Sets the maximum size of the value`
-- minHeight: `Sets the minimum height size (pixels) of the image`
-- minWidth: `Sets the minimum size in length (pixels) of the image`
-- maxHeight: Sets the maximum height (pixels) size of the image``
-- maxWidth: `Sets the maximum size in length (pixels) of the image`
-- maxFile: `Sets the maximum number of files to upload`
-- maxUploadSize: `Sets the maximum file size (bytes)`
-- maxWords: `Defines the maximum number of words in a string`
-- min: `Sets the minimum size of the value`
-- minFile: `Sets the minimum amount of files to upload`
-- minWords: `Defines the minimum number of words in a string`
-- mimeType: `Defines the extension(s) allowed for upload`
-- minUploadSize: `Sets the minimum file size (bytes)`
-- numeric: `Checks if the value contains only numeric values (Left zero accepted)`
-- numMax: `Sets a maximum value, with the minimum being zero`
-- numMin: `Sets a minimum value, with the minimum being zero`
-- numMonth: `Checks if the value is a valid month (1 to 12)`
-- notSpace: `Checks if the string contains spaces`
-- noWeekend: `Checks if the date (Brazilian or American is not a Weekend)`
-- optional: `If inserted, it only validates if the value is different from empty, null or false`
-- phone: `Checks if the value matches a valid phone. (DDD + NUMBERS) 10 or 11 digits`
-- plate: `Checks if the value matches the shape of a license plate`
-- regex: `Defines a rule for the value through a regular expression`
-- required: `Set the field to mandatory`
-- requiredFile: `Sets the field of type 'File' as mandatory`
-- rgbColor: `Checks if the string has a valid RGB Color`
-- timestamp: `Checks if the value is a valid timestamp (accepts Brazilian or American format)`
-- upper: `Checks if all characters are uppercase`
-- url: `Checks if the value is a valid URL address`
-- zipcode: `Checks if the value matches the format of a zip code`
+Complete list of available validators in the library. Use them in your validation rules to ensure data meets your business criteria.
+
+### Text Validators
+
+| Validator | Description |
+|---|---|
+| alpha | Only alphabetic characters |
+| alphaNoSpecial | Regular text without accents |
+| alphaNum | Alphanumeric characters |
+| alphaNumNoSpecial | Letters without accents + numbers |
+| lower | All lowercase characters |
+| notSpace | Check if contains spaces |
+| regex | Custom regular expression validation |
+| upper | All uppercase characters |
+
+### Brazilian Data Validators
+
+| Validator | Description |
+|---|---|
+| companyIdentification | Validates CNPJ with or without mask |
+| ddd | Validates DDD by state or general (e.g. ddd:pr) |
+| identifier | Validates CPF with or without mask |
+| identifierOrCompany | Validates CPF or CNPJ |
+| phone | Phone with DDD (10 or 11 digits) |
+| plate | Vehicle license plate |
+
+### Date and Time Validators
+
+| Validator | Description |
+|---|---|
+| dateAmerican | American date format (MM/DD/YYYY) |
+| dateBrazil | Brazilian date format (DD/MM/YYYY) |
+| dateIso8601 | ISO 8601 date (2025-11-20T10:30:00Z) |
+| dateNotFuture | Validates date is not in the future |
+| dateUTCWithoutTimezone | UTC date without Z (2025-11-20T10:30:00) |
+| hour | Validates hour format |
+| noWeekend | Checks if date is not a weekend |
+| numMonth | Validates month (1-12) |
+| timestamp | Validates Unix timestamp |
+
+### Type Validators
+
+| Validator | Description |
+|---|---|
+| array | Check if it is an array |
+| bool | Boolean values (true/false, 1/0, yes/no) |
+| float | Decimal/floating value |
+| int | Integer type (attempts parse) |
+| integer | Integer with strict type check |
+| json | Valid JSON |
+| numeric | Only numeric values (accepts leading zeros) |
+
+### Constraint Validators
+
+| Validator | Description |
+|---|---|
+| equals | Field must equal another field |
+| max | Maximum size |
+| maxWords | Maximum number of words |
+| min | Minimum size |
+| minWords | Minimum number of words |
+| optional | Validates only if not empty |
+| required | Required field |
+
+### Network and Identifier Validators
+
+| Validator | Description |
+|---|---|
+| email | Email validation |
+| ip | Valid IP address |
+| mac | Valid MAC address |
+| rgbColor | Valid RGB color |
+
+### Numeric Comparison Validators
+
+| Validator | Description |
+|---|---|
+| numMax | Maximum value (minimum = 0) |
+| numMin | Minimum value (minimum = 0) |
+
+### File Upload Validators
+
+| Validator | Description |
+|---|---|
+| fileName | Validates and formats filename |
+| maxFile | Maximum number of files |
+| maxHeight | Maximum image height (pixels) |
+| maxUploadSize | Maximum file size (bytes) |
+| maxWidth | Maximum image width (pixels) |
+| minFile | Minimum number of files |
+| minHeight | Minimum image height (pixels) |
+| minUploadSize | Minimum file size (bytes) |
+| minWidth | Minimum image width (pixels) |
+| mimeType | Defines allowed extensions (separated by ;) |
+| requiredFile | Required file field |
+
+---
 
 ## Defining custom message
 
@@ -619,6 +728,54 @@ Add Line: /coverage/
 `./vendor/bin/phpunit --coverage-xml coverage`
 `./vendor/bin/phpstan analyse -c phpstan.neon --level 10`
 `If you don't know how to run phpstan, I execute and adjust whatever is necessary`
+
+## 💬 Support and Documentation
+
+### Need Help?
+- 📖 Check the [complete documentation](https://github.com/brunoconte3/dev-utils/wiki)
+- 🐛 Found a bug? [Open an issue](https://github.com/brunoconte3/dev-utils/issues)
+- 💡 Have a suggestion? [Submit a feature request](https://github.com/brunoconte3/dev-utils/issues/new)
+
+### Contributing
+Contributions are welcome! Please:
+1. Fork the project
+2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+Make sure:
+- All tests pass: `phpunit`
+- Code follows standards: `phpstan analyse -c phpstan.neon --level 10`
+- PSR-12 compliance: `phpcs`
+
+## 📊 Code Quality
+
+- ✅ **PHPUnit** - Full test coverage
+- ✅ **PHPStan Level 10** - Advanced static analysis
+- ✅ **SonarQube** - Code quality and security analysis
+- ✅ **PHPCS** - PHP Code Sniffer for coding standards
+- ✅ **Zero dependencies** - Pure PHP
+
+## 🔗 Useful Links
+
+```
+GitHub    https://github.com/brunoconte3/dev-utils
+Packagist https://packagist.org/packages/brunoconte3/dev-utils
+Issues    https://github.com/brunoconte3/dev-utils/issues
+Wiki      https://github.com/brunoconte3/dev-utils/wiki
+```
+
+## 📝 Changelog
+
+See [CHANGELOG.md](CHANGELOG.md) for complete version history and changes.
+
+## 🌟 If you like this project
+
+If this project was useful to you:
+- ⭐ Leave a star on GitHub
+- 🍴 Fork and share
+- 💬 Give feedback and suggestions
 
 # License
 
