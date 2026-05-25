@@ -15,7 +15,7 @@ jobs:
 
       # Checkout project
       - name: Checkout project
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       # Install Composer dependencies
       - name: Install Composer dependencies
