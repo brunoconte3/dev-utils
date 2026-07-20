@@ -62,16 +62,6 @@ Install using **Composer**:
 composer require brunoconte3/dev-utils
 ```
 
-Or add to your `composer.json`:
-
-```json
-{
-  "require": {
-    "brunoconte3/dev-utils": "2.16.0"
-  }
-}
-```
-
 **Requirements:**
 
 - PHP >= 8.3
