@@ -1,8 +1,7 @@
 # dev-utils
-  **dev-utils** Pure PHP Data Validation & Formatting Library
 
-[![Latest Version](https://img.shields.io/badge/version-2.15.1-blue.svg)](https://github.com/brunoconte3/dev-utils)
-[![PHP Version](https://img.shields.io/badge/php-%3E%3D%208.3-blue.svg)](https://www.php.net/)
+**dev-utils** Pure PHP Data Validation & Formatting Library
+
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
 **Complete pure PHP library** for data validation, string formatting, array manipulation, and general utilities. Fully tested with **PHPUnit** and validated with **PHPStan level 10** and **SonarQube** and **PHPCS**.
@@ -67,13 +66,14 @@ Or add to your `composer.json`:
 
 ```json
 {
-    "require": {
-        "brunoconte3/dev-utils": "2.16.0"
-    }
+  "require": {
+    "brunoconte3/dev-utils": "2.16.0"
+  }
 }
 ```
 
 **Requirements:**
+
 - PHP >= 8.3
 - Composer
 
@@ -87,21 +87,27 @@ Or add to your `composer.json`:
 - ✓ **Active Maintenance** - Regular updates
 
 <a id="common-use-cases"></a>
+
 ## 🎯 Common Use Cases
 
 ### Validate registration forms
+
 Validate email, CPF/CNPJ, phone and other data in a single validator.
 
 ### Process file uploads
+
 Control file size, MIME type, image dimensions and filename.
 
 ### Format data for display
+
 Format currencies, dates, strings and perform type conversions.
 
 ### Validate API data
+
 Ensure received data meets your business criteria.
 
 ### Manipulate complex arrays
+
 Search, sort, filter and transform arrays with ready-to-use methods.
 
 ## Data Validation Example
@@ -156,7 +162,7 @@ Control minimum/maximum file size (bytes), number of files, allowed extensions, 
 <!DOCTYPE html>
 <html lang="pt-BR">
   <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <title>Upload de Arquivos</title>
   </head>
   <body>
@@ -216,97 +222,97 @@ Complete list of available validators in the library. Use them in your validatio
 
 ### Text Validators
 
-| Validator | Description |
-|---|---|
-| alpha | Only alphabetic characters |
-| alphaNoSpecial | Regular text without accents |
-| alphaNum | Alphanumeric characters |
-| alphaNumNoSpecial | Letters without accents + numbers |
-| lower | All lowercase characters |
-| notSpace | Check if contains spaces |
-| regex | Custom regular expression validation |
-| upper | All uppercase characters |
+| Validator         | Description                          |
+| ----------------- | ------------------------------------ |
+| alpha             | Only alphabetic characters           |
+| alphaNoSpecial    | Regular text without accents         |
+| alphaNum          | Alphanumeric characters              |
+| alphaNumNoSpecial | Letters without accents + numbers    |
+| lower             | All lowercase characters             |
+| notSpace          | Check if contains spaces             |
+| regex             | Custom regular expression validation |
+| upper             | All uppercase characters             |
 
 ### Brazilian Data Validators
 
-| Validator | Description |
-|---|---|
-| companyIdentification | Validates CNPJ with or without mask |
-| ddd | Validates DDD by state or general (e.g. ddd:pr) |
-| identifier | Validates CPF with or without mask |
-| identifierOrCompany | Validates CPF or CNPJ |
-| phone | Phone with DDD (10 or 11 digits) |
-| plate | Vehicle license plate |
+| Validator             | Description                                     |
+| --------------------- | ----------------------------------------------- |
+| companyIdentification | Validates CNPJ with or without mask             |
+| ddd                   | Validates DDD by state or general (e.g. ddd:pr) |
+| identifier            | Validates CPF with or without mask              |
+| identifierOrCompany   | Validates CPF or CNPJ                           |
+| phone                 | Phone with DDD (10 or 11 digits)                |
+| plate                 | Vehicle license plate                           |
 
 ### Date and Time Validators
 
-| Validator | Description |
-|---|---|
-| dateAmerican | American date format (MM/DD/YYYY) |
-| dateBrazil | Brazilian date format (DD/MM/YYYY) |
-| dateIso8601 | ISO 8601 date (2025-11-20T10:30:00Z) |
-| dateNotFuture | Validates date is not in the future |
+| Validator              | Description                              |
+| ---------------------- | ---------------------------------------- |
+| dateAmerican           | American date format (MM/DD/YYYY)        |
+| dateBrazil             | Brazilian date format (DD/MM/YYYY)       |
+| dateIso8601            | ISO 8601 date (2025-11-20T10:30:00Z)     |
+| dateNotFuture          | Validates date is not in the future      |
 | dateUTCWithoutTimezone | UTC date without Z (2025-11-20T10:30:00) |
-| hour | Validates hour format |
-| noWeekend | Checks if date is not a weekend |
-| numMonth | Validates month (1-12) |
-| timestamp | Validates Unix timestamp |
+| hour                   | Validates hour format                    |
+| noWeekend              | Checks if date is not a weekend          |
+| numMonth               | Validates month (1-12)                   |
+| timestamp              | Validates Unix timestamp                 |
 
 ### Type Validators
 
-| Validator | Description |
-|---|---|
-| array | Check if it is an array |
-| bool | Boolean values (true/false, 1/0, yes/no) |
-| float | Decimal/floating value |
-| int | Integer type (attempts parse) |
-| integer | Integer with strict type check |
-| json | Valid JSON |
-| numeric | Only numeric values (accepts leading zeros) |
+| Validator | Description                                 |
+| --------- | ------------------------------------------- |
+| array     | Check if it is an array                     |
+| bool      | Boolean values (true/false, 1/0, yes/no)    |
+| float     | Decimal/floating value                      |
+| int       | Integer type (attempts parse)               |
+| integer   | Integer with strict type check              |
+| json      | Valid JSON                                  |
+| numeric   | Only numeric values (accepts leading zeros) |
 
 ### Constraint Validators
 
-| Validator | Description |
-|---|---|
-| equals | Field must equal another field |
-| max | Maximum size |
-| maxWords | Maximum number of words |
-| min | Minimum size |
-| minWords | Minimum number of words |
-| optional | Validates only if not empty |
-| required | Required field |
+| Validator | Description                    |
+| --------- | ------------------------------ |
+| equals    | Field must equal another field |
+| max       | Maximum size                   |
+| maxWords  | Maximum number of words        |
+| min       | Minimum size                   |
+| minWords  | Minimum number of words        |
+| optional  | Validates only if not empty    |
+| required  | Required field                 |
 
 ### Network and Identifier Validators
 
-| Validator | Description |
-|---|---|
-| email | Email validation |
-| ip | Valid IP address |
-| mac | Valid MAC address |
-| rgbColor | Valid RGB color |
+| Validator | Description       |
+| --------- | ----------------- |
+| email     | Email validation  |
+| ip        | Valid IP address  |
+| mac       | Valid MAC address |
+| rgbColor  | Valid RGB color   |
 
 ### Numeric Comparison Validators
 
-| Validator | Description |
-|---|---|
-| numMax | Maximum value (minimum = 0) |
-| numMin | Minimum value (minimum = 0) |
+| Validator | Description                 |
+| --------- | --------------------------- |
+| numMax    | Maximum value (minimum = 0) |
+| numMin    | Minimum value (minimum = 0) |
 
 ### File Upload Validators
 
-| Validator | Description |
-|---|---|
-| fileName | Validates and formats filename |
-| maxFile | Maximum number of files |
-| maxHeight | Maximum image height (pixels) |
-| maxUploadSize | Maximum file size (bytes) |
-| maxWidth | Maximum image width (pixels) |
-| minFile | Minimum number of files |
-| minHeight | Minimum image height (pixels) |
-| minUploadSize | Minimum file size (bytes) |
-| minWidth | Minimum image width (pixels) |
-| mimeType | Defines allowed extensions (separated by ;) |
-| requiredFile | Required file field |
+| Validator     | Description                                 |
+| ------------- | ------------------------------------------- |
+| fileName      | Validates and formats filename              |
+| maxFile       | Maximum number of files                     |
+| maxHeight     | Maximum image height (pixels)               |
+| maxUploadSize | Maximum file size (bytes)                   |
+| maxWidth      | Maximum image width (pixels)                |
+| minFile       | Minimum number of files                     |
+| minHeight     | Minimum image height (pixels)               |
+| minUploadSize | Minimum file size (bytes)                   |
+| minWidth      | Minimum image width (pixels)                |
+| mimeType      | Defines allowed extensions (separated by ;) |
+| requiredFile  | Required file field                         |
 
 ---
 
@@ -732,12 +738,15 @@ Add Line: /coverage/
 ## 💬 Support and Documentation
 
 ### Need Help?
+
 - 📖 Check the [complete documentation](https://github.com/brunoconte3/dev-utils/wiki)
 - 🐛 Found a bug? [Open an issue](https://github.com/brunoconte3/dev-utils/issues)
 - 💡 Have a suggestion? [Submit a feature request](https://github.com/brunoconte3/dev-utils/issues/new)
 
 ### Contributing
+
 Contributions are welcome! Please:
+
 1. Fork the project
 2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
 3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
@@ -745,6 +754,7 @@ Contributions are welcome! Please:
 5. Open a Pull Request
 
 Make sure:
+
 - All tests pass: `phpunit`
 - Code follows standards: `phpstan analyse -c phpstan.neon --level 10`
 - PSR-12 compliance: `phpcs`
@@ -773,6 +783,7 @@ See [CHANGELOG.md](CHANGELOG.md) for complete version history and changes.
 ## 🌟 If you like this project
 
 If this project was useful to you:
+
 - ⭐ Leave a star on GitHub
 - 🍴 Fork and share
 - 💬 Give feedback and suggestions
