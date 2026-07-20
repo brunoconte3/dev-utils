@@ -68,7 +68,7 @@ Or add to your `composer.json`:
 ```json
 {
     "require": {
-        "brunoconte3/dev-utils": "2.15.1"
+        "brunoconte3/dev-utils": "2.16.0"
     }
 }
 ```
