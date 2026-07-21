@@ -5,8 +5,9 @@ parameters:
 
   # src/CI.php é um script CLI (gate de cobertura), já excluído do phpunit.xml.
   # Usa os globais $argc/$argv, cuja disponibilidade depende do ini register_argc_argv
-  # (o default varia entre os builds do PHP 8.3/8.4/8.5), gerando falso-positivo no
-  # nível 10. Mantido fora da análise estática.
+  # (o default varia entre os builds do PHP 8.4/8.5); onde vem Off, o PHPStan
+  # reporta "Variable $argv might not be defined" — falso-positivo, pois o script só
+  # roda em CLI. Mantido fora da análise estática.
   excludePaths:
     - src/CI.php
 

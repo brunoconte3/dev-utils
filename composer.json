@@ -87,7 +87,7 @@
         "source": "https://github.com/brunoconte3/dev-utils"
     },
     "require": {
-        "php": "^8.3",
+        "php": "^8.4",
         "ext-intl": "*",
         "ext-json": "*",
         "ext-mbstring": "*"
