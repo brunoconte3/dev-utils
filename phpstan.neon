@@ -1,5 +1,14 @@
 parameters:
+  level: 10
+
   reportUnmatchedIgnoredErrors: false
+
+  # src/CI.php é um script CLI (gate de cobertura), já excluído do phpunit.xml.
+  # Usa os globais $argc/$argv, cuja disponibilidade depende do ini register_argc_argv
+  # (o default varia entre os builds do PHP 8.3/8.4/8.5), gerando falso-positivo no
+  # nível 10. Mantido fora da análise estática.
+  excludePaths:
+    - src/CI.php
 
   ignoreErrors:
     - '#no value type specified in iterable type array#'
