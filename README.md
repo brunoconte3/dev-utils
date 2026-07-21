@@ -64,7 +64,7 @@ composer require brunoconte3/dev-utils
 
 **Requirements:**
 
-- PHP >= 8.3
+- PHP >= 8.4
 - Composer
 
 ### Why use dev-utils?
