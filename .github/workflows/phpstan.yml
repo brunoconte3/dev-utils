@@ -3,15 +3,19 @@ name: "PHPStan - CI"
 
 jobs:
   phpstan:
-    name: Run PHPStan
+    name: Run PHPStan (PHP ${{ matrix.php-version }})
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        php-version: ["8.3", "8.4", "8.5"]
     steps:
       # Set up PHP
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: "8.4"
-          extensions: mbstring, json
+          php-version: ${{ matrix.php-version }}
+          extensions: mbstring, intl, json
 
       # Checkout project
       - name: Checkout project

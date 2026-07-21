@@ -6,3 +6,13 @@
 *.yaml text eol=lf
 *.neon text eol=lf
 *.properties text eol=lf
+
+# Arquivos de desenvolvimento: excluídos do pacote de distribuição (composer require / git archive)
+/.github                    export-ignore
+/tests                      export-ignore
+/.gitattributes             export-ignore
+/.gitignore                 export-ignore
+/phpcs.xml                  export-ignore
+/phpstan.neon               export-ignore
+/phpunit.xml                export-ignore
+/sonar-project.properties   export-ignore
