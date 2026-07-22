@@ -1,8 +1,6 @@
 parameters:
   level: 10
 
-  reportUnmatchedIgnoredErrors: false
-
   # src/CI.php é um script CLI (gate de cobertura), já excluído do phpunit.xml.
   # Usa os globais $argc/$argv, cuja disponibilidade depende do ini register_argc_argv
   # (o default varia entre os builds do PHP 8.4/8.5); onde vem Off, o PHPStan
@@ -16,25 +14,6 @@ parameters:
     - '#Cannot cast mixed to string#'
     - '#Cannot cast mixed to int#'
     - '#Cannot cast mixed to float#'
-    - '#Cannot cast array<string>\|false to string#'
-    -
-      message: "#expects Countable\\|iterable, array\\|bool given#"
-      paths:
-        - tests/UnitTestString.php
-        - tests/UnitTestRule.php
-        - tests/UnitTestInteger.php
-    -
-      message: "#Call to an undefined method object::addChild#"
-      path: src/Arrays.php
-    -
-      message: "#Cannot access offset 'textoError' on array\\|bool#"
-      path: tests/UnitTestRule.php
-    -
-      message: "#Call to an undefined method object::asXML#"
-      path: tests/UnitArrayTest.php
-    -
-      message: "#Strict comparison using === between callable-string and#"
-      path: src/DependencyInjection/Rules.php
     -
       message: "#invalidRule\\(\\) is unused#"
       path: src/DependencyInjection/Rules.php
