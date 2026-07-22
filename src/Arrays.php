@@ -7,6 +7,7 @@ namespace DevUtils;
 class Arrays
 {
     private const XML_ATTR_KEY = '@attr';
+    private const XML_NUMERIC_KEY_NAME = 'item';
 
     public static function searchKey(array $array, string $key): ?int
     {
@@ -20,15 +21,15 @@ class Arrays
             return false;
         }
 
-        $position = self::searchKey($array, $oldKey);
-        if ($position === null) {
+        if ($newKey !== $oldKey && array_key_exists($newKey, $array)) {
             return false;
         }
 
-        $keys = array_keys($array);
-        $keys[$position] = $newKey;
-        $values = array_values($array);
-        $array = array_combine($keys, $values);
+        $renamed = [];
+        foreach ($array as $key => $value) {
+            $renamed[$key === $oldKey ? $newKey : $key] = $value;
+        }
+        $array = $renamed;
 
         return true;
     }
@@ -96,6 +97,10 @@ class Arrays
         foreach ($array as $key => $value) {
             if (is_numeric($key) && is_array($value) && isset($value[self::XML_ATTR_KEY])) {
                 $key = $value[self::XML_ATTR_KEY];
+            }
+
+            if (is_numeric($key)) {
+                $key = self::XML_NUMERIC_KEY_NAME;
             }
 
             if (is_array($value)) {
