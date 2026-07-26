@@ -516,34 +516,46 @@ require 'vendor/autoload.php';
 use DevUtils\Compare;
 
 //Returns +30 (+30 days difference)
+//Throws InvalidArgumentException when the date is not dd/mm/yyyy or yyyy-mm-dd (31/02/2020 is rejected)
 Compare::daysDifferenceBetweenData('31/05/2020', '30/06/2020'); //Accepts American date too
 
 //Compares if start date is less than end date => Returns [bool]
+//null or empty string returns false; an invalid filled date throws InvalidArgumentException
 Compare::startDateLessThanEnd('30/07/2020', '30/06/2020'); //Accepts American date too
 
 //Difference between hours ==> 01:36:28 [Hours displays negative and positive difference]
+//A negative result is the real duration prefixed by '-' ==> '-11:00:05'
+//Requires HH:MM:SS, otherwise throws InvalidArgumentException
 Compare::differenceBetweenHours('10:41:55', '12:18:23');
 
 //Compares if the start time is less than the end time (3rd parameter, accept custom message)
+//4th parameter accepts a custom message for when one of the hours is not filled
 Compare::startHourLessThanEnd('12:05:01', '10:20:01');
 
-//Compares the date to the current date, and returns the person's age
+//Compares the date to the current date, and returns the person's age. Future dates return 0
 Compare::calculateAgeInYears('20/05/1989');
+
+//2nd parameter pins the reference instant (useful to keep tests deterministic)
+//3rd parameter sets the timezone, defaults to America/Sao_Paulo
+Compare::calculateAgeInYears('20/05/1989', new DateTimeImmutable('2025-06-01'), 'America/Sao_Paulo');
 
 //Compares fields for equality, returns boolean
 //optional third parameter, false to not compare caseSensitive, default true
+//The case-insensitive comparison is multibyte aware ('AÇAFRÃO' matches 'açafrão')
 Compare::checkDataEquality('AçaFrão', 'Açafrão');
 
 //Compares if desired content exists in String, returns boolean
 Compare::contains('AçaFrão', 'çaF');
 
 //Compares the corresponding URL with the second parameter, starts with the string entered in the first parameter. Returns boolean.
+//Case-insensitive and tolerant to a trailing slash, but slashes inside the path are significant ('/te/ste' does not match '/teste').
 Compare::beginUrlWith('/teste', '/teste/variavel');
 
 //Compares the corresponding URL with the second parameter, ends with the string entered in the first parameter. Returns boolean.
 Compare::finishUrlWith('/teste', 'sistema/teste');
 
 //Compares if the corresponding string with the first parameter is equal to the substring obtained from the second parameter. Extracting to compare 7 characters from the second parameter starting at position 0. Returns boolean.
+//The start/length window is always honoured, even when both strings are identical.
 Compare::compareStringFrom('sistema', 'sistema/teste', 0, 7);
 
 ```
@@ -765,10 +777,6 @@ Packagist https://packagist.org/packages/brunoconte3/dev-utils
 Issues    https://github.com/brunoconte3/dev-utils/issues
 Wiki      https://github.com/brunoconte3/dev-utils/wiki
 ```
-
-## 📝 Changelog
-
-See [CHANGELOG.md](CHANGELOG.md) for complete version history and changes.
 
 ## 🌟 If you like this project
 

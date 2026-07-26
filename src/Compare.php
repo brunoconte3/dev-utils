@@ -1,105 +1,116 @@
 <?php
 
+declare(strict_types=1);
+
 namespace DevUtils;
 
-use DateTime;
+use DateTimeImmutable;
+use DateTimeInterface;
 use DateTimeZone;
+use InvalidArgumentException;
 
 class Compare
 {
+    private const DEFAULT_TIMEZONE = 'America/Sao_Paulo';
+    private const HOUR_PATTERN = '/^(\d{1,2}):([0-5][0-9]):([0-5][0-9])$/';
+
     private static function normalizeDateFormat(string $date): string
     {
-        if (str_contains($date, '/')) {
+        $date = trim($date);
+
+        if (ValidateDate::validateDateBrazil($date)) {
             return implode('-', array_reverse(explode('/', $date)));
         }
-        return $date;
+
+        if (ValidateDate::validateDateAmerican($date)) {
+            return $date;
+        }
+
+        throw new InvalidArgumentException("Data inválida: '{$date}'. Formatos aceitos: dd/mm/aaaa ou aaaa-mm-dd.");
     }
 
     private static function normalizeUrl(string $url): string
     {
-        return strtoupper(str_replace('/', '', $url));
+        return mb_strtoupper(rtrim($url, '/'), 'UTF-8');
     }
 
     private static function convertTimeToSeconds(string $time): int
     {
-        [$hours, $minutes, $seconds] = explode(':', $time);
-        return ((int) $hours * 3600) + ((int) $minutes * 60) + (int) $seconds;
+        if (preg_match(self::HOUR_PATTERN, trim($time), $matches) !== 1) {
+            throw new InvalidArgumentException("Hora inválida: '{$time}'. Formato aceito: HH:MM:SS.");
+        }
+
+        return ((int) $matches[1] * 3600) + ((int) $matches[2] * 60) + (int) $matches[3];
     }
 
     private static function formatSecondsToTime(int $totalSeconds): string
     {
-        $hours = floor($totalSeconds / 3600);
-        $remainingSeconds = $totalSeconds - ($hours * 3600);
-        $minutes = floor($remainingSeconds / 60);
-        $seconds = $remainingSeconds - ($minutes * 60);
+        $absoluteSeconds = abs($totalSeconds);
 
-        if (str_starts_with((string) $hours, '-')) {
-            $formattedHours = '-' . str_pad(substr((string) $hours, 1), 2, '0', STR_PAD_LEFT);
-        } else {
-            $formattedHours = str_pad((string) $hours, 2, '0', STR_PAD_LEFT);
-        }
-
-        $formattedMinutes = str_pad((string) $minutes, 2, '0', STR_PAD_LEFT);
-        $formattedSeconds = str_pad((string) $seconds, 2, '0', STR_PAD_LEFT);
-
-        return "{$formattedHours}:{$formattedMinutes}:{$formattedSeconds}";
+        return sprintf(
+            '%s%02d:%02d:%02d',
+            $totalSeconds < 0 ? '-' : '',
+            intdiv($absoluteSeconds, 3600),
+            intdiv($absoluteSeconds % 3600, 60),
+            $absoluteSeconds % 60,
+        );
     }
 
     public static function daysDifferenceBetweenData(string $dtIni, string $dtFin): string
     {
-        $dtIni = self::normalizeDateFormat($dtIni);
-        $dtFin = self::normalizeDateFormat($dtFin);
+        // UTC evita que transições de horário de verão distorçam a contagem de dias de calendário.
+        $utc = new DateTimeZone('UTC');
+        $datetime1 = new DateTimeImmutable(self::normalizeDateFormat($dtIni), $utc);
+        $datetime2 = new DateTimeImmutable(self::normalizeDateFormat($dtFin), $utc);
 
-        $datetime1 = new DateTime($dtIni);
-        $datetime2 = new DateTime($dtFin);
-        $interval = $datetime1->diff($datetime2);
-
-        return $interval->format('%R%a');
+        return $datetime1->diff($datetime2)->format('%R%a');
     }
 
     public static function startDateLessThanEnd(?string $dtIni, ?string $dtFin): bool
     {
-        if (empty($dtIni) || empty($dtFin)) {
+        if ($dtIni === null || trim($dtIni) === '' || $dtFin === null || trim($dtFin) === '') {
             return false;
         }
 
-        $daysDifference = (int) str_replace('+', '', self::daysDifferenceBetweenData($dtIni, $dtFin));
-        return $daysDifference >= 0;
+        return (int) self::daysDifferenceBetweenData($dtIni, $dtFin) >= 0;
     }
 
     public static function startHourLessThanEnd(
-        string $hourIni,
-        string $hourFin,
+        ?string $hourIni,
+        ?string $hourFin,
         string $msg = 'Hora Inicial não pode ser maior que a Hora Final!',
+        string $msgEmpty = 'Um ou mais campos horas não foram preenchidos!',
     ): ?string {
-        if (empty($hourIni) || empty($hourFin)) {
-            return 'Um ou mais campos horas não foram preenchidos!';
+        if ($hourIni === null || trim($hourIni) === '' || $hourFin === null || trim($hourFin) === '') {
+            return $msgEmpty;
         }
 
-        $diff = self::differenceBetweenHours($hourIni, $hourFin);
-        if (str_starts_with($diff, '-')) {
-            return $msg;
-        }
-
-        return null;
+        return str_starts_with(self::differenceBetweenHours($hourIni, $hourFin), '-') ? $msg : null;
     }
 
-    public static function calculateAgeInYears(string $date): int
-    {
-        $date = self::normalizeDateFormat($date);
-        $dateBirth = new DateTime($date, new DateTimeZone('America/Sao_Paulo'));
-        $dataNow = new DateTime('now', new DateTimeZone('America/Sao_Paulo'));
-        $diff = $dataNow->diff($dateBirth);
-        return (int) $diff->format('%y');
+    public static function calculateAgeInYears(
+        string $date,
+        ?DateTimeInterface $reference = null,
+        string $timezone = self::DEFAULT_TIMEZONE,
+    ): int {
+        $zone = new DateTimeZone($timezone);
+        $dateBirth = new DateTimeImmutable(self::normalizeDateFormat($date), $zone);
+        $now = $reference !== null
+            ? DateTimeImmutable::createFromInterface($reference)->setTimezone($zone)
+            : new DateTimeImmutable('now', $zone);
+
+        if ($dateBirth > $now) {
+            return 0;
+        }
+
+        return (int) $dateBirth->diff($now)->format('%y');
     }
 
     public static function differenceBetweenHours(string $hourIni, string $hourFin): string
     {
-        $secondsIni = self::convertTimeToSeconds($hourIni);
-        $secondsFin = self::convertTimeToSeconds($hourFin);
-        $totalSeconds = $secondsFin - $secondsIni;
-
-        return self::formatSecondsToTime($totalSeconds);
+        return self::formatSecondsToTime(
+            self::convertTimeToSeconds($hourFin) - self::convertTimeToSeconds($hourIni),
+        );
     }
 
     public static function checkDataEquality(
@@ -107,9 +118,11 @@ class Compare
         string $secondValue,
         bool $caseSensitive = true,
     ): bool {
-        return $caseSensitive
-            ? $firstValue === $secondValue
-            : strcasecmp($firstValue, $secondValue) === 0;
+        if ($caseSensitive) {
+            return $firstValue === $secondValue;
+        }
+
+        return mb_strtolower($firstValue, 'UTF-8') === mb_strtolower($secondValue, 'UTF-8');
     }
 
     public static function contains(string $value, string $search): bool
@@ -119,21 +132,16 @@ class Compare
 
     public static function compareStringFrom(string $search, string $str, int $start, int $length): bool
     {
-        return $str === $search || substr($str, $start, $length) === $search;
+        return substr($str, $start, $length) === $search;
     }
 
     public static function beginUrlWith(string $search, string $url): bool
     {
-        $normalizedSearch = self::normalizeUrl($search);
-        $normalizedUrl = self::normalizeUrl($url);
-        return self::compareStringFrom($normalizedSearch, $normalizedUrl, 0, strlen($normalizedSearch));
+        return str_starts_with(self::normalizeUrl($url), self::normalizeUrl($search));
     }
 
     public static function finishUrlWith(string $search, string $url): bool
     {
-        $normalizedSearch = self::normalizeUrl($search);
-        $normalizedUrl = self::normalizeUrl($url);
-        $startPosition = strlen($normalizedUrl) - strlen($normalizedSearch);
-        return self::compareStringFrom($normalizedSearch, $normalizedUrl, $startPosition, strlen($normalizedUrl));
+        return str_ends_with(self::normalizeUrl($url), self::normalizeUrl($search));
     }
 }
