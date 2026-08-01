@@ -15,11 +15,12 @@
   </coverage>
   <source>
     <include>
+      <directory suffix=".php">conf</directory>
       <directory suffix=".php">src</directory>
       <directory suffix=".php">tests</directory>
     </include>
     <exclude>
-      <directory>src/CI.php</directory>
+      <file>src/CI.php</file>
     </exclude>
   </source>
 </phpunit>
