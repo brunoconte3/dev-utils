@@ -8,72 +8,154 @@ use PHPUnit\Framework\TestCase;
 
 class UnitCiTest extends TestCase
 {
-    private const CI_SCRIPT = './src/CI.php';
-    private const COVERAGE_FILE = 'coverage/index.xml';
+    private string $script = '';
+    private string $directory = '';
+    private string $report = '';
+    private int $exitCode = 0;
 
-    public function testCiFileExists(): void
+    protected function setUp(): void
     {
-        $file = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'CI.php';
-        self::assertFileIsReadable($file);
+        $this->script = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'CI.php';
+        $this->directory = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'devutils-ci-' . bin2hex(random_bytes(8));
+        mkdir($this->directory);
+
+        $this->report = $this->directory . DIRECTORY_SEPARATOR . 'index.xml';
+        file_put_contents($this->report, $this->reportXml());
     }
 
-    public function testCiPassWithValidCoverage(): void
+    protected function tearDown(): void
     {
-        if (!file_exists(self::COVERAGE_FILE)) {
-            self::markTestSkipped('Coverage file not found');
+        foreach (glob($this->directory . DIRECTORY_SEPARATOR . '*') ?: [] as $file) {
+            unlink($file);
         }
-        $returnCheck = shell_exec('php ' . self::CI_SCRIPT . ' ' . self::COVERAGE_FILE . ' 80');
-        self::assertStringContainsString('[PASS]', ($returnCheck ?: ''));
+        rmdir($this->directory);
     }
 
-    public function testCiPassWithZeroThreshold(): void
+    private function reportXml(): string
     {
-        if (!file_exists(self::COVERAGE_FILE)) {
-            self::markTestSkipped('Coverage file not found');
-        }
-        $returnCheck = shell_exec('php ' . self::CI_SCRIPT . ' ' . self::COVERAGE_FILE . ' 0');
-        self::assertStringContainsString('[PASS]', ($returnCheck ?: ''));
+        return <<<XML
+        <?xml version="1.0"?>
+        <phpunit xmlns="https://schema.phpunit.de/coverage/1.0">
+          <project source="/app">
+            <directory name="/">
+              <totals>
+                <lines total="100" executable="100" executed="90" percent="90.00"/>
+              </totals>
+            </directory>
+          </project>
+        </phpunit>
+        XML;
     }
 
-    public function testCiFailWithHighThreshold(): void
+    private function runScript(string $arguments = ''): string
     {
-        if (!file_exists(self::COVERAGE_FILE)) {
-            self::markTestSkipped('Coverage file not found');
-        }
-        exec('php ' . self::CI_SCRIPT . ' ' . self::COVERAGE_FILE . ' 100.1 2>&1', $output, $exitCode);
-        $result = implode("\n", $output);
+        $command = escapeshellarg(PHP_BINARY) . ' ' . escapeshellarg($this->script);
+        $output = [];
+
+        exec(trim($command . ' ' . $arguments) . ' 2>&1', $output, $exitCode);
+        $this->exitCode = $exitCode;
+
+        return implode("\n", $output);
+    }
+
+    public function testCiScriptIsReadable(): void
+    {
+        self::assertFileIsReadable($this->script);
+    }
+
+    public function testPassesWhenCoverageMeetsThreshold(): void
+    {
+        $result = $this->runScript(escapeshellarg($this->report) . ' 80');
+
+        self::assertStringContainsString('[PASS]', $result);
+        self::assertStringContainsString('90%', $result);
+        self::assertSame(0, $this->exitCode);
+    }
+
+    public function testPassesWhenCoverageEqualsThreshold(): void
+    {
+        $result = $this->runScript(escapeshellarg($this->report) . ' 90');
+
+        self::assertStringContainsString('[PASS]', $result);
+        self::assertSame(0, $this->exitCode);
+    }
+
+    public function testPassesWhenThresholdIsZero(): void
+    {
+        $result = $this->runScript(escapeshellarg($this->report) . ' 0');
+
+        self::assertStringContainsString('[PASS]', $result);
+        self::assertSame(0, $this->exitCode);
+    }
+
+    public function testPassesWithFloatThreshold(): void
+    {
+        $result = $this->runScript(escapeshellarg($this->report) . ' 50.5');
+
+        self::assertStringContainsString('[PASS]', $result);
+        self::assertSame(0, $this->exitCode);
+    }
+
+    public function testFailsWhenCoverageIsBelowThreshold(): void
+    {
+        $result = $this->runScript(escapeshellarg($this->report) . ' 100');
+
         self::assertStringContainsString('[FAIL]', $result);
-        self::assertNotEquals(0, $exitCode);
+        self::assertSame(1, $this->exitCode);
     }
 
-    public function testCiWithoutArguments(): void
+    public function testFailureDoesNotLeakStackTrace(): void
     {
-        exec('php ' . self::CI_SCRIPT . ' 2>&1', $output, $exitCode);
-        $result = implode("\n", $output);
+        $result = $this->runScript(escapeshellarg($this->report) . ' 100');
+
+        self::assertStringNotContainsString('Stack trace', $result);
+        self::assertStringNotContainsString('Uncaught', $result);
+    }
+
+    public function testFailsWithoutArguments(): void
+    {
+        $result = $this->runScript();
+
         self::assertStringContainsString('Usage:', $result);
-        self::assertEquals(255, $exitCode);
+        self::assertSame(1, $this->exitCode);
     }
 
-    public function testCiWithOnlyOneArgument(): void
+    public function testFailsWithOnlyOneArgument(): void
     {
-        exec('php ' . self::CI_SCRIPT . ' ' . self::COVERAGE_FILE . ' 2>&1', $output, $exitCode);
-        $result = implode("\n", $output);
+        $result = $this->runScript(escapeshellarg($this->report));
+
         self::assertStringContainsString('Usage:', $result);
-        self::assertEquals(255, $exitCode);
+        self::assertSame(1, $this->exitCode);
     }
 
-    public function testCiWithInvalidFile(): void
+    public function testReportsMissingFileInsteadOfZeroCoverage(): void
     {
-        exec('php ' . self::CI_SCRIPT . ' nonexistent.xml 80 2>&1', $output, $exitCode);
-        self::assertNotEquals(0, $exitCode);
+        $missing = $this->directory . DIRECTORY_SEPARATOR . 'nonexistent.xml';
+
+        $result = $this->runScript(escapeshellarg($missing) . ' 80');
+
+        self::assertStringContainsString('Coverage report not found', $result);
+        self::assertStringNotContainsString('[FAIL]', $result);
+        self::assertSame(1, $this->exitCode);
     }
 
-    public function testCiWithFloatThreshold(): void
+    public function testRejectsNonNumericThreshold(): void
     {
-        if (!file_exists(self::COVERAGE_FILE)) {
-            self::markTestSkipped('Coverage file not found');
-        }
-        $returnCheck = shell_exec('php ' . self::CI_SCRIPT . ' ' . self::COVERAGE_FILE . ' 50.5');
-        self::assertStringContainsString('[PASS]', ($returnCheck ?: ''));
+        $result = $this->runScript(escapeshellarg($this->report) . ' abc');
+
+        self::assertStringContainsString('Threshold must be numeric', $result);
+        self::assertStringNotContainsString('[PASS]', $result);
+        self::assertSame(1, $this->exitCode);
+    }
+
+    public function testRejectsMissingFileEvenWhenThresholdIsZero(): void
+    {
+        $missing = $this->directory . DIRECTORY_SEPARATOR . 'nonexistent.xml';
+
+        $result = $this->runScript(escapeshellarg($missing) . ' 0');
+
+        self::assertStringContainsString('Coverage report not found', $result);
+        self::assertStringNotContainsString('[PASS]', $result);
+        self::assertSame(1, $this->exitCode);
     }
 }

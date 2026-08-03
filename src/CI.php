@@ -1,18 +1,29 @@
 <?php
 
+declare(strict_types=1);
+
+use DevUtils\CoverageGate;
+
+require_once __DIR__ . DIRECTORY_SEPARATOR . 'CoverageGate.php';
+
 if ($argc !== 3) {
-    echo "Usage: " . $argv[0] . " <path/to/index.xml> <threshold>\n";
-    exit(-1);
+    fwrite(STDERR, 'Usage: ' . $argv[0] . " <path/to/index.xml> <threshold>\n");
+    exit(1);
 }
 
-$file = $argv[1];
-$threshold = (float) $argv[2];
-
-$coverage = simplexml_load_file($file);
-$ratio = !empty($coverage) ? (float) $coverage->project->directory->totals->lines["percent"] : 0;
-
-if ($ratio < $threshold) {
-    throw new InvalidArgumentException("[FAIL] Code coverage is $ratio% (required minimum is $threshold%)");
+try {
+    $threshold = CoverageGate::parseThreshold($argv[2]);
+    $ratio = CoverageGate::readRatio($argv[1]);
+} catch (Throwable $exception) {
+    fwrite(STDERR, '[ERROR] ' . $exception->getMessage() . "\n");
+    exit(1);
 }
 
-echo "[PASS] Code coverage is $ratio% (required minimum is $threshold%).";
+$message = CoverageGate::message($ratio, $threshold);
+
+if (!CoverageGate::passes($ratio, $threshold)) {
+    fwrite(STDERR, $message . "\n");
+    exit(1);
+}
+
+echo $message . "\n";
