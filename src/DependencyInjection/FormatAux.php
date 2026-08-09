@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace DevUtils\DependencyInjection;
 
 use InvalidArgumentException;
@@ -8,10 +10,12 @@ abstract class FormatAux
 {
     private const DATA_TYPE_TO_CONVERT = ['bool', 'float', 'int', 'numeric',];
     private const DECIMAL_PLACES = 2;
-    private const DECIMAL_SEPARATOR = '.';
-    private const THOUSANDS_SEPARATOR = '.';
-    private const PADDING_LENGTH = 3;
-    private const PADDING_CHAR = '0';
+    private const GROUP_SIZE = 3;
+    private const SCALE_CENTS = 0;
+    private const SCALE_UNIT = 1;
+    private const SCALE_THOUSAND = 2;
+    private const SCALE_MILLION = 3;
+    private const MAX_EXTENSIVE_VALUE = 1.0e18;
 
     private static function returnTypeBool(mixed $val, bool $returnNull = false): bool
     {
@@ -24,7 +28,7 @@ abstract class FormatAux
 
     private static function isValidInteger(mixed $value): bool
     {
-        return is_int($value) || filter_var($value, FILTER_VALIDATE_INT) !== false || $value === '0';
+        return is_int($value) || filter_var($value, FILTER_VALIDATE_INT) !== false;
     }
 
     private static function isValidFloat(mixed $value): bool
@@ -80,7 +84,7 @@ abstract class FormatAux
      */
     private static function getTen10Words(): array
     {
-        return ['dez', 'onze', 'doze', 'treze', 'quatorze', 'quinze', 'dezesseis', 'dezesete', 'dezoito', 'dezenove',];
+        return ['dez', 'onze', 'doze', 'treze', 'quatorze', 'quinze', 'dezesseis', 'dezessete', 'dezoito', 'dezenove',];
     }
 
     /**
@@ -107,18 +111,6 @@ abstract class FormatAux
     }
 
     /**
-     * @param array<int, string> $parts
-     * @return array<int, string>
-     */
-    private static function normalizeIntegerParts(array $parts): array
-    {
-        foreach ($parts as &$part) {
-            $part = str_pad($part, self::PADDING_LENGTH, self::PADDING_CHAR, STR_PAD_LEFT);
-        }
-        return $parts;
-    }
-
-    /**
      * @param array<string, array<int, string>> $words
      */
     private static function convertHundred(string $value, array $words): string
@@ -142,10 +134,6 @@ abstract class FormatAux
      */
     private static function convertUnit(string $value, array $words): string
     {
-        if ((int) $value <= 0) {
-            return '';
-        }
-
         return (int) $value[1] === 1
             ? $words['ten10'][(int) $value[2]]
             : $words['unitary'][(int) $value[2]];
@@ -176,113 +164,108 @@ abstract class FormatAux
     /**
      * @param array<string, array<int, string>> $words
      */
-    private static function getSingularOrPlural(string $value, int $position, array $words): string
+    private static function convertGroup(string $group, array $words): string
     {
-        return (int) $value > 1 ? $words['plural'][$position] : $words['singular'][$position];
-    }
-
-    private static function getSeparator(int $index, int $end): string
-    {
-        return $index < $end ? ', ' : ' e ';
-    }
-
-    private static function shouldAddSeparator(
-        int $index,
-        int $end,
-        int $firstValue,
-        int $zeroCounter
-    ): bool {
-        return $index > 0 && $index <= $end && $firstValue > 0 && $zeroCounter < 1;
-    }
-
-    /**
-     * @param array<int, string> $integerParts
-     */
-    private static function calculateLastIndex(array $integerParts): int
-    {
-        $totalParts = count($integerParts);
-        return $totalParts - ($integerParts[$totalParts - 1] > 0 ? 1 : 2);
-    }
-
-    /**
-     * @param array<string, array<int, string>> $words
-     */
-    private static function addScaleToExtensiveString(
-        string $extensiveString,
-        string $part,
-        int $position,
-        array $words
-    ): string {
-        $scale = self::getSingularOrPlural($part, $position, $words);
-        return $extensiveString . ' ' . $scale;
-    }
-
-    /**
-     * @param array<int, string> $integerParts
-     * @param array<string, array<int, string>> $words
-     */
-    private static function addSpecialThousandSuffix(
-        string $extensiveString,
-        int $position,
-        int $zeroCounter,
-        array $integerParts,
-        array $words
-    ): string {
-        if ($position === 1 && $zeroCounter > 0 && (int) $integerParts[0] > 0) {
-            return $extensiveString . ($zeroCounter > 1 ? ' de ' : ' ') . $words['plural'][$position];
-        }
-        return $extensiveString;
-    }
-
-    /**
-     * @param array<int, string> $integerParts
-     * @param array<string, array<int, string>> $words
-     * @return array{extensiveString: string, zeroCounter: int}
-     */
-    private static function processIntegerPart(
-        string $part,
-        int $index,
-        int $totalParts,
-        int $zeroCounter,
-        array $integerParts,
-        array $words
-    ): array {
-        $hundred = self::convertHundred($part, $words);
-        $ten = self::convertTen($part, $words);
-        $unit = self::convertUnit($part, $words);
-        $extensiveString = self::buildExtensiveString($hundred, $ten, $unit);
-
-        if (!$extensiveString) {
-            return ['extensiveString' => '', 'zeroCounter' => $part === '000' ? $zeroCounter + 1 : $zeroCounter,];
-        }
-
-        $position = $totalParts - 1 - $index;
-        $extensiveString = self::addScaleToExtensiveString($extensiveString, $part, $position, $words);
-        $extensiveString = self::addSpecialThousandSuffix(
-            $extensiveString,
-            $position,
-            $zeroCounter,
-            $integerParts,
-            $words
+        return self::buildExtensiveString(
+            self::convertHundred($group, $words),
+            self::convertTen($group, $words),
+            self::convertUnit($group, $words),
         );
+    }
 
-        $newZeroCounter = $zeroCounter > 0 ? $zeroCounter - 1 : 0;
+    /**
+     * @return array{0: string, 1: int}
+     */
+    private static function splitCurrency(float $value): array
+    {
+        [$integer, $cents] = explode('.', number_format($value, self::DECIMAL_PLACES, '.', ''));
 
-        return ['extensiveString' => $extensiveString, 'zeroCounter' => $newZeroCounter,];
+        return [$integer, (int) $cents];
     }
 
     /**
      * @return array<int, string>
      */
-    private static function formatValueForExtensive(float $value): array
+    private static function splitIntoGroups(string $digits): array
     {
-        $formattedValue = number_format(
-            $value,
-            self::DECIMAL_PLACES,
-            self::DECIMAL_SEPARATOR,
-            self::THOUSANDS_SEPARATOR
-        );
-        return self::normalizeIntegerParts(explode(self::DECIMAL_SEPARATOR, $formattedValue));
+        $length = (int) (ceil(strlen($digits) / self::GROUP_SIZE) * self::GROUP_SIZE);
+
+        return str_split(str_pad($digits, $length, '0', STR_PAD_LEFT), self::GROUP_SIZE);
+    }
+
+    /**
+     * @param array<string, array<int, string>> $words
+     * @return array<int, array{text: string, number: int, scale: int}>
+     */
+    private static function buildIntegerChunks(string $digits, array $words): array
+    {
+        $groups = self::splitIntoGroups($digits);
+        $totalGroups = count($groups);
+        $chunks = [];
+
+        foreach ($groups as $index => $group) {
+            $number = (int) $group;
+            if ($number === 0) {
+                continue;
+            }
+
+            $scale = $totalGroups - $index;
+            $text = self::convertGroup($group, $words);
+
+            if ($scale >= self::SCALE_THOUSAND) {
+                $scaleWord = $number > 1 ? $words['plural'][$scale] : $words['singular'][$scale];
+                $text = ($scale === self::SCALE_THOUSAND && $number === 1)
+                    ? $scaleWord
+                    : $text . ' ' . $scaleWord;
+            }
+
+            $chunks[] = ['text' => $text, 'number' => $number, 'scale' => $scale];
+        }
+
+        return $chunks;
+    }
+
+    /**
+     * @param array<int, array{text: string, number: int, scale: int}> $chunks
+     */
+    private static function joinChunks(array $chunks): string
+    {
+        $texts = array_column($chunks, 'text');
+        if (count($texts) < 2) {
+            return implode('', $texts);
+        }
+
+        $lastChunk = $chunks[count($chunks) - 1];
+        $lastText = (string) array_pop($texts);
+        $useAnd = $lastChunk['number'] < 100 || $lastChunk['number'] % 100 === 0;
+
+        return implode(', ', $texts) . ($useAnd ? ' e ' : ', ') . $lastText;
+    }
+
+    /**
+     * @param array<int, array{text: string, number: int, scale: int}> $chunks
+     * @param array<string, array<int, string>> $words
+     */
+    private static function currencySuffix(array $chunks, array $words): string
+    {
+        $lastChunk = $chunks[count($chunks) - 1];
+        $isSingular = $lastChunk['scale'] === self::SCALE_UNIT && $lastChunk['number'] === 1;
+        $currency = $isSingular
+            ? $words['singular'][self::SCALE_UNIT]
+            : $words['plural'][self::SCALE_UNIT];
+
+        return ($lastChunk['scale'] >= self::SCALE_MILLION ? ' de ' : ' ') . $currency;
+    }
+
+    /**
+     * @param array<string, array<int, string>> $words
+     */
+    private static function centsToWords(int $cents, array $words): string
+    {
+        $group = str_pad((string) $cents, self::GROUP_SIZE, '0', STR_PAD_LEFT);
+        $unit = $cents > 1 ? $words['plural'][self::SCALE_CENTS] : $words['singular'][self::SCALE_CENTS];
+
+        return self::convertGroup($group, $words) . ' ' . $unit;
     }
 
     private static function throwInvalidArgumentException(string $message): never
@@ -332,31 +315,22 @@ abstract class FormatAux
 
     protected static function extensive(float $value = 0): string
     {
-        if ($value == 0) {
-            return 'zero';
+        if ($value >= self::MAX_EXTENSIVE_VALUE) {
+            self::throwInvalidArgumentException('Valor acima do limite suportado para escrita por extenso!');
         }
 
         $words = self::getExtensiveWordArrays();
-        $integerParts = self::formatValueForExtensive($value);
-        $totalParts = count($integerParts);
-        $lastIndex = self::calculateLastIndex($integerParts);
+        [$integer, $cents] = self::splitCurrency($value);
+        $chunks = self::buildIntegerChunks($integer, $words);
 
-        $result = '';
-        $zeroCounter = 0;
-
-        foreach ($integerParts as $index => $part) {
-            $processed = self::processIntegerPart($part, $index, $totalParts, $zeroCounter, $integerParts, $words);
-            $extensiveString = $processed['extensiveString'];
-            $zeroCounter = $processed['zeroCounter'];
-
-            if (!$extensiveString) {
-                continue;
-            }
-            if (self::shouldAddSeparator($index, $lastIndex, (int) $integerParts[0], $zeroCounter)) {
-                $result .= self::getSeparator($index, $lastIndex);
-            }
-            $result .= $extensiveString;
+        $parts = [];
+        if ($chunks !== []) {
+            $parts[] = self::joinChunks($chunks) . self::currencySuffix($chunks, $words);
         }
-        return $result ?: 'zero';
+        if ($cents > 0) {
+            $parts[] = self::centsToWords($cents, $words);
+        }
+
+        return $parts === [] ? 'zero' : implode(' e ', $parts);
     }
 }

@@ -331,10 +331,11 @@ require 'vendor/autoload.php';
 
 use DevUtils\Format;
 
-Format::companyIdentification('A1B2C3D45E6F59'); //CNPJ ==> A1.B2C.3D4/5E6F-59
+Format::companyIdentification('A1B2C3D45E6F59'); //CNPJ ==> A1.B2C.3D4/5E6F-59 - accepts masked input
 Format::convertTimestampBrazilToAmerican('15/04/2021 19:50:25'); //Convert Timestamp Brazil to American format
-Format::currency('113', 'R$ '); //Default currency BR ==> 123.00 - the 2nd parameter chooses the Currency label
+Format::currency('113', 'R$ ');//Default currency BR ==> R$ 113,00 - the 2nd parameter chooses the Currency label. A leading '-' is preserved
 Format::currencyUsd('1123.45'); //Default currency USD ==> 1,123.45 - the 2nd parameter chooses the Currency label
+//Accepts dd/mm/yyyy, dd-mm-yyyy and yyyy-mm-dd. An invalid date throws InvalidArgumentException
 Format::dateAmerican('12-05-2020'); //return date ==>  2020-05-12
 Format::dateBrazil('2020-05-12'); //return date ==>  12/05/2020
 Format::identifier('73381209000');  //CPF ==>  733.812.090-00
@@ -343,7 +344,8 @@ Format::falseToNull(false); //Return ==> null
 Format::lower('CArrO'); //lowercase text ==> carro - the 2nd parameter chooses the charset, UTF-8 default
 //[Apply any type of Mask, accepts space, points and others]
 Format::mask('#### #### #### ####', '1234567890123456'); //Mask ==> 1234 5678 9012 3456
-Format::maskStringHidden('065.775.009.96', 3, 4, '*'); //Mask of string ==> 065.***.009.96
+//Mask of string ==> 065.***.009.96 - a position outside the string throws InvalidArgumentException
+Format::maskStringHidden('065.775.009.96', 3, 4, '*');
 Format::onlyNumbers('548Abc87@'); //Returns only numbers ==> 54887;
 Format::onlyLettersNumbers('548Abc87@'); //Returns only letters and numbers ==> 548Abc87;
 Format::pointOnlyValue('1.350,45'); //Currency for recording on the BD ==>  1350.45
@@ -353,12 +355,14 @@ Format::removeSpecialCharacters('Açafrão com Espaco %$#@!', true);
 Format::returnPhoneOrAreaCode('44999998888', false); //Returns only the phone number ==> 999998888
 Format::returnPhoneOrAreaCode('44999998888', true); //Returns only the phone's area code ==> 44
 Format::reverse('Abacaxi'); //Returns inverted string ==> ixacabA
-Format::telephone('44999998888');  //Return phone format brazil ==> (44) 99999-8888
+Format::telephone('44999998888');  //Return phone format brazil ==> (44) 99999-8888 - digits only
 Format::ucwordsCharset('aÇafrÃo maCaRRão'); //Return first capital letter ==> Açafrão Macarrão
 Format::upper('Moto'); //lowercase text ==> MOTO - the 2nd parameter chooses the charset, UTF-8 default
 Format::zipCode('87030585'); //CEP format brazil ==>  87030-585
 Format::writeDateExtensive('06/11/2020'); //Date by Long Brazilian format ==> sexta-feira, 06 de novembro de 2020
 Format::writeCurrencyExtensive(1.97); //Coin by Extensive Brazilian format ==> um real e noventa e sete centavos
+Format::writeCurrencyExtensive(1000); //==> mil reais
+Format::writeCurrencyExtensive(1000000); //==> um milhão de reais
 Format::convertStringToBinary('amor'); //String to binary ==> 1100001 1101101 1101111 1110010
 Format::slugfy('Polenta frita e Parmesão'); //Returns a slug from a string ==> polenta-frita-e-parmesao
 
@@ -374,7 +378,9 @@ $rules = [
     'treatingBooleanType' => 'convert|bool',
     'handlingNumericType' => 'convert|numeric',
 ];
-Format::convertTypes($data, $rules); //Convert the value to its correct type ['bool', 'float', 'int', 'numeric',]
+//Convert the value to its correct type ['bool', 'float', 'int', 'numeric',]
+//Returns an array with the fields that could not be converted (empty when everything succeeded)
+$conversionErrors = Format::convertTypes($data, $rules);
 /*** Return
 [
   'treatingIntType' => int 12

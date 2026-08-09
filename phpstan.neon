@@ -20,12 +20,6 @@ parameters:
     -
       message: "#is always true#"
       path: src/DependencyInjection/Rules.php
-    -
-      message: "#Result of \\|\\| is always true#"
-      path: src/Format.php
-    -
-      message: "#Strict comparison using === between 0#"
-      path: src/Format.php
 
   bootstrapFiles:
     - vendor/autoload.php

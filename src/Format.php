@@ -1,43 +1,74 @@
 <?php
 
+declare(strict_types=1);
+
 namespace DevUtils;
 
+use DateTimeImmutable;
 use DevUtils\DependencyInjection\FormatAux;
 use DevUtils\DependencyInjection\StrfTime;
-use Exception;
 use InvalidArgumentException;
 
 class Format extends FormatAux
 {
-    private static function normalizeDateToBrazilian(string $date): string
+    private static function toIsoDate(string $date): ?string
     {
-        if (str_contains($date, '/')) {
+        if (ValidateDate::validateDateBrazil($date)) {
             return implode('-', array_reverse(explode('/', $date)));
         }
-        return $date;
+
+        if (ValidateDate::validateDateAmerican($date)) {
+            return $date;
+        }
+
+        $parts = explode('-', $date);
+        if (count($parts) === 3 && ValidateDate::validateDateBrazil(implode('/', $parts))) {
+            return implode('-', array_reverse($parts));
+        }
+
+        return null;
+    }
+
+    private static function createDate(string $method, string $date): DateTimeImmutable
+    {
+        $trimmed = trim($date);
+
+        if (strlen($trimmed) < 8 || strlen($trimmed) > 10) {
+            throw new InvalidArgumentException("$method precisa conter 8 à 10 dígitos!");
+        }
+
+        $isoDate = self::toIsoDate($trimmed);
+        if ($isoDate === null) {
+            throw new InvalidArgumentException("$method recebeu uma data inválida: '$date'!");
+        }
+
+        return new DateTimeImmutable($isoDate);
     }
 
     private static function formatCurrencyForFloat(float | int | string $value): float
     {
-        if (is_string($value)) {
-            $separator = str_contains($value, ',') ? ',' : '.';
-            $valueParts = explode($separator, $value);
-
-            if (isset($valueParts[1]) && strlen((string) $valueParts[1]) === 1) {
-                $valueParts[1] = (string) $valueParts[1] . '0';
-            }
-
-            $value = implode($separator, $valueParts);
-            $onlyNumbers = self::onlyNumbers($value);
-            $numericValue = strlen($onlyNumbers) > 0 ? $onlyNumbers : '000';
-
-            if (preg_match('/(\,|\.)/', substr(substr($value, -3), 0, 1))) {
-                $value = substr_replace($numericValue, '.', -2, 0);
-            } else {
-                $value = $numericValue;
-            }
+        if (!is_string($value)) {
+            return (float) $value;
         }
-        return (float) $value;
+
+        $trimmed = trim($value);
+        $isNegative = str_starts_with($trimmed, '-');
+        $separator = str_contains($trimmed, ',') ? ',' : '.';
+        $valueParts = explode($separator, $trimmed);
+
+        if (isset($valueParts[1]) && strlen($valueParts[1]) === 1) {
+            $valueParts[1] .= '0';
+        }
+
+        $normalized = implode($separator, $valueParts);
+        $onlyNumbers = self::onlyNumbers($normalized);
+        $numericValue = $onlyNumbers !== '' ? $onlyNumbers : '000';
+
+        if (preg_match('/[,.]/', substr(substr($normalized, -3), 0, 1)) === 1) {
+            $numericValue = substr_replace($numericValue, '.', -2, 0);
+        }
+
+        return (float) ($isNegative ? "-$numericValue" : $numericValue);
     }
 
     private static function formatFileName(string $fileName = ''): string
@@ -68,36 +99,49 @@ class Format extends FormatAux
         string $thousandsSeparator,
         string $prefix = ''
     ): string {
-        return (!empty($value) || $value === 0.0)
-            ? $prefix . number_format($value, 2, $decimalSeparator, $thousandsSeparator)
-            : '';
+        return $prefix . number_format($value, 2, $decimalSeparator, $thousandsSeparator);
     }
 
-    public static function convertTypes(array &$data, array $rules): void
+    /**
+     * @return array<int, string>
+     */
+    public static function convertTypes(array &$data, array $rules): array
     {
-        $error = [];
-        foreach ($rules as $key => $value) {
-            if (!is_string($value)) {
+        $errors = [];
+
+        foreach ($rules as $key => $rule) {
+            if (!is_string($rule)) {
                 continue;
             }
-            $arrRules = explode('|', $value);
-            $type = parent::returnTypeToConvert($arrRules);
-            if (in_array('convert', $arrRules) && !empty($type)) {
-                try {
-                    if (in_array($key, array_keys($data))) {
-                        $data[$key] = parent::executeConvert($type, $data[$key]);
-                    }
-                } catch (Exception) {
-                    $dataValue = isset($data[$key]) ? (string) $data[$key] : 'null';
-                    $error[] = "falhar ao tentar converter {$dataValue} para $type";
-                }
+
+            $ruleParts = explode('|', $rule);
+            $type = parent::returnTypeToConvert($ruleParts);
+
+            if ($type === null || !in_array('convert', $ruleParts, true) || !array_key_exists($key, $data)) {
+                continue;
             }
+
+            $converted = parent::executeConvert($type, $data[$key]);
+            $succeeded = match ($type) {
+                'bool' => is_bool($converted),
+                'int' => is_int($converted),
+                default => is_float($converted),
+            };
+
+            if (!$succeeded) {
+                $errors[] = "Falha ao converter o campo '{$key}' para {$type}!";
+                continue;
+            }
+
+            $data[$key] = $converted;
         }
+
+        return $errors;
     }
 
     public static function companyIdentification(string $cnpj): string
     {
-        $companyIdentification = strtoupper((string) preg_replace('/[^A-Z0-9]/', '', $cnpj));
+        $companyIdentification = (string) preg_replace('/[^A-Z0-9]/', '', strtoupper($cnpj));
 
         if (!preg_match('/^[A-Z0-9]{12}\d{2}$/', $companyIdentification)) {
             throw new InvalidArgumentException(
@@ -135,11 +179,11 @@ class Format extends FormatAux
 
     public static function telephone(string $number): string
     {
+        if (!ctype_digit($number)) {
+            throw new InvalidArgumentException('telephone precisa conter apenas números!');
+        }
         if (strlen($number) < 10 || strlen($number) > 11) {
             throw new InvalidArgumentException('telephone precisa ter 10 ou 11 números!');
-        }
-        if (!is_numeric($number)) {
-            throw new InvalidArgumentException('telephone precisa conter apenas números!');
         }
         return '(' . substr($number, 0, 2) . ') ' . substr($number, 2, -4) . '-' . substr($number, -4);
     }
@@ -152,23 +196,12 @@ class Format extends FormatAux
 
     public static function dateBrazil(string $date): string
     {
-        if (strlen($date) < 8 || strlen($date) > 10) {
-            throw new InvalidArgumentException('dateBrazil precisa conter 8 à 10 dígitos!');
-        }
-        return date('d/m/Y', (strtotime($date) ?: null));
+        return self::createDate('dateBrazil', $date)->format('d/m/Y');
     }
 
     public static function dateAmerican(string $date): string
     {
-        if (strlen($date) < 8 || strlen($date) > 10) {
-            throw new InvalidArgumentException('dateAmerican precisa conter 8 à 10 dígitos!');
-        }
-
-        if (str_contains($date, '/')) {
-            return self::normalizeDateToBrazilian($date);
-        }
-
-        return date('Y-m-d', strtotime($date) ?: 0);
+        return self::createDate('dateAmerican', $date)->format('Y-m-d');
     }
 
     public static function arrayToIntReference(array &$array): void
@@ -213,8 +246,7 @@ class Format extends FormatAux
 
     public static function pointOnlyValue(string $value): string
     {
-        $withComma = preg_replace('/[^0-9,]/', '', $value) ?? '';
-        return preg_replace('/[^0-9]/', '.', $withComma) ?? '';
+        return str_replace(',', '.', preg_replace('/[^0-9,]/', '', $value) ?? '');
     }
 
     public static function emptyToNull(array $array, ?string $exception = null): array
@@ -279,6 +311,9 @@ class Format extends FormatAux
             throw new InvalidArgumentException('Quantidade de caracteres para ocultar não pode ser menor que 1!');
         }
         $chars = str_repeat($char, $qtdHidden);
+        if ($positionHidden < 0 || $positionHidden + strlen($chars) > strlen($string)) {
+            throw new InvalidArgumentException('Posição para ocultar está fora do intervalo da String!');
+        }
         return substr_replace($string, $chars, $positionHidden, strlen($chars));
     }
 
@@ -297,7 +332,7 @@ class Format extends FormatAux
 
     public static function removeAccent(?string $string): ?string
     {
-        if (empty($string)) {
+        if ($string === null || $string === '') {
             return null;
         }
         return preg_replace(
@@ -324,7 +359,7 @@ class Format extends FormatAux
 
     public static function removeSpecialCharacters(string $string, bool $space = true): ?string
     {
-        if (empty($string)) {
+        if ($string === '') {
             return null;
         }
         $newString = self::removeAccent($string) ?? '';
@@ -336,12 +371,7 @@ class Format extends FormatAux
 
     public static function writeDateExtensive(string $date): string
     {
-        $normalizedDate = self::normalizeDateToBrazilian($date);
-        $timestamp = strtotime($normalizedDate);
-
-        if ($timestamp === false) {
-            throw new InvalidArgumentException('Invalid date format for writeDateExtensive.');
-        }
+        $timestamp = self::createDate('writeDateExtensive', $date)->getTimestamp();
 
         return StrfTime::strftime('%A, %d de %B de %Y', $timestamp, 'pt_BR');
     }
@@ -418,6 +448,8 @@ class Format extends FormatAux
     public static function slugfy(string $text): string
     {
         $noSpecialCharacter = self::removeSpecialCharacters(str_replace('-', ' ', $text)) ?? '';
-        return str_replace(' ', '-', self::lower($noSpecialCharacter));
+        $slug = preg_replace('/\s+/', '-', trim($noSpecialCharacter)) ?? '';
+
+        return self::lower($slug);
     }
 }

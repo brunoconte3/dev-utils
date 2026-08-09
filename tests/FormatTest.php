@@ -6,6 +6,8 @@ namespace DevUtils\Test;
 
 use DevUtils\DependencyInjection\data\DataConvertTypesBool;
 use DevUtils\Format;
+use InvalidArgumentException;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class FormatTest extends TestCase
@@ -281,17 +283,59 @@ class FormatTest extends TestCase
         }
     }
 
-    public function testWriteCurrencyExtensive(): void
+    /**
+     * @return array<string, array{0: float, 1: string}>
+     */
+    public static function currencyExtensiveProvider(): array
     {
-        self::assertEquals('um real e noventa e sete centavos', Format::writeCurrencyExtensive(1.97));
-        self::assertEquals(
-            'um milhão, quinhentos mil e vinte e três centavos',
-            Format::writeCurrencyExtensive(1500000.23)
-        );
-        self::assertEquals(
-            'três mil, quatrocentos e cinquenta e seis reais e setenta e oito centavos',
-            Format::writeCurrencyExtensive(3456.78)
-        );
+        return [
+            'um centavo' => [0.01, 'um centavo'],
+            'somente centavos' => [0.50, 'cinquenta centavos'],
+            'um real' => [1.00, 'um real'],
+            'real com centavos' => [1.97, 'um real e noventa e sete centavos'],
+            'teens' => [17.00, 'dezessete reais'],
+            'teens em centavos' => [1.17, 'um real e dezessete centavos'],
+            'centena exata' => [100.00, 'cem reais'],
+            'cento e um' => [101.00, 'cento e um reais'],
+            'centena com teens' => [117.00, 'cento e dezessete reais'],
+            'duzentos' => [200.00, 'duzentos reais'],
+            'mil exato' => [1000.00, 'mil reais'],
+            'mil e dezessete' => [1017.00, 'mil e dezessete reais'],
+            'dezessete mil' => [17000.00, 'dezessete mil reais'],
+            'milhar com centena quebrada' => [
+                3456.78,
+                'três mil, quatrocentos e cinquenta e seis reais e setenta e oito centavos',
+            ],
+            'milhao exato' => [1000000.00, 'um milhão de reais'],
+            'milhoes exatos' => [2000000.00, 'dois milhões de reais'],
+            'milhao com centavos' => [1000000.23, 'um milhão de reais e vinte e três centavos'],
+            'milhao e milhar' => [1500000.23, 'um milhão e quinhentos mil reais e vinte e três centavos'],
+            'milhao e reais' => [1000500.00, 'um milhão e quinhentos reais'],
+            'milhao e um real' => [1000001.00, 'um milhão e um real'],
+            'milhoes com centena quebrada' => [3000123.00, 'três milhões, cento e vinte e três reais'],
+            'dezessete milhoes' => [17000000.00, 'dezessete milhões de reais'],
+            'bilhao' => [1000000000.00, 'um bilhão de reais'],
+            'trilhao' => [1000000000000.00, 'um trilhão de reais'],
+            'quatrilhao' => [1000000000000000.00, 'um quatrilhão de reais'],
+        ];
+    }
+
+    #[DataProvider('currencyExtensiveProvider')]
+    public function testWriteCurrencyExtensive(float $value, string $expected): void
+    {
+        self::assertSame($expected, Format::writeCurrencyExtensive($value));
+    }
+
+    public function testWriteCurrencyExtensiveRoundsBelowOneCentToZero(): void
+    {
+        self::assertSame('zero', Format::writeCurrencyExtensive(0.001));
+    }
+
+    public function testWriteCurrencyExtensiveAboveSupportedLimitThrowsException(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Valor acima do limite suportado');
+        Format::writeCurrencyExtensive(1.0e18);
     }
 
     public function testRestructFileArray(): void
@@ -473,7 +517,9 @@ class FormatTest extends TestCase
 
     public function testSlugfyWithMultipleSpaces(): void
     {
-        self::assertEquals('teste--aqui', Format::slugfy('Teste  Aqui'));
+        self::assertSame('teste-aqui', Format::slugfy('Teste  Aqui'));
+        self::assertSame('teste-aqui', Format::slugfy('  Teste   Aqui  '));
+        self::assertSame('teste-aqui', Format::slugfy('Teste - Aqui'));
     }
 
     public function testSlugfyWithDashes(): void
@@ -538,5 +584,254 @@ class FormatTest extends TestCase
     public function testCurrencyUsdWithZero(): void
     {
         self::assertEquals('0.00', Format::currencyUsd(0));
+    }
+
+    public function testCurrencyKeepsNegativeSignFromString(): void
+    {
+        self::assertSame('-1.123,45', Format::currency('-1123.45'));
+        self::assertSame('-1.123,45', Format::currency(-1123.45));
+        self::assertSame('-123,40', Format::currency('-123,4'));
+        self::assertSame('R$ -1.123,45', Format::currency('-1123.45', 'R$ '));
+        self::assertSame('-1,123.45', Format::currencyUsd('-1123.45'));
+    }
+
+    public function testCompanyIdentificationAcceptsLowercase(): void
+    {
+        self::assertSame('BR.ASI.L20/26AA-64', Format::companyIdentification('brasil2026aa64'));
+        self::assertSame('BR.ASI.L20/26AA-64', Format::companyIdentification('bRaSiL2026aA64'));
+        self::assertSame('76.027.484/0001-24', Format::companyIdentification('76.027.484/0001-24'));
+    }
+
+    public function testTelephoneRejectsSignedNumber(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('apenas números');
+        Format::telephone('+443333888');
+    }
+
+    public function testIdentifierNonNumericThrowsException(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('apenas números');
+        Format::identifier('abcdefghijk');
+    }
+
+    /**
+     * @return array<string, array{0: string}>
+     */
+    public static function invalidDateProvider(): array
+    {
+        return [
+            'texto' => ['abcdefgh'],
+            'dia impossivel' => ['31/02/2020'],
+            'mes impossivel' => ['2020-13-01'],
+            'barra invertida' => ['2020/10/31'],
+            'numeros soltos' => ['12345678'],
+        ];
+    }
+
+    #[DataProvider('invalidDateProvider')]
+    public function testDateBrazilRejectsInvalidDate(string $invalid): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('data inválida');
+        Format::dateBrazil($invalid);
+    }
+
+    #[DataProvider('invalidDateProvider')]
+    public function testDateAmericanRejectsInvalidDate(string $invalid): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        Format::dateAmerican($invalid);
+    }
+
+    #[DataProvider('invalidDateProvider')]
+    public function testWriteDateExtensiveRejectsInvalidDate(string $invalid): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        Format::writeDateExtensive($invalid);
+    }
+
+    public function testWriteDateExtensiveInvalidLengthThrowsException(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('8 à 10 dígitos');
+        Format::writeDateExtensive('2020');
+    }
+
+    public function testDateBrazilAcceptsEveryDocumentedFormat(): void
+    {
+        self::assertSame('10/10/2020', Format::dateBrazil('2020-10-10'));
+        self::assertSame('10/10/2020', Format::dateBrazil('10/10/2020'));
+        self::assertSame('12/05/2020', Format::dateBrazil('12-05-2020'));
+        self::assertSame('01/01/2020', Format::dateBrazil(' 2020-01-01 '));
+    }
+
+    public function testDateAmericanAcceptsEveryDocumentedFormat(): void
+    {
+        self::assertSame('2020-10-10', Format::dateAmerican('10/10/2020'));
+        self::assertSame('2020-10-10', Format::dateAmerican('2020-10-10'));
+        self::assertSame('2020-05-12', Format::dateAmerican('12-05-2020'));
+    }
+
+    public function testConvertTypesReturnsEmptyErrorsOnSuccess(): void
+    {
+        $data = ['idade' => '30'];
+        $errors = Format::convertTypes($data, ['idade' => 'convert|int']);
+
+        self::assertSame([], $errors);
+        self::assertSame(30, $data['idade']);
+    }
+
+    public function testConvertTypesReportsFailureInsteadOfSwallowingIt(): void
+    {
+        $data = ['idade' => 'trinta'];
+        $errors = Format::convertTypes($data, ['idade' => 'convert|int']);
+
+        self::assertCount(1, $errors);
+        self::assertStringContainsString("campo 'idade' para int", $errors[0]);
+        self::assertSame('trinta', $data['idade']);
+    }
+
+    public function testConvertTypesReportsFloatFailure(): void
+    {
+        $data = ['preco' => 'abc'];
+        $errors = Format::convertTypes($data, ['preco' => 'convert|float']);
+
+        self::assertCount(1, $errors);
+        self::assertSame('abc', $data['preco']);
+    }
+
+    public function testConvertTypesIgnoresNonStringRule(): void
+    {
+        $data = ['x' => '5'];
+        $errors = Format::convertTypes($data, ['x' => ['convert', 'int']]);
+
+        self::assertSame([], $errors);
+        self::assertSame('5', $data['x']);
+    }
+
+    public function testConvertTypesIgnoresRuleWithoutConvertKeyword(): void
+    {
+        $data = ['x' => '5'];
+        $errors = Format::convertTypes($data, ['x' => 'int']);
+
+        self::assertSame([], $errors);
+        self::assertSame('5', $data['x']);
+    }
+
+    public function testConvertTypesIgnoresRuleWithoutKnownType(): void
+    {
+        $data = ['x' => '5'];
+        $errors = Format::convertTypes($data, ['x' => 'convert|required']);
+
+        self::assertSame([], $errors);
+        self::assertSame('5', $data['x']);
+    }
+
+    public function testConvertTypesIgnoresRuleForMissingField(): void
+    {
+        $data = ['x' => '5'];
+        $errors = Format::convertTypes($data, ['inexistente' => 'convert|int']);
+
+        self::assertSame([], $errors);
+        self::assertArrayNotHasKey('inexistente', $data);
+    }
+
+    public function testMaskStringHiddenPositionOutOfRangeThrowsException(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('fora do intervalo');
+        Format::maskStringHidden('abcdef', 3, 99, '*');
+    }
+
+    public function testMaskStringHiddenNegativePositionThrowsException(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('fora do intervalo');
+        Format::maskStringHidden('abcdef', 3, -2, '*');
+    }
+
+    public function testMaskStringHiddenAtTheEndOfString(): void
+    {
+        self::assertSame('abc***', Format::maskStringHidden('abcdef', 3, 3, '*'));
+    }
+
+    public function testZeroIsNotTreatedAsEmpty(): void
+    {
+        self::assertSame('0', Format::removeAccent('0'));
+        self::assertSame('0', Format::removeSpecialCharacters('0'));
+        self::assertSame('0', Format::slugfy('0'));
+    }
+
+    public function testRestructFileArrayWithEmptyInput(): void
+    {
+        self::assertSame([], Format::restructFileArray());
+        self::assertSame([], Format::restructFileArray([]));
+    }
+
+    public function testRestructFileArrayReturnsPhpUploadErrors(): void
+    {
+        $result = Format::restructFileArray([
+            'name' => ['a.jpg'],
+            'type' => ['image/jpeg'],
+            'tmp_name' => [''],
+            'error' => [UPLOAD_ERR_INI_SIZE],
+            'size' => [0],
+        ]);
+
+        self::assertCount(1, $result);
+        self::assertStringContainsString('[a.jpg]', (string) $result[0]);
+    }
+
+    public function testRestructFileArrayWithoutNameKey(): void
+    {
+        self::assertSame([], Format::restructFileArray(['error' => [0]]));
+    }
+
+    public function testRestructFileArrayIgnoresNonStringName(): void
+    {
+        self::assertSame([], Format::restructFileArray([
+            'name' => [123],
+            'type' => ['image/jpeg'],
+            'tmp_name' => ['/tmp/x'],
+            'error' => [0],
+            'size' => [10],
+        ]));
+    }
+
+    public function testRestructFileArrayNormalizesSingleUploadIntoList(): void
+    {
+        $result = Format::restructFileArray([
+            'name' => 'JPG - Validação upload v.1.jpg',
+            'type' => 'image/jpeg',
+            'tmp_name' => '/tmp/phpODnLGo',
+            'error' => 0,
+            'size' => 8488,
+        ]);
+
+        $file = (array) $result[0];
+        self::assertCount(1, $result);
+        self::assertSame('jpg__validacao_upload_v1.jpg', $file['name']);
+        self::assertSame('image/jpeg', $file['type']);
+        self::assertSame(8488, $file['size']);
+        self::assertStringEndsWith('jpg__validacao_upload_v1.jpg', (string) $file['name_upload']);
+    }
+
+    public function testRestructFileArrayFallsBackWhenMetadataIsNotArray(): void
+    {
+        $result = Format::restructFileArray([
+            'name' => ['a.jpg'],
+            'type' => 'image/jpeg',
+            'tmp_name' => '/tmp/x',
+            'error' => 0,
+            'size' => 10,
+        ]);
+
+        $file = (array) $result[0];
+        self::assertSame('', $file['type']);
+        self::assertSame('', $file['tmp_name']);
+        self::assertSame(0, $file['error']);
+        self::assertSame(0, $file['size']);
     }
 }
