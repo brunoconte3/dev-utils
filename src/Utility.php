@@ -4,68 +4,76 @@ declare(strict_types=1);
 
 namespace DevUtils;
 
+use InvalidArgumentException;
+
 class Utility
 {
-    private static function buildCharset(
+    private const UPPERCASE_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    private const LOWERCASE_CHARS = 'abcdefghijklmnopqrstuvwxyz';
+    private const NUMBER_CHARS = '0123456789';
+    private const SYMBOL_CHARS = '@#$!()-+%=';
+    private const SECURE_PROTOCOL_VALUES = ['on', '1', 'true', 'yes'];
+    private const CLIENT_IP_SERVER_KEYS = ['HTTP_CLIENT_IP', 'HTTP_X_FORWARDED_FOR', 'REMOTE_ADDR'];
+
+    /**
+     * @return array<int, non-empty-string>
+     */
+    private static function buildCharsetGroups(
         bool $uppercase,
         bool $lowercase,
         bool $numbers,
         bool $symbols
-    ): string {
-        $charset = '';
+    ): array {
+        $groups = [];
 
         if ($numbers) {
-            $charset .= str_shuffle('0123456789');
+            $groups[] = self::NUMBER_CHARS;
         }
         if ($symbols) {
-            $charset .= str_shuffle('@#$!()-+%=');
+            $groups[] = self::SYMBOL_CHARS;
         }
         if ($uppercase) {
-            $charset .= str_shuffle('ABCDEFGHIJKLMNOPQRSTUVYXWZ');
+            $groups[] = self::UPPERCASE_CHARS;
         }
         if ($lowercase) {
-            $charset .= str_shuffle('abcdefghijklmnopqrstuvyxwz');
+            $groups[] = self::LOWERCASE_CHARS;
         }
-        return $charset;
+
+        return $groups;
     }
 
-    private static function isValidPassword(
-        string $password,
-        bool $uppercase,
-        bool $lowercase,
-        bool $numbers,
-        bool $symbols
-    ): bool {
-        if ($uppercase && !preg_match('@[A-Z]@', $password)) {
-            return false;
-        }
-        if ($lowercase && !preg_match('@[a-z]@', $password)) {
-            return false;
-        }
-        if ($numbers && !preg_match('@[0-9]@', $password)) {
-            return false;
-        }
-        if ($symbols && !preg_match('/[^A-Za-z0-9]/', $password)) {
-            return false;
-        }
-        return true;
+    /**
+     * @param non-empty-string $charset
+     */
+    private static function randomChar(string $charset): string
+    {
+        return $charset[random_int(0, strlen($charset) - 1)];
     }
 
+    /**
+     * @param array<int, string> $chars
+     * @return array<int, string>
+     */
+    private static function secureShuffle(array $chars): array
+    {
+        for ($i = count($chars) - 1; $i > 0; $i--) {
+            $j = random_int(0, $i);
+            [$chars[$i], $chars[$j]] = [$chars[$j], $chars[$i]];
+        }
+
+        return $chars;
+    }
 
     public static function captureClientIp(): ?string
     {
-        $clientIp = filter_input(INPUT_SERVER, 'HTTP_CLIENT_IP');
-        if (!empty($clientIp)) {
-            return $clientIp;
+        foreach (self::CLIENT_IP_SERVER_KEYS as $key) {
+            $value = $_SERVER[$key] ?? null;
+            if (is_string($value) && $value !== '') {
+                return $value;
+            }
         }
 
-        $forwardedFor = filter_input(INPUT_SERVER, 'HTTP_X_FORWARDED_FOR');
-        if (!empty($forwardedFor)) {
-            return $forwardedFor;
-        }
-
-        $remoteAddr = filter_input(INPUT_SERVER, 'REMOTE_ADDR');
-        return $remoteAddr ?: null;
+        return null;
     }
 
     public static function generatePassword(
@@ -75,23 +83,36 @@ class Utility
         bool $numbers = true,
         bool $symbols = true,
     ): string {
-        $charset = self::buildCharset($uppercase, $lowercase, $numbers, $symbols);
-        $maxAttempts = 100;
+        $groups = self::buildCharsetGroups($uppercase, $lowercase, $numbers, $symbols);
 
-        for ($attempt = 0; $attempt < $maxAttempts; $attempt++) {
-            $password = substr(str_shuffle($charset), 0, $size);
-
-            if (self::isValidPassword($password, $uppercase, $lowercase, $numbers, $symbols)) {
-                return $password;
-            }
+        if ($groups === []) {
+            throw new InvalidArgumentException('Ao menos um conjunto de caracteres deve ser habilitado!');
         }
 
-        return substr(str_shuffle($charset), 0, $size);
+        if ($size < count($groups)) {
+            throw new InvalidArgumentException(
+                'O tamanho da senha deve ser no mínimo ' . count($groups) . ' para os conjuntos habilitados!'
+            );
+        }
+
+        $charset = implode('', $groups);
+        $chars = [];
+
+        foreach ($groups as $group) {
+            $chars[] = self::randomChar($group);
+        }
+
+        while (count($chars) < $size) {
+            $chars[] = self::randomChar($charset);
+        }
+
+        return implode('', self::secureShuffle($chars));
     }
 
     public static function buildUrl(string $host, string $absolutePath = '', ?string $https = null): string
     {
-        $protocol = ($https === 'on') ? 'https' : 'http';
+        $protocol = in_array(strtolower($https ?? ''), self::SECURE_PROTOCOL_VALUES, true) ? 'https' : 'http';
+
         return sprintf('%s://%s%s', $protocol, $host, $absolutePath);
     }
 }

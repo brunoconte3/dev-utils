@@ -41,7 +41,6 @@ require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPAR
                     $validator = new Validator();
 
                     $cpfOuCnpj = Format::identifierOrCompany('DEVUTILS123404');
-                    echo '<br> Teste dados válidos identifierOrCompany => ' . $cpfOuCnpj;
                     $array = [
                         'cpfOuCnpj' => $cpfOuCnpj,
                         'nomeCidade' => 'Maringá',
@@ -57,7 +56,7 @@ require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPAR
                     <pre>
                         <?php
                         if (empty($validator->getErros())) {
-                            echo '<p style="background-color:green;">Sucesso! dados válidos!</p>';
+                            echo '<p style="background-color:green;color:white;">Sucesso! dados válidos!</p>';
                         } else {
                             echo '<p style="background-color:red;">Revise a entrada!<pre></p>';
                             print_r($validator->getErros());

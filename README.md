@@ -622,21 +622,42 @@ Uuid::isValid('01890f87-4f0b-7f6b-8b1d-9f4f9d7c3b5a', 7); // ==> true
 
 ### Password Generation
 
+Built on `random_int()`, PHP's cryptographically secure generator — safe for real passwords,
+temporary access codes and reset tokens.
+
 ```php
 <?php
 
 use DevUtils\Utility;
 
-/*
-Generate secure passwords
-int $size       ==> Number of characters (Required)
-bool $uppercase ==> Include uppercase letters (default: true)
-bool $lowercase ==> Include lowercase letters (default: true)
-bool $numbers   ==> Include numbers (default: true)
-bool $symbols   ==> Include symbols (default: true)
-*/
-Utility::generatePassword(10); // ==> aB3$xY9!zK
-Utility::generatePassword(16, true, true, true, false); // Without symbols
+Utility::generatePassword(10);                          // ==> aB3$xY9!zK
+Utility::generatePassword(16, true, true, true, false); // 16 chars, no symbols
+Utility::generatePassword(32, false, false, true, false); // 32-digit numeric token
+```
+
+Two guarantees worth relying on:
+
+- **The result always has exactly the requested length**, even when it exceeds the character set
+  (a 32-digit token draws from only 10 digits, so characters repeat — as they should).
+- **Every enabled group is present.** `generatePassword(4)` returns one uppercase, one lowercase,
+  one digit and one symbol, so you never have to re-check the password against your own policy.
+
+| Parameter    | Default    | Description                       |
+| ------------ | ---------- | --------------------------------- |
+| `$size`      | *required* | Number of characters              |
+| `$uppercase` | `true`     | Include `A-Z`                     |
+| `$lowercase` | `true`     | Include `a-z`                     |
+| `$numbers`   | `true`     | Include `0-9`                     |
+| `$symbols`   | `true`     | Include `@#$!()-+%=`              |
+
+Impossible requests fail loudly instead of returning a weak password:
+
+```php
+Utility::generatePassword(10, false, false, false, false);
+// InvalidArgumentException: Ao menos um conjunto de caracteres deve ser habilitado!
+
+Utility::generatePassword(2); // 2 chars cannot hold the 4 enabled groups
+// InvalidArgumentException: O tamanho da senha deve ser no mínimo 4 para os conjuntos habilitados!
 ```
 
 ## Manipulate Arrays
@@ -703,6 +724,12 @@ var_dump(Arrays::checkExistIndexArrayRecursive($array, 'subcategoria1')); // Ret
 
 ## Utilities
 
+### buildUrl - absolute URLs without hardcoding protocol or domain
+
+A relative path like `/reset/abc123` is useless outside the browser. Use `buildUrl` whenever the
+address has to survive on its own: links sent by e-mail, HTTP redirects, canonical tags, webhook
+callbacks, OAuth `redirect_uri` and sitemaps.
+
 ```php
 <?php
 
@@ -710,16 +737,45 @@ require 'vendor/autoload.php';
 
 use DevUtils\Utility;
 
-Utility::captureClientIp(); // Return user IP, capture per layer available, eg 201.200.25.40
-
-/*
-* @return string -> Full URL string
-* @param string $host -> system domain
-* @param string $absolutePath -> absolute path
-* @param string $https -> 'on' to generate https url, null or other value, generate http url
-*/
-Utility::buildUrl('localhost', '/sua-url/complemento', 'on'); // Return to URL
+Utility::buildUrl('localhost', '/sua-url/complemento');        // ==> http://localhost/sua-url/complemento
+Utility::buildUrl('localhost', '/sua-url/complemento', 'on');  // ==> https://localhost/sua-url/complemento
+Utility::buildUrl('meusite.com.br');                           // ==> http://meusite.com.br
+Utility::buildUrl('localhost:8080', '/api/v1?page=2');         // ==> http://localhost:8080/api/v1?page=2
 ```
+
+**The 3rd parameter is meant to receive `$_SERVER['HTTPS']` as is**, so the same code produces the
+right scheme in development and in production. `https` is generated for `'on'`, `'On'`, `'ON'`,
+`'1'`, `'true'` and `'yes'`; anything else — including `'off'`, `'0'`, `''` and `null` — generates
+`http`.
+
+```php
+// Real use: a password reset link that works on http locally and https in production
+use DevUtils\conf\Conf;
+
+$link = Utility::buildUrl(Conf::host(), '/reset/' . $token, $_SERVER['HTTPS'] ?? null);
+
+// dev  ==> http://localhost/reset/9f3a...
+// prod ==> https://meusite.com.br/reset/9f3a...
+
+mail($email, 'Recuperação de senha', "Acesse: {$link}");
+```
+
+`Conf::host()` already returns the current sanitized domain, so the two pair naturally and you
+never repeat the domain in your code.
+
+### captureClientIp - visitor IP address
+
+```php
+Utility::captureClientIp(); // ==> '201.200.25.40', or null when no source is available
+```
+
+Checks, in order: `HTTP_CLIENT_IP`, `HTTP_X_FORWARDED_FOR` and `REMOTE_ADDR`, returning the first
+one that is filled.
+
+> ⚠️ The first two are **request headers, which the client can forge**. Rely on them only when your
+> application sits behind a proxy you control. For security decisions — rate limiting, IP
+> allowlists, audit trails — read `$_SERVER['REMOTE_ADDR']` directly. Note also that
+> `HTTP_X_FORWARDED_FOR` may hold a chain (`client, proxy1, proxy2`) and is returned as is.
 
 ## Check the minimum coverage of CI/CD unit tests using PHPUnit
 
