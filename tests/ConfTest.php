@@ -90,8 +90,9 @@ class ConfTest extends TestCase
         $_SERVER['HTTP_HOST'] = 'dev-utils.local';
         $_SERVER['REQUEST_URI'] = '/status';
 
-        new Conf();
+        $conf = new Conf();
 
+        self::assertInstanceOf(Conf::class, $conf);
         self::assertSame('dev-utils.local', URL_HOST);
         self::assertSame('dev-utils.local/status', URL);
         self::assertSame(dirname(__DIR__), PATH_PROJECT);
@@ -101,12 +102,13 @@ class ConfTest extends TestCase
     {
         $_SERVER['HTTP_HOST'] = 'dev-utils.local';
         $_SERVER['REQUEST_URI'] = '/status';
-        new Conf();
+        $first = new Conf();
 
         $_SERVER['HTTP_HOST'] = 'outro-host.local';
         $_SERVER['REQUEST_URI'] = '/outro';
-        new Conf();
+        $second = new Conf();
 
+        self::assertNotSame($first, $second);
         self::assertSame('dev-utils.local', URL_HOST);
         self::assertSame('dev-utils.local/status', URL);
     }

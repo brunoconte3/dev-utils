@@ -35,37 +35,37 @@ class UtilityTest extends TestCase
 
     public function testCaptureClientIpPrefersClientIpHeader(): void
     {
-        $_SERVER['HTTP_CLIENT_IP'] = '10.0.0.1';
-        $_SERVER['HTTP_X_FORWARDED_FOR'] = '10.0.0.2';
-        $_SERVER['REMOTE_ADDR'] = '10.0.0.3';
+        $_SERVER['HTTP_CLIENT_IP'] = '203.0.113.1';
+        $_SERVER['HTTP_X_FORWARDED_FOR'] = '203.0.113.2';
+        $_SERVER['REMOTE_ADDR'] = '203.0.113.3';
 
-        self::assertSame('10.0.0.1', Utility::captureClientIp());
+        self::assertSame('203.0.113.1', Utility::captureClientIp());
     }
 
     public function testCaptureClientIpFallsBackToForwardedFor(): void
     {
         unset($_SERVER['HTTP_CLIENT_IP']);
-        $_SERVER['HTTP_X_FORWARDED_FOR'] = '10.0.0.2';
-        $_SERVER['REMOTE_ADDR'] = '10.0.0.3';
+        $_SERVER['HTTP_X_FORWARDED_FOR'] = '203.0.113.2';
+        $_SERVER['REMOTE_ADDR'] = '203.0.113.3';
 
-        self::assertSame('10.0.0.2', Utility::captureClientIp());
+        self::assertSame('203.0.113.2', Utility::captureClientIp());
     }
 
     public function testCaptureClientIpFallsBackToRemoteAddr(): void
     {
         unset($_SERVER['HTTP_CLIENT_IP'], $_SERVER['HTTP_X_FORWARDED_FOR']);
-        $_SERVER['REMOTE_ADDR'] = '10.0.0.3';
+        $_SERVER['REMOTE_ADDR'] = '203.0.113.3';
 
-        self::assertSame('10.0.0.3', Utility::captureClientIp());
+        self::assertSame('203.0.113.3', Utility::captureClientIp());
     }
 
     public function testCaptureClientIpIgnoresEmptyAndNonStringValues(): void
     {
         $_SERVER['HTTP_CLIENT_IP'] = '';
-        $_SERVER['HTTP_X_FORWARDED_FOR'] = ['10.0.0.9'];
-        $_SERVER['REMOTE_ADDR'] = '10.0.0.3';
+        $_SERVER['HTTP_X_FORWARDED_FOR'] = ['203.0.113.9'];
+        $_SERVER['REMOTE_ADDR'] = '203.0.113.3';
 
-        self::assertSame('10.0.0.3', Utility::captureClientIp());
+        self::assertSame('203.0.113.3', Utility::captureClientIp());
     }
 
     /**
