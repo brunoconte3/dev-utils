@@ -11,6 +11,10 @@ use PHPUnit\Framework\TestCase;
 
 class UtilityTest extends TestCase
 {
+    private const IP_CLIENT = '203.0.113.1';
+    private const IP_FORWARDED = '203.0.113.2';
+    private const IP_REMOTE = '203.0.113.3';
+
     /**
      * @var array<mixed>
      */
@@ -35,37 +39,37 @@ class UtilityTest extends TestCase
 
     public function testCaptureClientIpPrefersClientIpHeader(): void
     {
-        $_SERVER['HTTP_CLIENT_IP'] = '203.0.113.1';
-        $_SERVER['HTTP_X_FORWARDED_FOR'] = '203.0.113.2';
-        $_SERVER['REMOTE_ADDR'] = '203.0.113.3';
+        $_SERVER['HTTP_CLIENT_IP'] = self::IP_CLIENT;
+        $_SERVER['HTTP_X_FORWARDED_FOR'] = self::IP_FORWARDED;
+        $_SERVER['REMOTE_ADDR'] = self::IP_REMOTE;
 
-        self::assertSame('203.0.113.1', Utility::captureClientIp());
+        self::assertSame(self::IP_CLIENT, Utility::captureClientIp());
     }
 
     public function testCaptureClientIpFallsBackToForwardedFor(): void
     {
         unset($_SERVER['HTTP_CLIENT_IP']);
-        $_SERVER['HTTP_X_FORWARDED_FOR'] = '203.0.113.2';
-        $_SERVER['REMOTE_ADDR'] = '203.0.113.3';
+        $_SERVER['HTTP_X_FORWARDED_FOR'] = self::IP_FORWARDED;
+        $_SERVER['REMOTE_ADDR'] = self::IP_REMOTE;
 
-        self::assertSame('203.0.113.2', Utility::captureClientIp());
+        self::assertSame(self::IP_FORWARDED, Utility::captureClientIp());
     }
 
     public function testCaptureClientIpFallsBackToRemoteAddr(): void
     {
         unset($_SERVER['HTTP_CLIENT_IP'], $_SERVER['HTTP_X_FORWARDED_FOR']);
-        $_SERVER['REMOTE_ADDR'] = '203.0.113.3';
+        $_SERVER['REMOTE_ADDR'] = self::IP_REMOTE;
 
-        self::assertSame('203.0.113.3', Utility::captureClientIp());
+        self::assertSame(self::IP_REMOTE, Utility::captureClientIp());
     }
 
     public function testCaptureClientIpIgnoresEmptyAndNonStringValues(): void
     {
         $_SERVER['HTTP_CLIENT_IP'] = '';
         $_SERVER['HTTP_X_FORWARDED_FOR'] = ['203.0.113.9'];
-        $_SERVER['REMOTE_ADDR'] = '203.0.113.3';
+        $_SERVER['REMOTE_ADDR'] = self::IP_REMOTE;
 
-        self::assertSame('203.0.113.3', Utility::captureClientIp());
+        self::assertSame(self::IP_REMOTE, Utility::captureClientIp());
     }
 
     /**
@@ -74,14 +78,14 @@ class UtilityTest extends TestCase
     public static function passwordCharsetProvider(): array
     {
         return [
-            'todos os conjuntos' => [20, true, true, true, true, '/^[A-Za-z0-9@#$!()\-+%=]+$/'],
+            'maiusculas e numeros' => [10, true, false, true, false, '/^[A-Z0-9]+$/'],
+            'sem simbolos' => [12, true, true, true, false, '/^[A-Za-z0-9]+$/'],
             'somente maiusculas' => [8, true, false, false, false, '/^[A-Z]+$/'],
             'somente minusculas' => [8, false, true, false, false, '/^[a-z]+$/'],
             'somente numeros' => [8, false, false, true, false, '/^[0-9]+$/'],
             'somente simbolos' => [8, false, false, false, true, '/^[@#$!()\-+%=]+$/'],
-            'sem simbolos' => [12, true, true, true, false, '/^[A-Za-z0-9]+$/'],
-            'maiusculas e numeros' => [10, true, false, true, false, '/^[A-Z0-9]+$/'],
             'tamanho minimo de um grupo' => [1, true, false, false, false, '/^[A-Z]$/'],
+            'todos os conjuntos' => [20, true, true, true, true, '/^[A-Za-z0-9@#$!()\-+%=]+$/'],
         ];
     }
 
@@ -172,9 +176,9 @@ class UtilityTest extends TestCase
     public static function invalidPasswordSizeProvider(): array
     {
         return [
-            'zero' => [0],
-            'negativo' => [-1],
             'menor que os quatro grupos' => [3],
+            'negativo' => [-1],
+            'zero' => [0],
         ];
     }
 
@@ -203,17 +207,17 @@ class UtilityTest extends TestCase
     public static function protocolProvider(): array
     {
         return [
-            'on minusculo' => ['on', 'https'],
+            'nulo' => [null, 'http'],
+            'off' => ['off', 'http'],
             'On capitalizado' => ['On', 'https'],
             'ON maiusculo' => ['ON', 'https'],
-            'um' => ['1', 'https'],
-            'true' => ['true', 'https'],
-            'yes' => ['yes', 'https'],
-            'off' => ['off', 'http'],
-            'zero' => ['0', 'http'],
+            'on minusculo' => ['on', 'https'],
             'string vazia' => ['', 'http'],
-            'nulo' => [null, 'http'],
+            'true' => ['true', 'https'],
+            'um' => ['1', 'https'],
             'valor desconhecido' => ['banana', 'http'],
+            'yes' => ['yes', 'https'],
+            'zero' => ['0', 'http'],
         ];
     }
 

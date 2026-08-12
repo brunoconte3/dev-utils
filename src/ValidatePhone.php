@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace DevUtils;
 
 class ValidatePhone
@@ -13,6 +15,6 @@ class ValidatePhone
             return false;
         }
 
-        return (bool) preg_match('/^[1-9]{2}([0-9]{8}|[1-9][0-9]{8})$/', $phone);
+        return (bool) preg_match('/^[1-9]{2}(\d{8}|[1-9]\d{8})$/', $phone);
     }
 }

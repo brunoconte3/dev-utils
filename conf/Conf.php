@@ -22,9 +22,11 @@ final class Conf
 
     private static function defineOnce(string $name, string $value): void
     {
-        if (!defined($name)) {
-            define($name, $value);
+        if (defined($name)) {
+            return;
         }
+
+        define($name, $value);
     }
 
     public static function host(): string

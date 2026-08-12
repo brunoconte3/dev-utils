@@ -9,6 +9,9 @@ use PHPUnit\Framework\TestCase;
 
 class StringTest extends TestCase
 {
+    private const RULE_MIN_5 = 'min:5';
+    private const RULE_MAX_5 = 'max:5';
+
     private function validate(array $data, array $rules): Validator
     {
         $validator = new Validator();
@@ -75,14 +78,14 @@ class StringTest extends TestCase
     {
         $array = [
             'testErrorDddTwoDigits' => '60',
-            'testValidTwoDigits' => '61',
             'testErrorDddTwoDigitsState' => '11',
+            'testValidTwoDigits' => '61',
             'testValidTwoDigitsState' => '44',
         ];
         $rules = [
             'testErrorDddTwoDigits' => 'ddd',
-            'testValidTwoDigits' => 'ddd',
             'testErrorDddTwoDigitsState' => 'ddd:pr',
+            'testValidTwoDigits' => 'ddd',
             'testValidTwoDigitsState' => 'ddd:pr',
         ];
         $validator = new Validator();
@@ -158,16 +161,16 @@ class StringTest extends TestCase
     public function testIdentifierOrCompany(): void
     {
         $array = [
-            'testValidCpf' => '52998224725',
-            'testValidCnpj' => '32063364000107',
-            'testErrorCpf' => '12345678900',
             'testErrorCnpj' => '11111111111111',
+            'testErrorCpf' => '12345678900',
+            'testValidCnpj' => '32063364000107',
+            'testValidCpf' => '52998224725',
         ];
         $rules = [
-            'testValidCpf' => 'identifierOrCompany',
-            'testValidCnpj' => 'identifierOrCompany',
-            'testErrorCpf' => 'identifierOrCompany',
             'testErrorCnpj' => 'identifierOrCompany',
+            'testErrorCpf' => 'identifierOrCompany',
+            'testValidCnpj' => 'identifierOrCompany',
+            'testValidCpf' => 'identifierOrCompany',
         ];
         self::assertValidatorErrorCount(2, $array, $rules);
     }
@@ -244,8 +247,8 @@ class StringTest extends TestCase
             'testValid' => 'abcde',
         ];
         $rules = [
-            'testError' => 'min:5',
-            'testValid' => 'min:5',
+            'testError' => self::RULE_MIN_5,
+            'testValid' => self::RULE_MIN_5,
         ];
         self::assertValidatorErrorCount(1, $array, $rules);
     }
@@ -257,8 +260,8 @@ class StringTest extends TestCase
             'testValid' => 'abcde',
         ];
         $rules = [
-            'testError' => 'max:5',
-            'testValid' => 'max:5',
+            'testError' => self::RULE_MAX_5,
+            'testValid' => self::RULE_MAX_5,
         ];
         self::assertValidatorErrorCount(1, $array, $rules);
     }
@@ -409,8 +412,8 @@ class StringTest extends TestCase
     public function testEquals(): void
     {
         $array = [
-            'password' => 'secret123',
             'confirmPassword' => 'secret123',
+            'password' => 'secret123',
             'wrongPassword' => 'different',
         ];
         $rules = [
@@ -423,12 +426,12 @@ class StringTest extends TestCase
     public function testDddWithThreeDigits(): void
     {
         $array = [
-            'testValid' => '011',
             'testError' => '060',
+            'testValid' => '011',
         ];
         $rules = [
-            'testValid' => 'ddd',
             'testError' => 'ddd',
+            'testValid' => 'ddd',
         ];
         self::assertValidatorErrorCount(1, $array, $rules);
     }
@@ -447,16 +450,16 @@ class StringTest extends TestCase
     public function testRgbColorVariations(): void
     {
         $array = [
-            'testValidNoSpaces' => '0,43,233',
-            'testValidWithSpaces' => '0 , 43 , 233',
             'testValidMax' => '255, 255, 255',
             'testValidMin' => '0, 0, 0',
+            'testValidNoSpaces' => '0,43,233',
+            'testValidWithSpaces' => '0 , 43 , 233',
         ];
         $rules = [
-            'testValidNoSpaces' => 'rgbColor',
-            'testValidWithSpaces' => 'rgbColor',
             'testValidMax' => 'rgbColor',
             'testValidMin' => 'rgbColor',
+            'testValidNoSpaces' => 'rgbColor',
+            'testValidWithSpaces' => 'rgbColor',
         ];
         self::assertValidatorErrorCount(0, $array, $rules);
     }
@@ -477,16 +480,16 @@ class StringTest extends TestCase
     public function testLowerWithSpecialChars(): void
     {
         $array = [
+            'testErrorWithNumbers' => 'hello123',
+            'testeValidWithSpecial' => 'hello@world',
             'testValid' => 'hello world',
             'testValidwithoutSpaces' => 'helloworld',
-            'testeValidWithSpecial' => 'hello@world',
-            'testErrorWithNumbers' => 'hello123',
         ];
         $rules = [
+            'testErrorWithNumbers' => 'lower',
+            'testeValidWithSpecial' => 'lower',
             'testValid' => 'lower',
             'testValidwithoutSpaces' => 'lower',
-            'testeValidWithSpecial' => 'lower',
-            'testErrorWithNumbers' => 'lower',
         ];
         self::assertValidatorErrorCount(1, $array, $rules);
     }
@@ -494,14 +497,14 @@ class StringTest extends TestCase
     public function testUpperWithSpecialChars(): void
     {
         $array = [
+            'testErrorWithNumbers' => 'HELLO123',
             'testValid' => 'HELLO WORLD',
             'testValidWithCharacters' => 'HELLO@WORLD',
-            'testErrorWithNumbers' => 'HELLO123',
         ];
         $rules = [
+            'testErrorWithNumbers' => 'upper',
             'testValid' => 'upper',
             'testValidWithCharacters' => 'upper',
-            'testErrorWithNumbers' => 'upper',
         ];
         self::assertValidatorErrorCount(1, $array, $rules);
     }
@@ -509,12 +512,12 @@ class StringTest extends TestCase
     public function testMinWithUnicodeCharacters(): void
     {
         $array = [
-            'testValid' => 'açãõé',
             'testError' => 'ab',
+            'testValid' => 'açãõé',
         ];
         $rules = [
-            'testValid' => 'min:5',
-            'testError' => 'min:5',
+            'testError' => self::RULE_MIN_5,
+            'testValid' => self::RULE_MIN_5,
         ];
         self::assertValidatorErrorCount(1, $array, $rules);
     }
@@ -522,12 +525,12 @@ class StringTest extends TestCase
     public function testMaxWithUnicodeCharacters(): void
     {
         $array = [
-            'testValid' => 'açã',
             'testError' => 'açãõéíú',
+            'testValid' => 'açã',
         ];
         $rules = [
-            'testValid' => 'max:5',
-            'testError' => 'max:5',
+            'testError' => self::RULE_MAX_5,
+            'testValid' => self::RULE_MAX_5,
         ];
         self::assertValidatorErrorCount(1, $array, $rules);
     }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace DevUtils\DependencyInjection;
 
 trait TraitRule
@@ -32,7 +34,9 @@ trait TraitRule
             'companyIdentification' => 'validateCompanyIdentification',
             'dateAmerican' => 'validateDateAmerican',
             'dateBrazil' => 'validateDateBrazil',
+            'dateIso8601' => 'validateDateIso8601',
             'dateNotFuture' => 'validateDateNotFuture',
+            'dateUTCWithoutTimezone' => 'validateDateUTCWithoutTimezone',
             'email' => 'validateEmail',
             'equals' => 'validateEquals',
             'fileName' => 'validateFileName',
@@ -45,8 +49,6 @@ trait TraitRule
             'ip' => 'validateIp',
             'json' => 'validateJson',
             'lower' => 'validateLower',
-            'dateIso8601' => 'validateDateIso8601',
-            'dateUTCWithoutTimezone' => 'validateDateUTCWithoutTimezone',
         ];
     }
 
@@ -56,17 +58,17 @@ trait TraitRule
             'mac' => 'validateMac',
             'max' => 'validateMaximumField',
             'maxFile' => 'validateMaximumFileNumbers',
+            'maxHeight' => 'validateMaxHeight',
             'maxUploadSize' => 'validateFileMaxUploadSize',
             'maxWidth' => 'validateMaxWidth',
-            'maxHeight' => 'validateMaxHeight',
             'maxWords' => 'validateMaximumWords',
+            'mimeType' => 'validateFileMimeType',
             'min' => 'validateMinimumField',
             'minFile' => 'validateMinimumFileNumbers',
             'minHeight' => 'validateMinHeight',
-            'minWidth' => 'validateMinWidth',
-            'mimeType' => 'validateFileMimeType',
-            'minWords' => 'validateMinimumWords',
             'minUploadSize' => 'validateFileMinUploadSize',
+            'minWidth' => 'validateMinWidth',
+            'minWords' => 'validateMinimumWords',
             'notSpace' => 'validateSpace',
             'noWeekend' => 'validateWeekend',
             'numeric' => 'validateNumeric',
@@ -79,9 +81,9 @@ trait TraitRule
     private static function functionsValidationOtoZ(): array
     {
         return [
+            'ddd' => 'validateDdd',
             'optional' => 'validateOptional',
             'phone' => 'validatePhone',
-            'ddd' => 'validateDdd',
             'plate' => 'validatePlate',
             'regex' => 'validateRegex',
             'required' => 'validateFieldMandatory',

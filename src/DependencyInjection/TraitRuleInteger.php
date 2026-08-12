@@ -1,14 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace DevUtils\DependencyInjection;
 
 trait TraitRuleInteger
 {
     protected function validateInteger(string $field = '', ?string $value = null, ?string $message = ''): void
     {
-        if (!filter_var($value, FILTER_VALIDATE_INT)) {
-            $this->errors[$field] = !empty($message) ? $message : "O campo $field deve ser do tipo inteiro!";
+        if (filter_var($value, FILTER_VALIDATE_INT)) {
+            return;
         }
+
+        $this->errors[$field] = !empty($message) ? $message : "O campo $field deve ser do tipo inteiro!";
     }
 
     protected function validateIntegerTyped(
@@ -16,16 +20,20 @@ trait TraitRuleInteger
         string|int|null $value = null,
         ?string $message = ''
     ): void {
-        if (!is_int($value)) {
-            $this->errors[$field] = !empty($message) ? $message : "O campo $field deve ser do tipado como inteiro!";
+        if (is_int($value)) {
+            return;
         }
+
+        $this->errors[$field] = !empty($message) ? $message : "O campo $field deve ser do tipado como inteiro!";
     }
 
     protected function validateNumeric(string $field = '', ?string $value = null, ?string $message = ''): void
     {
-        if (!is_numeric($value)) {
-            $this->errors[$field] = !empty($message) ? $message : "O campo $field só pode conter valores numéricos!";
+        if (is_numeric($value)) {
+            return;
         }
+
+        $this->errors[$field] = !empty($message) ? $message : "O campo $field só pode conter valores numéricos!";
     }
 
     protected function validateNumMax(
@@ -35,23 +43,29 @@ trait TraitRuleInteger
         ?string $message = '',
     ): void {
         if ($value < 0) {
-            $this->errors[$field] = !empty($message) ?
-                $message : "O campo $field deve ter o valor mínimo de zero!";
+            $this->errors[$field] = !empty($message)
+                ? $message
+                : "O campo $field deve ter o valor mínimo de zero!";
         }
-        if ($value > $rule) {
-            $this->errors[$field] = !empty($message) ?
-                $message : "O campo $field é permitido até o valor máximo de $rule!";
+        if ($value <= $rule) {
+            return;
         }
+
+        $this->errors[$field] = !empty($message)
+            ? $message
+            : "O campo $field é permitido até o valor máximo de $rule!";
     }
 
     protected function validateNumMonth(string $field = '', ?string $value = null, ?string $message = ''): void
     {
         if (!is_numeric($value)) {
-            $this->errors[$field] = !empty($message) ?
-                $message : "O campo $field precisa ser do valor inteiro e maior que 0!";
+            $this->errors[$field] = !empty($message)
+                ? $message
+                : "O campo $field precisa ser do valor inteiro e maior que 0!";
         } elseif ($value > 12 || $value <= 0 || strlen((string) $value) > 2) {
-            $this->errors[$field] = !empty($message) ?
-                $message : "O campo $field não é um mês válido!";
+            $this->errors[$field] = !empty($message)
+                ? $message
+                : "O campo $field não é um mês válido!";
         }
     }
 
@@ -65,12 +79,16 @@ trait TraitRuleInteger
             $this->errors[$field] = !empty($message) ? $message : "O campo $field não é um inteiro!";
         }
         if ((int) $value < $rule) {
-            $this->errors[$field] = !empty($message) ?
-                $message : "O campo $field deve ter o valor mínimo de $rule!";
+            $this->errors[$field] = !empty($message)
+                ? $message
+                : "O campo $field deve ter o valor mínimo de $rule!";
         }
-        if ((int) $value < 0) {
-            $this->errors[$field] = !empty($message) ?
-                $message : "O campo $field deve ter o valor mínimo de zero!";
+        if ((int) $value >= 0) {
+            return;
         }
+
+        $this->errors[$field] = !empty($message)
+            ? $message
+            : "O campo $field deve ter o valor mínimo de zero!";
     }
 }

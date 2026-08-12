@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace DevUtils\DependencyInjection;
 
 use DevUtils\ValidateFile;
@@ -8,13 +10,15 @@ trait TraitRuleFile
 {
     private function validateRuleFile(int | string $rule, string $field, ?string $label): void
     {
-        if (!is_numeric($rule) || ($rule <= 0)) {
-            $text = "O parâmetro do validador '$label', deve ser numérico e maior ou igual a zero!";
-            if (!isset($this->errors[$field]) || !is_array($this->errors[$field])) {
-                $this->errors[$field] = [];
-            }
-            $this->errors[$field][0] = $text;
+        if (is_numeric($rule) && ($rule > 0)) {
+            return;
         }
+
+        $text = "O parâmetro do validador '$label', deve ser numérico e maior ou igual a zero!";
+        if (!isset($this->errors[$field]) || !is_array($this->errors[$field])) {
+            $this->errors[$field] = [];
+        }
+        $this->errors[$field][0] = $text;
     }
 
     protected function validateFileMaxUploadSize(
@@ -28,7 +32,7 @@ trait TraitRuleFile
 
         $this->validateHandleErrorsInArray(
             ValidateFile::validateMaxUploadSize((int) $rule, $value, $message),
-            $field
+            $field,
         );
     }
 
@@ -43,7 +47,7 @@ trait TraitRuleFile
 
         $this->validateHandleErrorsInArray(
             ValidateFile::validateMinUploadSize((int) $rule, $value, $message),
-            $field
+            $field,
         );
     }
 
@@ -59,7 +63,7 @@ trait TraitRuleFile
 
         $this->validateHandleErrorsInArray(
             ValidateFile::validateFileName($value),
-            $field
+            $field,
         );
     }
 
@@ -79,7 +83,7 @@ trait TraitRuleFile
     ): void {
         $this->validateHandleErrorsInArray(
             ValidateFile::validateFileUploadMandatory($field, $value, $message),
-            $field
+            $field,
         );
     }
 
@@ -109,31 +113,42 @@ trait TraitRuleFile
         $this->validateHandleErrorsInArray($validateResult, $field);
     }
 
-    private function validateFileCalculateSize(string $field): ?string
+    private function isNotImageType(mixed $type, array $imgValid): bool
     {
-        $imgValid = ['image/gif', 'image/png', 'image/jpeg', 'image/bmp', 'image/webp'];
-        if (!extension_loaded('gd')) {
-            return 'Biblioteca GD não foi encontrada!';
-        } elseif (empty($_FILES)) {
-            return 'Anexo não foi encontrado!';
-        } else {
-            $msg = 'Para validar minWidth, maxWidth, minHeight e maxHeight o arquivo precisa ser uma imagem!';
-            $file = $_FILES[$field] ?? $_FILES;
-            if (is_iterable($file)) {
-                foreach ($file as $key => $value) {
-                    if (is_array($value)) {
-                        foreach ($value as $valor) {
-                            if ($key === 'type' && !empty($valor) && !in_array($valor, $imgValid)) {
-                                return $msg;
-                            }
-                        }
-                    }
-                    if ($key === 'type' && !empty($value) && is_string($value) && !in_array($value, $imgValid)) {
-                        return $msg;
-                    }
+        if (is_array($type)) {
+            foreach ($type as $valor) {
+                if (!empty($valor) && !in_array($valor, $imgValid)) {
+                    return true;
                 }
             }
+
+            return false;
         }
+
+        return !empty($type) && is_string($type) && !in_array($type, $imgValid);
+    }
+
+    private function validateFileCalculateSize(string $field): ?string
+    {
+        if (!extension_loaded('gd')) {
+            return 'Biblioteca GD não foi encontrada!';
+        }
+        if (empty($_FILES)) {
+            return 'Anexo não foi encontrado!';
+        }
+
+        $file = $_FILES[$field] ?? $_FILES;
+        if (!is_iterable($file)) {
+            return null;
+        }
+
+        $imgValid = ['image/gif', 'image/png', 'image/jpeg', 'image/bmp', 'image/webp'];
+        foreach ($file as $key => $value) {
+            if ($key === 'type' && $this->isNotImageType($value, $imgValid)) {
+                return 'Para validar minWidth, maxWidth, minHeight e maxHeight o arquivo precisa ser uma imagem!';
+            }
+        }
+
         return null;
     }
 
@@ -174,7 +189,7 @@ trait TraitRuleFile
             $value,
             $message,
             'minWidth',
-            fn(string $f, ?int $r, array $v, ?string $m): array => ValidateFile::validateMinWidth($f, $r, $v, $m)
+            fn(string $f, ?int $r, array $v, ?string $m): array => ValidateFile::validateMinWidth($f, $r, $v, $m),
         );
     }
 
@@ -190,7 +205,7 @@ trait TraitRuleFile
             $value,
             $message,
             'minHeight',
-            fn(string $f, ?int $r, array $v, ?string $m): array => ValidateFile::validateMinHeight($f, $r, $v, $m)
+            fn(string $f, ?int $r, array $v, ?string $m): array => ValidateFile::validateMinHeight($f, $r, $v, $m),
         );
     }
 
@@ -206,7 +221,7 @@ trait TraitRuleFile
             $value,
             $message,
             'minWidth',
-            fn(string $f, ?int $r, array $v, ?string $m): array => ValidateFile::validateMaxWidth($f, $r, $v, $m)
+            fn(string $f, ?int $r, array $v, ?string $m): array => ValidateFile::validateMaxWidth($f, $r, $v, $m),
         );
     }
 
@@ -222,7 +237,7 @@ trait TraitRuleFile
             $value,
             $message,
             'maxHeight',
-            fn(string $f, ?int $r, array $v, ?string $m): array => ValidateFile::validateMaxHeight($f, $r, $v, $m)
+            fn(string $f, ?int $r, array $v, ?string $m): array => ValidateFile::validateMaxHeight($f, $r, $v, $m),
         );
     }
 }

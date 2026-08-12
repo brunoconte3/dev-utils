@@ -7,23 +7,25 @@ namespace DevUtils;
 class ValidateFile
 {
     private const PHP_FILE_ERRORS = [
-        UPLOAD_ERR_OK         => 'Arquivo enviado com sucesso!',
-        UPLOAD_ERR_INI_SIZE   => 'O arquivo enviado excede o limite definido na diretiva '
-            . 'UPLOAD_MAX_FILESIZE do php.ini!',
-        UPLOAD_ERR_FORM_SIZE  => 'O arquivo excede o limite definido em MAX_FILE_SIZE, no fomulário HTML!',
-        UPLOAD_ERR_PARTIAL    => 'O upload do arquivo, foi realizado parcialmente!',
-        UPLOAD_ERR_NO_FILE    => 'Nenhum arquivo foi enviado!',
-        UPLOAD_ERR_NO_TMP_DIR => 'Pasta temporária ausênte!',
         UPLOAD_ERR_CANT_WRITE => 'Falha ao gravar arquivo no disco!',
-        UPLOAD_ERR_EXTENSION  => 'Uma extensão PHP interrompeu o upload do arquivo!',
+        UPLOAD_ERR_EXTENSION => 'Uma extensão PHP interrompeu o upload do arquivo!',
+        UPLOAD_ERR_FORM_SIZE => 'O arquivo excede o limite definido em MAX_FILE_SIZE, no fomulário HTML!',
+        UPLOAD_ERR_INI_SIZE => 'O arquivo enviado excede o limite definido na diretiva '
+            . 'UPLOAD_MAX_FILESIZE do php.ini!',
+        UPLOAD_ERR_NO_FILE => 'Nenhum arquivo foi enviado!',
+        UPLOAD_ERR_NO_TMP_DIR => 'Pasta temporária ausênte!',
+        UPLOAD_ERR_OK => 'Arquivo enviado com sucesso!',
+        UPLOAD_ERR_PARTIAL => 'O upload do arquivo, foi realizado parcialmente!',
     ];
 
     private static function validateFileTransformSingleToMultiple(array &$file): void
     {
-        if (isset($file['name']) && !is_array($file['name'])) {
-            foreach ($file as $paramFile => $value) {
-                $file[$paramFile] = [$value];
-            }
+        if (!isset($file['name']) || is_array($file['name'])) {
+            return;
+        }
+
+        foreach ($file as $paramFile => $value) {
+            $file[$paramFile] = [$value];
         }
     }
 
@@ -35,10 +37,10 @@ class ValidateFile
 
         if (is_array($file['name'])) {
             $count = count($file['name']);
-            return ($count === 1 && empty($file['name'][0])) ? 0 : $count;
+            return $count === 1 && empty($file['name'][0]) ? 0 : $count;
         }
 
-        return (is_string($file['name']) && !empty($file['name'])) ? 1 : 0;
+        return is_string($file['name']) && !empty($file['name']) ? 1 : 0;
     }
 
     private static function validateFileSize(
@@ -60,16 +62,47 @@ class ValidateFile
         }
 
         foreach ($file['size'] as $key => $size) {
-            if ($condition($size, $rule)) {
-                $fileName = (is_array($file['name']) && isset($file['name'][$key]))
-                    ? (string) $file['name'][$key] : 'arquivo';
-                $defaultMsg = "O arquivo {$fileName} deve conter, no {$type} {$rule} bytes!";
-                $msg = $message ?: $defaultMsg;
-                $arrayFileError[] = $msg;
+            if (!$condition($size, $rule)) {
+                continue;
             }
+
+            $fileName = is_array($file['name']) && isset($file['name'][$key])
+                ? (string) $file['name'][$key] : 'arquivo';
+            $defaultMsg = "O arquivo {$fileName} deve conter, no {$type} {$rule} bytes!";
+            $msg = $message ?: $defaultMsg;
+            $arrayFileError[] = $msg;
         }
 
         return $arrayFileError;
+    }
+
+    private static function imageDimensionError(
+        string $tmpName,
+        string $field,
+        ?int $rule,
+        ?string $message,
+        string $dimension,
+        string $type,
+        int $imageSizeIndex
+    ): ?string {
+        $imageSize = getimagesize($tmpName) ?: [0, 0];
+        $value = $imageSize[$imageSizeIndex];
+
+        $isInvalid = match ($type) {
+            'min' => $value > 0 && $value < $rule,
+            'max' => $value > 0 && $value > $rule,
+            default => false,
+        };
+
+        if (!$isInvalid) {
+            return null;
+        }
+
+        $dimensionLabel = $dimension === 'width' ? 'comprimento' : 'altura';
+        $typeLabel = $type === 'min' ? 'menor' : 'maior';
+        $defaultMsg = "O campo {$field} não pode ser {$typeLabel} que {$rule} pexels de {$dimensionLabel}!";
+
+        return $message ?: $defaultMsg;
     }
 
     private static function validateImageDimension(
@@ -97,25 +130,31 @@ class ValidateFile
                 continue;
             }
 
-            $imageSize = getimagesize($tmpName) ?: [0, 0];
-            $value = $imageSize[$imageSizeIndex];
-
-            $isInvalid = match ($type) {
-                'min' => $value > 0 && $value < $rule,
-                'max' => $value > 0 && $value > $rule,
-                default => false,
-            };
-
-            if ($isInvalid) {
-                $dimensionLabel = $dimension === 'width' ? 'comprimento' : 'altura';
-                $typeLabel = $type === 'min' ? 'menor' : 'maior';
-                $defaultMsg = "O campo {$field} não pode ser {$typeLabel} que {$rule} pexels de {$dimensionLabel}!";
-                $msg = $message ?: $defaultMsg;
-                $arrayFileError[] = $msg;
+            $msg = self::imageDimensionError($tmpName, $field, $rule, $message, $dimension, $type, $imageSizeIndex);
+            if ($msg === null) {
+                continue;
             }
+
+            $arrayFileError[] = $msg;
         }
 
         return $arrayFileError;
+    }
+
+    private static function phpFileErrorMessage(
+        array $file,
+        int | string $key,
+        mixed $codeError,
+        string $message,
+    ): ?string {
+        if (!is_int($codeError) || $codeError <= 0 || !array_key_exists($codeError, self::PHP_FILE_ERRORS)) {
+            return null;
+        }
+
+        $fileName = is_array($file['name']) && isset($file['name'][$key]) ? $file['name'][$key] : '';
+        $nameFile = $fileName ? '[' . (string) $fileName . '] - ' : '';
+
+        return $message ? $nameFile . $message : $nameFile . self::PHP_FILE_ERRORS[$codeError];
     }
 
     public static function validateFileErrorPhp(array &$file, string $message = ''): array
@@ -128,12 +167,12 @@ class ValidateFile
 
         $arrayFileError = [];
         foreach ($file['error'] as $key => $codeError) {
-            if ($codeError > 0 && is_int($codeError) && array_key_exists($codeError, self::PHP_FILE_ERRORS)) {
-                $fileName = (is_array($file['name']) && isset($file['name'][$key])) ? $file['name'][$key] : '';
-                $nameFile = $fileName ? '[' . (string) $fileName . '] - ' : '';
-                $errorMessage = $message ? $nameFile . $message : $nameFile . self::PHP_FILE_ERRORS[$codeError];
-                $arrayFileError[] = $errorMessage;
+            $errorMessage = self::phpFileErrorMessage($file, $key, $codeError, $message);
+            if ($errorMessage === null) {
+                continue;
             }
+
+            $arrayFileError[] = $errorMessage;
         }
 
         return $arrayFileError;
@@ -208,11 +247,28 @@ class ValidateFile
             }
             $noSpecialCharacter = Format::removeSpecialCharacters($fileName) ?? '';
             $file['name'][$key] = explode('.', strtolower(trim(
-                str_replace(' ', '', $noSpecialCharacter)
+                str_replace(' ', '', $noSpecialCharacter),
             )));
         }
 
         return [];
+    }
+
+    private static function mimeTypeError(string $fileName, string | array $rule, ?string $message): ?string
+    {
+        $ext = explode('.', $fileName);
+        $extension = strtolower(end($ext));
+        $messageMimeType = $message ?: "O arquivo {$fileName}, contém uma extensão inválida!";
+
+        if (is_string($rule) && $extension !== strtolower($rule)) {
+            return $messageMimeType;
+        }
+
+        if (is_array($rule) && !in_array($extension, $rule, true)) {
+            return $messageMimeType;
+        }
+
+        return null;
     }
 
     public static function validateMimeType(
@@ -225,7 +281,11 @@ class ValidateFile
         }
 
         self::validateFileTransformSingleToMultiple($file);
-        $rule = is_array($rule) ? array_map(fn($v) => is_string($v) ? trim($v) : $v, $rule) : trim($rule);
+        if (is_array($rule)) {
+            $rule = array_map(fn($v) => is_string($v) ? trim($v) : $v, $rule);
+        } else {
+            $rule = trim($rule);
+        }
 
         if (!isset($file['name']) || !is_array($file['name'])) {
             return [];
@@ -237,18 +297,12 @@ class ValidateFile
                 continue;
             }
 
-            $ext = explode('.', $fileName);
-            $extension = strtolower(end($ext));
-            $messageMimeType = $message ?: "O arquivo {$fileName}, contém uma extensão inválida!";
-
-            if (is_string($rule) && $extension !== strtolower($rule)) {
-                $arrayFileError[] = $messageMimeType;
+            $msg = self::mimeTypeError($fileName, $rule, $message);
+            if ($msg === null) {
                 continue;
             }
 
-            if (is_array($rule) && !in_array($extension, $rule, true)) {
-                $arrayFileError[] = $messageMimeType;
-            }
+            $arrayFileError[] = $msg;
         }
 
         return $arrayFileError;

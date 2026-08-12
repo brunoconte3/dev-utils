@@ -51,8 +51,8 @@ class ArrayTest extends TestCase
                 'fruta_3' => 'fruta',
                 'fruta_4' => 'Uva',
             ],
-            'verduras' => ['verdura_1' => self::VEGETABLE_RUCULA, 'verdura_2' => 'Acelga', 'verdura_3' => 'Alface'],
             'legume' => 'Tomate',
+            'verduras' => ['verdura_1' => self::VEGETABLE_RUCULA, 'verdura_2' => 'Acelga', 'verdura_3' => 'Alface'],
         ];
 
         $this->simpleArray = ['primeiro' => 15, 'segundo' => 25];
@@ -124,10 +124,10 @@ class ArrayTest extends TestCase
     {
         $array = [
             'pessoa' => [
-                'pedidos' => ['pedido1', 'pedido2'],
                 'categorias' => [
                     'subcategorias' => ['subcategoria1' => 'valor teste'],
                 ],
+                'pedidos' => ['pedido1', 'pedido2'],
             ],
         ];
         self::assertTrue(Arrays::checkExistIndexArrayRecursive($array, 'subcategoria1'));

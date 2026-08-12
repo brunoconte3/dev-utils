@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace DevUtils\DependencyInjection;
 
 use DateTime;
@@ -20,27 +22,27 @@ class StrfTime
     ];
     private const SIMPLE_FORMATS = [
         '%d' => 'd',
-        '%u' => 'N',
-        '%w' => 'w',
-        '%V' => 'W',
-        '%m' => 'm',
+        '%D' => 'm/d/Y',
+        '%F' => 'Y-m-d',
         '%G' => 'o',
-        '%y' => 'y',
-        '%Y' => 'Y',
         '%H' => 'H',
         '%I' => 'h',
+        '%m' => 'm',
         '%M' => 'i',
         '%p' => 'A',
         '%P' => 'a',
         '%r' => 'h:i:s A',
         '%R' => 'H:i',
         '%S' => 's',
+        '%s' => 'U',
         '%T' => 'H:i:s',
+        '%u' => 'N',
+        '%V' => 'W',
+        '%w' => 'w',
+        '%y' => 'y',
+        '%Y' => 'Y',
         '%z' => 'O',
         '%Z' => 'T',
-        '%D' => 'm/d/Y',
-        '%F' => 'Y-m-d',
-        '%s' => 'U',
     ];
     private const INTL_FORMAT_KEYS = ['%a', '%A', '%b', '%B', '%h', '%X', '%c', '%x'];
 
@@ -101,19 +103,19 @@ class StrfTime
 
     private static function formatDayOfYear(DateTimeInterface $timestamp): string
     {
-        return sprintf('%03d', ((int) $timestamp->format('z')) + 1);
+        return sprintf('%03d', (int) $timestamp->format('z') + 1);
     }
 
     private static function formatWeekNumber(DateTimeInterface $timestamp, string $dayName): string
     {
         $day = new DateTime(sprintf('%d-01 %s', $timestamp->format('Y'), $dayName));
-        $diff = ((int) $timestamp->format('z')) - ((int) $day->format('z'));
+        $diff = (int) $timestamp->format('z') - (int) $day->format('z');
         return sprintf('%02u', 1 + ($diff / 7));
     }
 
     private static function formatCentury(DateTimeInterface $timestamp): string
     {
-        return (string) floor(((int) $timestamp->format('Y')) / 100);
+        return (string) floor((int) $timestamp->format('Y') / 100);
     }
 
     private static function formatIsoYearShort(DateTimeInterface $timestamp): string

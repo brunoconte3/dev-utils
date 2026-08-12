@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace DevUtils;
 
 class ValidateCnpj
@@ -57,11 +59,11 @@ class ValidateCnpj
                 return -1;
             }
             $sum += $value * $weight;
-            $weight = ($weight === 2) ? 9 : $weight - 1;
+            $weight = $weight === 2 ? 9 : $weight - 1;
         }
 
         $remainder = $sum % 11;
-        return ($remainder < 2) ? 0 : 11 - $remainder;
+        return $remainder < 2 ? 0 : 11 - $remainder;
     }
 
     private static function validateRuleCnpj(string $cnpj): bool
@@ -76,11 +78,7 @@ class ValidateCnpj
         }
 
         $secondDigit = self::calculateDigit($cnpj . $firstDigit, 13, 6);
-        if ($secondDigit < 0 || (int) $cnpj[13] !== $secondDigit) {
-            return false;
-        }
-
-        return true;
+        return $secondDigit >= 0 && (int) $cnpj[13] === $secondDigit;
     }
 
     private static function dealCnpj(string $cnpj): string

@@ -13,7 +13,7 @@ final class Common
     ): bool {
         foreach ($arr as $value) {
             if (is_array($value)) {
-                $ultTeste = Common::searchLastLayerRecursive($value, $param, $ultTeste);
+                $ultTeste = self::searchLastLayerRecursive($value, $param, $ultTeste);
             } else {
                 if ((int) $value === (int) $param) {
                     $ultTeste = true;

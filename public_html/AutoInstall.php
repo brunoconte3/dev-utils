@@ -16,11 +16,11 @@ if (!file_exists('../vendor/autoload.php') && !is_dir('../vendor')) {
         '\\\\',
         '/',
         '//',
-    ], DIRECTORY_SEPARATOR, ('composerInstall.view.php'));
+    ], DIRECTORY_SEPARATOR, 'composerInstall.view.php');
     if (!file_exists($arquivo)) {
         echo 'Houve um erro. A view composerInstall não existe!';
     }
-    if (!require_once $arquivo) {
+    if (!require_once $arquivo) { // NOSONAR - carrega a view, não é carregamento de classe
         echo 'Houve um erro ao carregar a view composerInstall!';
     }
     exit();

@@ -1,8 +1,8 @@
 <?php
 
-namespace DevUtils\DependencyInjection;
+declare(strict_types=1);
 
-use DevUtils\Compare;
+namespace DevUtils\DependencyInjection;
 
 class Rules
 {
@@ -10,38 +10,26 @@ class Rules
     use TraitRuleArray;
     use TraitRuleDate;
     use TraitRuleInteger;
+    use TraitRuleField;
     use TraitRuleFile;
     use TraitRuleString;
 
     protected array $errors = [];
     public const RULES_WITHOUT_FUNCS = ['convert'];
 
-    private function invalidRule(
-        string $rule = '',
-        string $field = '',
-        mixed $value = null,
-        ?string $message = '',
-    ): void {
-        $msg = '';
-        if (!empty($rule)) {
-            $msg .= $rule;
-        }
-        if (!empty($value)) {
-            $msg .= (string) $value;
-        }
-        if (!empty($message)) {
-            $msg .= $message;
-        }
-        $msg = "Uma regra inválida está sendo aplicada no campo $field!";
-        $this->errors[$field] = $msg;
+    private function invalidRule(string|int $field = ''): void
+    {
+        $this->errors[$field] = "Uma regra inválida está sendo aplicada no campo $field!";
     }
 
     private function getValidationMethod(string $rule): string
     {
         $functionsValidation = self::functionsValidation();
         $trimmedRule = trim($rule);
-        return trim(is_string($functionsValidation[$trimmedRule] ?? null)
-            ? $functionsValidation[$trimmedRule] : 'invalidRule');
+
+        return is_string($functionsValidation[$trimmedRule] ?? null)
+            ? trim($functionsValidation[$trimmedRule])
+            : '';
     }
 
     private function callValidationMethod(
@@ -52,8 +40,13 @@ class Rules
         ?string $msgCustomized,
         array $data = []
     ): void {
+        if ($method === '') {
+            $this->invalidRule($field);
+            return;
+        }
+
         $call = [$this, $method];
-        if (!is_callable($call, true, $method)) {
+        if (!is_callable($call, true)) {
             if (is_array($this->errors[$field] ?? null)) {
                 $this->errors[$field][$field] = 'Há regras de validação não implementadas no campo '
                     . (string) $field . '!';
@@ -63,32 +56,31 @@ class Rules
             return;
         }
 
-        if (
-            in_array(substr($method, 20), $this->methodsNoRuleValue())
-            || in_array($method, $this->methodsNoRuleValue())
-        ) {
+        if (in_array($method, $this->methodsNoRuleValue())) {
             call_user_func_array($call, [$field, $value, $msgCustomized]);
-        } elseif (substr($method, 20) === 'validateEquals') {
+        } elseif ($method === 'validateEquals') {
             call_user_func_array($call, [$val, $field, $value, $msgCustomized, $data]);
         } else {
             call_user_func_array($call, [$val, $field, $value, $msgCustomized]);
         }
     }
 
-    private function validateHandleErrorsInArray(array $errorList = [], string $field = ''): void
+    protected function validateHandleErrorsInArray(array $errorList = [], string $field = ''): void
     {
-        if (!empty($errorList)) {
-            if (array_key_exists($field, $this->errors)) {
-                $currentErrors = $this->errors[$field];
-                if (is_array($currentErrors)) {
-                    foreach ($errorList as $error) {
-                        array_push($currentErrors, $error);
-                    }
-                    $this->errors[$field] = array_unique($currentErrors);
+        if (empty($errorList)) {
+            return;
+        }
+
+        if (array_key_exists($field, $this->errors)) {
+            $currentErrors = $this->errors[$field];
+            if (is_array($currentErrors)) {
+                foreach ($errorList as $error) {
+                    array_push($currentErrors, $error);
                 }
-            } else {
-                $this->errors[$field] = $errorList;
+                $this->errors[$field] = array_unique($currentErrors);
             }
+        } else {
+            $this->errors[$field] = $errorList;
         }
     }
 
@@ -141,7 +133,8 @@ class Rules
     {
         $data = self::functionsValidationAtoL();
         $data += self::functionsValidationMtoN();
-        return $data += self::functionsValidationOtoZ();
+
+        return $data + self::functionsValidationOtoZ();
     }
 
     protected function validateOptional(): bool
@@ -159,7 +152,7 @@ class Rules
         }
         if (
             !isset($value)
-            ||  $value === false
+            || $value === false
             || (is_string($value) && empty(trim($value))) && (string) $value !== '0'
         ) {
             return $this->errors[$field] = !empty($message) ? $message : "O campo $field é obrigatório!";
@@ -187,7 +180,7 @@ class Rules
         //funcao recurssiva para tratar array e retornar json valido
         //essa função serve para validar dados com json_encode múltiplos, e indices quebrados na estrutura
         foreach ($data as $key => $val) {
-            $key = $this->prepareCharset($key, 'UTF-8');
+            $key = $this->prepareCharset((string) $key, 'UTF-8');
             if (is_string($val) && !empty($val)) {
                 $arr = json_decode($val, true);
                 if (is_array($arr) && (json_last_error() === JSON_ERROR_NONE)) {
@@ -208,7 +201,7 @@ class Rules
         //se for raiz retorna json
         $json = json_encode(
             $data,
-            JSON_UNESCAPED_UNICODE
+            JSON_UNESCAPED_UNICODE,
         ) ?: '';
         // Remove quebras de linha, tabulações
         return str_replace(["\r", "\n", "\t"], '', $json);
@@ -221,7 +214,9 @@ class Rules
                 $value[$key] = $this->preProcess($item);
             }
             return $value;
-        } elseif (is_string($value)) {
+        }
+
+        if (is_string($value)) {
             return preg_replace('/\\\\(?!["\\\\\/bfnrtu])/', '', $value);
         }
         return $value;
@@ -247,9 +242,11 @@ class Rules
                 return false;
             }
             //validação campo a campo
-            if (is_string($val)) {
-                $this->validateRuleField($key, ($data[$key] ?? null), $val, array_key_exists($key, $data), $data);
+            if (!is_string($val)) {
+                continue;
             }
+
+            $this->validateRuleField($key, ($data[$key] ?? null), $val, array_key_exists($key, $data), $data);
         }
         return $rules;
     }
@@ -262,140 +259,36 @@ class Rules
         array $data = [],
     ): array {
         //se o campo é valido, ele existe no json de dados, no mesmo nivel que a regra
-        if ($valid) {
-            //transforma a string json de validação em array para validação
-            $rulesArray = is_array($rules) ? $rules : [];
-            if (is_string($rules) && !empty($rules)) {
-                $rulesArray = json_decode($rules, true);
-                if (json_last_error() !== JSON_ERROR_NONE) {
-                    $rulesArray = [];
-                    // Suporte ao padrão PIPE, exemplo: 'int|required|min:14|max:14'.
-                    $rulesConf = explode('|', trim($rules));
-                    if (
-                        !in_array('optional', $rulesConf)
-                        || (in_array('optional', $rulesConf) && !empty($value) && $value !== 'null')
-                    ) {
-                        foreach ($rulesConf as $valueRuleConf) {
-                            $conf = preg_split('/[\,]/', trim($valueRuleConf), 2);
-                            $ruleArrayConf = explode(':', is_array($conf) ? $conf[0] : '');
-                            $regEx = (trim(strtolower($ruleArrayConf[0])) == 'regex') ? true : false;
-
-                            if (isset($ruleArrayConf[1]) && (strpos($valueRuleConf, ';') > 0) && !$regEx) {
-                                $ruleArrayConf[1] = explode(';', $ruleArrayConf[1]);
-                            }
-                            if (is_array($conf) && array_key_exists(1, $conf) && !empty($conf[1])) {
-                                $rulesArray['mensagem'] = trim(strip_tags($conf[1]));
-                            }
-                            $keyConf = $ruleArrayConf[0];
-                            if (is_string($keyConf)) {
-                                $rulesArray[(string) $keyConf] = $ruleArrayConf[1] ?? true;
-                            }
-                        }
-                    }
-                }
-            }
-            $rulesArray = !empty($rulesArray) && is_array($rulesArray) ? $rulesArray : [];
-            //irá chamar uma função para cada validação no json de validação, passando o valor para a função
-            $msgCustomized = $rulesArray['mensagem'] ?? null;
-            if (array_key_exists('mensagem', $rulesArray)) {
-                unset($rulesArray['mensagem']);
-            }
-            foreach ($rulesArray as $key => $val) {
-                $val = is_numeric($val) ? (int) $val : $val;
-                $ruleValue = (!empty($val) || ($val === 0)) ? true : false;
-                if (!in_array('optional', $rulesArray) || (in_array('optional', $rulesArray) && $ruleValue)) {
-                    if (in_array(trim(strtolower($key)), self::RULES_WITHOUT_FUNCS)) {
-                        continue;
-                    }
-                    $auxValue = $this->errors[$field] ?? '';
-                    if (is_array($auxValue)) {
-                        foreach ($auxValue as $chaveErro => $valueErro) {
-                            if (
-                                !is_array($this->errors[$field])
-                                || !array_key_exists($chaveErro, $this->errors[$field])
-                            ) {
-                                continue;
-                            }
-                            $auxValue = $this->errors[$field][$chaveErro];
-                            if (
-                                !empty($auxValue)
-                                && (is_string($auxValue) && Compare::contains($auxValue, 'obrigatório!'))
-                            ) {
-                                if (is_array($this->errors[$field])) {
-                                    $this->errors[$field][$chaveErro] = 'O campo ' . (string) $field .
-                                        ' é obrigatório!';
-                                }
-                            } else {
-                                $method = $this->getValidationMethod($key);
-                                //chama a função de validação, de cada parametro json
-                                $customMsg = is_string($msgCustomized) ? $msgCustomized : null;
-                                $this->callValidationMethod($method, $val, $field, $value, $customMsg, $data);
-                            }
-                        }
-                    }
-
-                    if (is_string($auxValue)) {
-                        if (!empty($this->errors[$field]) && Compare::contains($auxValue, 'obrigatório!')) {
-                            $this->errors[$field] = 'O campo ' . (string) $field . ' é obrigatório!';
-                        } else {
-                            $method = $this->getValidationMethod($key);
-                            //chama a função de validação, de cada parametro json
-                            $customMsg = is_string($msgCustomized) ? $msgCustomized : null;
-                            $this->callValidationMethod($method, $val, $field, $value, $customMsg, $data);
-                        }
-                    }
-                }
-            }
-            return [];
-        } else {
-            //se o campo é invalido, ele não existe no json de dados no mesmo nivel que a regra
-            //aqui valida se na regra há filhos obrigatorios para esse campo
-            $rulesArray = is_array($rules) ? $rules : [];
-            if (is_string($rules) && !empty($rules)) {
-                $rulesArray = json_decode($rules, true);
-                if (json_last_error() !== JSON_ERROR_NONE) {
-                    $rulesArray = [];
-                    //suporte ao padrão PIPE
-                    //'int|required|min:14|max:14',
-                    $rulesConf = explode('|', trim($rules));
-                    foreach ($rulesConf as $valueRuleConf) {
-                        $ruleArrayConf =  explode(':', trim($valueRuleConf));
-                        $rulesArray[$ruleArrayConf[0]] = $ruleArrayConf[1] ?? true;
-                    }
-                }
-            }
-            $rulesArray = is_array($rulesArray) ? $rulesArray : [];
-            $jsonRules = $this->levelSubLevelsArrayReturnJson($rulesArray);
-            $compareA = strpos(trim(strtolower((string) $jsonRules)), 'required');
-            if ($compareA !== false) {
-                $msg = 'O campo: ' . (string) $field . ' não foi encontrado nos dados de entrada, indices filhos são ';
-                $msg .= 'obrigatórios!';
-                if (
-                    count(array_filter(array_values((array) json_decode((string) $jsonRules, true)), 'is_array'))
-                    === 0
-                ) {
-                    $msg = 'O campo obrigatório ' . (string) $field . ' não foi encontrado nos dados de entrada!';
-                }
-                $this->errors[$field] = $msg;
-            }
-            return $this->errors;
+        if (!$valid) {
+            return $this->validateMissingField($field, $rules);
         }
+
+        $rulesArray = $this->extractRulesArray($rules, $value);
+        $this->applyFieldRules($field, $value, empty($rulesArray) ? [] : $rulesArray, $data);
+
+        return [];
     }
 
     protected function validateBoolean(string $field = '', ?string $value = null, ?string $message = null): void
     {
-        if (!filter_var($value, FILTER_VALIDATE_BOOLEAN)) {
-            $this->errors[$field] = !empty($message) ?
-                $message : "O campo $field só pode conter valores lógicos. (true, 1, yes)!";
+        if (filter_var($value, FILTER_VALIDATE_BOOLEAN)) {
+            return;
         }
+
+        $this->errors[$field] = !empty($message)
+            ? $message
+            : "O campo $field só pode conter valores lógicos. (true, 1, yes)!";
     }
 
     protected function validateFloating(string $field = '', ?string $value = null, ?string $message = null): void
     {
-        if (!filter_var($value, FILTER_VALIDATE_FLOAT)) {
-            $this->errors[$field] = !empty($message) ?
-                $message : "O campo $field deve ser do tipo real(flutuante)!";
+        if (filter_var($value, FILTER_VALIDATE_FLOAT)) {
+            return;
         }
+
+        $this->errors[$field] = !empty($message)
+            ? $message
+            : "O campo $field deve ser do tipo real(flutuante)!";
     }
 
     protected function validateJson(string $field, mixed $value, ?string $message = null): void

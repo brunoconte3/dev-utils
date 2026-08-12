@@ -9,6 +9,10 @@ use PHPUnit\Framework\TestCase;
 
 class UuidTest extends TestCase
 {
+    private const UUID_V4 = '550e8400-e29b-41d4-a716-446655440000';
+    private const UUID_V7 = '01890f87-4f0b-7f6b-8b1d-9f4f9d7c3b5a';
+    private const UUID_V1 = '6ba7b810-9dad-11d1-80b4-00c04fd430c8';
+
     public function testGenerate(): void
     {
         $uuid = Uuid::generate();
@@ -17,7 +21,7 @@ class UuidTest extends TestCase
         self::assertTrue(Uuid::isValid($uuid, 7));
         self::assertMatchesRegularExpression(
             '/^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i',
-            $uuid
+            $uuid,
         );
     }
 
@@ -32,9 +36,9 @@ class UuidTest extends TestCase
 
     public function testIsValidWithValidUuids(): void
     {
-        self::assertTrue(Uuid::isValid('550e8400-e29b-41d4-a716-446655440000'));
-        self::assertTrue(Uuid::isValid('01890f87-4f0b-7f6b-8b1d-9f4f9d7c3b5a'));
-        self::assertTrue(Uuid::isValid('6ba7b810-9dad-11d1-80b4-00c04fd430c8'));
+        self::assertTrue(Uuid::isValid(self::UUID_V4));
+        self::assertTrue(Uuid::isValid(self::UUID_V7));
+        self::assertTrue(Uuid::isValid(self::UUID_V1));
     }
 
     public function testIsValidWithInvalidUuids(): void
@@ -67,21 +71,21 @@ class UuidTest extends TestCase
 
     public function testIsValidWithAllVersions(): void
     {
-        self::assertTrue(Uuid::isValid('6ba7b810-9dad-11d1-80b4-00c04fd430c8', 1));
+        self::assertTrue(Uuid::isValid(self::UUID_V1, 1));
         self::assertTrue(Uuid::isValid('000003e8-cbb4-21ed-b200-325096b39f47', 2));
         self::assertTrue(Uuid::isValid('a3bb189e-8bf9-3888-9912-ace4e6543002', 3));
-        self::assertTrue(Uuid::isValid('550e8400-e29b-41d4-a716-446655440000', 4));
+        self::assertTrue(Uuid::isValid(self::UUID_V4, 4));
         self::assertTrue(Uuid::isValid('74738ff5-5367-5958-9aee-98fffdcd1876', 5));
         self::assertTrue(Uuid::isValid('1ef0c0d5-cf31-6f45-86a9-1e2b72a3e1ef', 6));
-        self::assertTrue(Uuid::isValid('01890f87-4f0b-7f6b-8b1d-9f4f9d7c3b5a', 7));
+        self::assertTrue(Uuid::isValid(self::UUID_V7, 7));
         self::assertTrue(Uuid::isValid('320c3d4d-cc00-875b-8ec9-32d5f69181c0', 8));
     }
 
     public function testIsValidWithWrongVersion(): void
     {
-        self::assertFalse(Uuid::isValid('550e8400-e29b-41d4-a716-446655440000', 7));
-        self::assertFalse(Uuid::isValid('01890f87-4f0b-7f6b-8b1d-9f4f9d7c3b5a', 4));
-        self::assertFalse(Uuid::isValid('6ba7b810-9dad-11d1-80b4-00c04fd430c8', 5));
+        self::assertFalse(Uuid::isValid(self::UUID_V4, 7));
+        self::assertFalse(Uuid::isValid(self::UUID_V7, 4));
+        self::assertFalse(Uuid::isValid(self::UUID_V1, 5));
     }
 
     public function testIsValidWithInvalidFormat(): void
@@ -115,8 +119,8 @@ class UuidTest extends TestCase
 
     public function testIsValidWithNullVersion(): void
     {
-        self::assertTrue(Uuid::isValid('550e8400-e29b-41d4-a716-446655440000', null));
-        self::assertTrue(Uuid::isValid('01890f87-4f0b-7f6b-8b1d-9f4f9d7c3b5a', null));
+        self::assertTrue(Uuid::isValid(self::UUID_V4, null));
+        self::assertTrue(Uuid::isValid(self::UUID_V7, null));
     }
 
     public function testIsValidWithVersionZero(): void

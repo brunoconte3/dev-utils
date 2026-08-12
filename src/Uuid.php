@@ -14,7 +14,7 @@ class Uuid
             substr($hex, 8, 4),
             substr($hex, 12, 4),
             substr($hex, 16, 4),
-            substr($hex, 20, 12)
+            substr($hex, 20, 12),
         );
     }
 
@@ -36,7 +36,7 @@ class Uuid
     {
         return preg_match(
             '/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i',
-            $uuid
+            $uuid,
         ) === 1;
     }
 
@@ -49,7 +49,7 @@ class Uuid
         $versionHex = substr($uuid, 14, 1);
         $version = (int) hexdec($versionHex);
 
-        return ($version >= 1 && $version <= 8) ? $version : null;
+        return $version >= 1 && $version <= 8 ? $version : null;
     }
 
     public static function generate(): string

@@ -91,7 +91,7 @@ class Utility
 
         if ($size < count($groups)) {
             throw new InvalidArgumentException(
-                'O tamanho da senha deve ser no mínimo ' . count($groups) . ' para os conjuntos habilitados!'
+                'O tamanho da senha deve ser no mínimo ' . count($groups) . ' para os conjuntos habilitados!',
             );
         }
 

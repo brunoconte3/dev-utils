@@ -25,9 +25,11 @@ class ConfTest extends TestCase
         if ($this->httpHost !== null) {
             $_SERVER['HTTP_HOST'] = $this->httpHost;
         }
-        if ($this->requestUri !== null) {
-            $_SERVER['REQUEST_URI'] = $this->requestUri;
+        if ($this->requestUri === null) {
+            return;
         }
+
+        $_SERVER['REQUEST_URI'] = $this->requestUri;
     }
 
     public function testHostReturnsHttpHostWithPort(): void

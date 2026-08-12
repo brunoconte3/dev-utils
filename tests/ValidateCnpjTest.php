@@ -9,6 +9,10 @@ use PHPUnit\Framework\TestCase;
 
 final class ValidateCnpjTest extends TestCase
 {
+    private const CNPJ_ZEROS_MASKED = '00.000.000/0000-00';
+    private const CNPJ_ONES_MASKED = '11.111.111/1111-11';
+    private const CNPJ_TWOS_RAW = '22222222222222';
+
     private static function charValue(string $ch): int
     {
         $n = ord($ch);
@@ -29,7 +33,7 @@ final class ValidateCnpjTest extends TestCase
             $sum += self::charValue($root[$i]) * $w1[$i];
         }
         $r1 = $sum % 11;
-        $dv1 = ($r1 < 2) ? 0 : 11 - $r1;
+        $dv1 = $r1 < 2 ? 0 : 11 - $r1;
 
         $w2 = [6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2];
         $sum = 0;
@@ -38,7 +42,7 @@ final class ValidateCnpjTest extends TestCase
             $sum += $v * $w2[$i];
         }
         $r2 = $sum % 11;
-        $dv2 = ($r2 < 2) ? 0 : 11 - $r2;
+        $dv2 = $r2 < 2 ? 0 : 11 - $r2;
 
         return [$dv1, $dv2];
     }
@@ -57,7 +61,7 @@ final class ValidateCnpjTest extends TestCase
             substr($raw, 2, 3),
             substr($raw, 5, 3),
             substr($raw, 8, 4),
-            substr($raw, 12, 2)
+            substr($raw, 12, 2),
         );
     }
 
@@ -142,8 +146,8 @@ final class ValidateCnpjTest extends TestCase
 
     public function testRejectNumericSequences(): void
     {
-        self::assertFalse(ValidateCnpj::validateCnpj('00.000.000/0000-00'));
-        self::assertFalse(ValidateCnpj::validateCnpj('11.111.111/1111-11'));
+        self::assertFalse(ValidateCnpj::validateCnpj(self::CNPJ_ZEROS_MASKED));
+        self::assertFalse(ValidateCnpj::validateCnpj(self::CNPJ_ONES_MASKED));
         self::assertFalse(ValidateCnpj::validateCnpj('22.222.222/2222-22'));
         self::assertFalse(ValidateCnpj::validateCnpj('33.333.333/3333-33'));
         self::assertFalse(ValidateCnpj::validateCnpj('44.444.444/4444-44'));
@@ -159,8 +163,8 @@ final class ValidateCnpjTest extends TestCase
         $raw00 = self::makeRawCnpj(str_repeat('0', 12));
         self::assertTrue(ValidateCnpj::validateCnpj(self::maskCnpj($raw00), '00000000000000'));
 
-        self::assertFalse(ValidateCnpj::validateCnpj('11.111.111/1111-11', ['11111111111111']));
-        self::assertFalse(ValidateCnpj::validateCnpj('22.222.222/2222-22', ['22222222222222']));
+        self::assertFalse(ValidateCnpj::validateCnpj(self::CNPJ_ONES_MASKED, ['11111111111111']));
+        self::assertFalse(ValidateCnpj::validateCnpj('22.222.222/2222-22', [self::CNPJ_TWOS_RAW]));
 
         $raw11 = self::makeRawCnpj(str_repeat('1', 12));
         self::assertTrue(ValidateCnpj::validateCnpj(self::maskCnpj($raw11)));
@@ -171,8 +175,8 @@ final class ValidateCnpjTest extends TestCase
 
     public function testBooleanExceptionDoesNotWhitelist(): void
     {
-        self::assertFalse(ValidateCnpj::validateCnpj('00.000.000/0000-00', true));
-        self::assertFalse(ValidateCnpj::validateCnpj('11.111.111/1111-11', false));
+        self::assertFalse(ValidateCnpj::validateCnpj(self::CNPJ_ZEROS_MASKED, true));
+        self::assertFalse(ValidateCnpj::validateCnpj(self::CNPJ_ONES_MASKED, false));
     }
 
     public function testAlphanumericRootsIgnoreNumericBlacklist(): void
@@ -184,8 +188,8 @@ final class ValidateCnpjTest extends TestCase
 
     public function testExceptionWithArrayMultipleValues(): void
     {
-        self::assertFalse(ValidateCnpj::validateCnpj('00.000.000/0000-00', ['11111111111111', '22222222222222']));
-        self::assertFalse(ValidateCnpj::validateCnpj('11.111.111/1111-11', ['00000000000000', '22222222222222']));
+        self::assertFalse(ValidateCnpj::validateCnpj(self::CNPJ_ZEROS_MASKED, ['11111111111111', self::CNPJ_TWOS_RAW]));
+        self::assertFalse(ValidateCnpj::validateCnpj(self::CNPJ_ONES_MASKED, ['00000000000000', self::CNPJ_TWOS_RAW]));
     }
 
     public function testValidCnpjWithOnlyNumbers(): void
@@ -225,12 +229,12 @@ final class ValidateCnpjTest extends TestCase
 
     public function testExceptionWithEmptyArray(): void
     {
-        self::assertFalse(ValidateCnpj::validateCnpj('00.000.000/0000-00', []));
+        self::assertFalse(ValidateCnpj::validateCnpj(self::CNPJ_ZEROS_MASKED, []));
     }
 
     public function testExceptionWithEmptyString(): void
     {
-        self::assertFalse(ValidateCnpj::validateCnpj('00.000.000/0000-00', ''));
+        self::assertFalse(ValidateCnpj::validateCnpj(self::CNPJ_ZEROS_MASKED, ''));
     }
 
     public function testValidAlphanumericWithNumbers(): void

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace DevUtils\DependencyInjection;
 
 use DevUtils\Format;
@@ -13,10 +15,13 @@ trait TraitRuleDate
         if (is_numeric($value) && strlen($value) === 8) {
             $value = Format::mask('##/##/####', $value);
         }
-        if (empty($value) || !ValidateDate::validateDateBrazil($value)) {
-            $this->errors[$field] = !empty($message) ?
-                $message : "O campo $field não é uma data válida!";
+        if (!empty($value) && ValidateDate::validateDateBrazil($value)) {
+            return;
         }
+
+        $this->errors[$field] = !empty($message)
+            ? $message
+            : "O campo $field não é uma data válida!";
     }
 
     protected function validateDateAmerican(string $field = '', ?string $value = null, ?string $message = ''): void
@@ -24,26 +29,34 @@ trait TraitRuleDate
         if (is_numeric($value) && strlen($value) === 8) {
             $value = Format::mask('####-##-##', $value);
         }
-        if (empty($value) || !ValidateDate::validateDateAmerican($value)) {
-            $this->errors[$field] = !empty($message) ?
-                $message : "O campo $field não é uma data válida!";
+        if (!empty($value) && ValidateDate::validateDateAmerican($value)) {
+            return;
         }
+
+        $this->errors[$field] = !empty($message)
+            ? $message
+            : "O campo $field não é uma data válida!";
     }
 
     protected function validateHour(string $field = '', ?string $value = null, ?string $message = ''): void
     {
         $value = $value ?? '';
-        if (!ValidateHour::validateHour($value)) {
-            $this->errors[$field] = !empty($message) ?
-                $message : "O campo $field não é uma hora válida!";
+        if (ValidateHour::validateHour($value)) {
+            return;
         }
+
+        $this->errors[$field] = !empty($message)
+            ? $message
+            : "O campo $field não é uma hora válida!";
     }
 
     protected function validateTimestamp(string $field = '', string $value = '', ?string $message = ''): void
     {
-        if (!ValidateDate::validateTimeStamp($value)) {
-            $this->errors[$field] = !empty($message) ? $message : "O campo $field não é um timestamp válido!";
+        if (ValidateDate::validateTimeStamp($value)) {
+            return;
         }
+
+        $this->errors[$field] = !empty($message) ? $message : "O campo $field não é um timestamp válido!";
     }
 
     protected function validateWeekend(string $field = '', string $value = '', ?string $message = ''): void
@@ -52,35 +65,42 @@ trait TraitRuleDate
             $value = Format::dateAmerican($value);
         }
         $day = date('w', (strtotime($value) ?: null));
-        if (in_array($day, [0, 6])) {
-            $this->errors[$field] = !empty($message) ? $message : "O campo $field não pode ser um Final de Semana!";
+        if (!in_array($day, [0, 6])) {
+            return;
         }
+
+        $this->errors[$field] = !empty($message) ? $message : "O campo $field não pode ser um Final de Semana!";
     }
 
     protected function validateDateNotFuture(string $field = '', string $value = '', ?string $message = ''): void
     {
         $dateAmerican = Format::dateAmerican($value);
-        if (!ValidateDate::validateDateNotFuture($dateAmerican)) {
-            $this->errors[$field] = !empty($message) ? $message :
-                "O campo $field não pode ser uma data maior que a atual";
+        if (ValidateDate::validateDateNotFuture($dateAmerican)) {
+            return;
         }
+
+        $this->errors[$field] = !empty($message) ? $message :
+            "O campo $field não pode ser uma data maior que a atual";
     }
 
     protected function validateDateIso8601(string $field = '', string $value = '', ?string $message = ''): void
     {
-        if (!ValidateDate::validateDateIso8601($value)) {
-            $this->errors[$field] = !empty($message) ? $message : "O campo $field não é uma data válida!";
+        if (ValidateDate::validateDateIso8601($value)) {
+            return;
         }
-    }
 
+        $this->errors[$field] = !empty($message) ? $message : "O campo $field não é uma data válida!";
+    }
 
     protected function validateDateUTCWithoutTimezone(
         string $field = '',
         string $value = '',
         ?string $message = ''
     ): void {
-        if (!ValidateDate::validateDateUTCWithoutTimezone($value)) {
-            $this->errors[$field] = !empty($message) ? $message : "O campo $field não é uma data válida!";
+        if (ValidateDate::validateDateUTCWithoutTimezone($value)) {
+            return;
         }
+
+        $this->errors[$field] = !empty($message) ? $message : "O campo $field não é uma data válida!";
     }
 }

@@ -8,6 +8,8 @@ use PHPUnit\Framework\TestCase;
 
 class UnitCiTest extends TestCase
 {
+    private const OUTPUT_PASS = '[PASS]';
+
     private string $script = '';
     private string $directory = '';
     private string $report = '';
@@ -67,7 +69,7 @@ class UnitCiTest extends TestCase
     {
         $result = $this->runScript(escapeshellarg($this->report) . ' 80');
 
-        self::assertStringContainsString('[PASS]', $result);
+        self::assertStringContainsString(self::OUTPUT_PASS, $result);
         self::assertStringContainsString('90%', $result);
         self::assertSame(0, $this->exitCode);
     }
@@ -76,7 +78,7 @@ class UnitCiTest extends TestCase
     {
         $result = $this->runScript(escapeshellarg($this->report) . ' 90');
 
-        self::assertStringContainsString('[PASS]', $result);
+        self::assertStringContainsString(self::OUTPUT_PASS, $result);
         self::assertSame(0, $this->exitCode);
     }
 
@@ -84,7 +86,7 @@ class UnitCiTest extends TestCase
     {
         $result = $this->runScript(escapeshellarg($this->report) . ' 0');
 
-        self::assertStringContainsString('[PASS]', $result);
+        self::assertStringContainsString(self::OUTPUT_PASS, $result);
         self::assertSame(0, $this->exitCode);
     }
 
@@ -92,7 +94,7 @@ class UnitCiTest extends TestCase
     {
         $result = $this->runScript(escapeshellarg($this->report) . ' 50.5');
 
-        self::assertStringContainsString('[PASS]', $result);
+        self::assertStringContainsString(self::OUTPUT_PASS, $result);
         self::assertSame(0, $this->exitCode);
     }
 
@@ -144,7 +146,7 @@ class UnitCiTest extends TestCase
         $result = $this->runScript(escapeshellarg($this->report) . ' abc');
 
         self::assertStringContainsString('Threshold must be numeric', $result);
-        self::assertStringNotContainsString('[PASS]', $result);
+        self::assertStringNotContainsString(self::OUTPUT_PASS, $result);
         self::assertSame(1, $this->exitCode);
     }
 
@@ -155,7 +157,7 @@ class UnitCiTest extends TestCase
         $result = $this->runScript(escapeshellarg($missing) . ' 0');
 
         self::assertStringContainsString('Coverage report not found', $result);
-        self::assertStringNotContainsString('[PASS]', $result);
+        self::assertStringNotContainsString(self::OUTPUT_PASS, $result);
         self::assertSame(1, $this->exitCode);
     }
 }

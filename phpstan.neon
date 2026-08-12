@@ -14,12 +14,6 @@ parameters:
     - '#Cannot cast mixed to string#'
     - '#Cannot cast mixed to int#'
     - '#Cannot cast mixed to float#'
-    -
-      message: "#invalidRule\\(\\) is unused#"
-      path: src/DependencyInjection/Rules.php
-    -
-      message: "#is always true#"
-      path: src/DependencyInjection/Rules.php
 
   bootstrapFiles:
     - vendor/autoload.php

@@ -12,35 +12,43 @@ use PHPUnit\Framework\TestCase;
 
 class FormatTest extends TestCase
 {
-    public static function setUpBeforeClass(): void
-    {
-        require_once './src/DependencyInjection/data/DataConvertTypesBool.php';
-    }
+    private const CNPJ_NUMERIC_MASKED = '76.027.484/0001-24';
+    private const CNPJ_ALPHANUMERIC_MASKED = 'BR.ASI.L20/26AA-64';
+    private const RULE_CONVERT_INT = 'convert|int';
+    private const PHONE_UNMASKED = '44999998888';
+    private const DATE_BRAZIL = '10/10/2020';
+    private const DATE_AMERICAN = '2020-10-10';
+    private const VALUE_DECIMAL = '1123.45';
+    private const VALUE_DECIMAL_NEGATIVE = '-1123.45';
+    private const VALUE_CURRENCY_BRAZIL = '123,40';
+    private const FILE_NAME_JPG = 'JPG - Validação upload v.1.jpg';
+    private const MIME_JPEG = 'image/jpeg';
+    private const TMP_PATH_JPG = '/tmp/phpODnLGo';
 
     public function testCompanyIdentification(): void
     {
-        self::assertEquals('76.027.484/0001-24', Format::companyIdentification('76027484000124'));
-        self::assertEquals('BR.ASI.L20/26AA-64', Format::companyIdentification('BRASIL2026AA64'));
+        self::assertEquals(self::CNPJ_NUMERIC_MASKED, Format::companyIdentification('76027484000124'));
+        self::assertEquals(self::CNPJ_ALPHANUMERIC_MASKED, Format::companyIdentification('BRASIL2026AA64'));
     }
 
     public function testConvertTypes(): void
     {
         $data = [
-            'tratandoTipoInt' => '12',
-            'tratandoTipoIntZero' => '0',
-            'tratandoTipoIntNegativo' => '-8',
-            'tratandoTipoFloat' => '9.63',
             'tratandoTipoBoolean' => 'true',
+            'tratandoTipoFloat' => '9.63',
+            'tratandoTipoInt' => '12',
+            'tratandoTipoIntNegativo' => '-8',
+            'tratandoTipoIntZero' => '0',
             'tratandoTipoNumeric' => '11',
         ];
         $rules = [
-            'tratandoTipoInt' => 'convert|int',
-            'tratandoTipoIntZero' => 'convert|int',
-            'tratandoTipoIntNegativo' => 'convert|int',
-            'tratandoTipoFloat' => 'convert|float',
-            'tratandoTipoBoolean' => 'convert|bool',
-            'tratandoTipoNumeric' => 'convert|numeric',
             'tratandoInexistente' => 'convert|bool',
+            'tratandoTipoBoolean' => 'convert|bool',
+            'tratandoTipoFloat' => 'convert|float',
+            'tratandoTipoInt' => self::RULE_CONVERT_INT,
+            'tratandoTipoIntNegativo' => self::RULE_CONVERT_INT,
+            'tratandoTipoIntZero' => self::RULE_CONVERT_INT,
+            'tratandoTipoNumeric' => 'convert|numeric',
         ];
         Format::convertTypes($data, $rules);
         self::assertIsInt($data['tratandoTipoInt']);
@@ -91,7 +99,7 @@ class FormatTest extends TestCase
 
     public function testTelephone(): void
     {
-        self::assertEquals('(44) 99999-8888', Format::telephone('44999998888'));
+        self::assertEquals('(44) 99999-8888', Format::telephone(self::PHONE_UNMASKED));
     }
 
     public function testZipCode(): void
@@ -101,29 +109,29 @@ class FormatTest extends TestCase
 
     public function testDateBrazil(): void
     {
-        self::assertEquals('10/10/2020', Format::dateBrazil('2020-10-10'));
+        self::assertEquals(self::DATE_BRAZIL, Format::dateBrazil(self::DATE_AMERICAN));
     }
 
     public function testDateAmerican(): void
     {
-        self::assertEquals('2020-10-10', Format::dateAmerican('10/10/2020'));
+        self::assertEquals(self::DATE_AMERICAN, Format::dateAmerican(self::DATE_BRAZIL));
     }
 
     public function testArrayToIntReference(): void
     {
         $arrayProcessed = [
-            0 => 1,
-            1 => 123,
             'a' => 222,
             'b' => 333,
             'c' => 0,
+            0 => 1,
+            1 => 123,
         ];
         $arrayReferenced = [
-            0 => '1',
-            1 => '123',
             'a' => '222',
             'b' => 333,
             'c' => '',
+            0 => '1',
+            1 => '123',
         ];
         Format::arrayToIntReference($arrayReferenced);
         self::assertEquals($arrayProcessed, $arrayReferenced);
@@ -132,28 +140,28 @@ class FormatTest extends TestCase
     public function testArrayToInt(): void
     {
         $arrayProcessed = [
-            0 => 1,
-            1 => 123,
             'a' => 222,
             'b' => 333,
             'c' => 0,
+            0 => 1,
+            1 => 123,
         ];
         self::assertEquals($arrayProcessed, Format::arrayToInt([
-            0 => '1',
-            1 => '123',
             'a' => '222',
             'b' => 333,
             'c' => '',
+            0 => '1',
+            1 => '123',
         ]));
     }
 
     public function testCurrency(): void
     {
-        self::assertEquals('1.123,45', Format::currency('1123.45'));
-        self::assertEquals('R$ 1.123,45', Format::currency('1123.45', 'R$ '));
+        self::assertEquals('1.123,45', Format::currency(self::VALUE_DECIMAL));
+        self::assertEquals('R$ 1.123,45', Format::currency(self::VALUE_DECIMAL, 'R$ '));
         self::assertEquals('123,00', Format::currency('123'));
-        self::assertEquals('123,40', Format::currency('123.4'));
-        self::assertEquals('123,40', Format::currency('123,4'));
+        self::assertEquals(self::VALUE_CURRENCY_BRAZIL, Format::currency('123.4'));
+        self::assertEquals(self::VALUE_CURRENCY_BRAZIL, Format::currency('123,4'));
         self::assertEquals('1,00', Format::currency('1'));
         self::assertEquals('1,00', Format::currency('1.00'));
         self::assertEquals('1,00', Format::currency('1,00'));
@@ -163,20 +171,20 @@ class FormatTest extends TestCase
         self::assertEquals('1.123,45', Format::currency(1123.45));
         self::assertEquals('R$ 1.123,45', Format::currency(1123.45, 'R$ '));
         self::assertEquals('123,00', Format::currency(123));
-        self::assertEquals('123,40', Format::currency(123.4));
+        self::assertEquals(self::VALUE_CURRENCY_BRAZIL, Format::currency(123.4));
         self::assertEquals('1.400,00', Format::currency(1400));
     }
 
     public function testCurrencyUsd(): void
     {
-        self::assertEquals('1,123.45', Format::currencyUsd('1123.45'));
-        self::assertEquals('Usd 1,123.45', Format::currencyUsd('1123.45', 'Usd '));
+        self::assertEquals('1,123.45', Format::currencyUsd(self::VALUE_DECIMAL));
+        self::assertEquals('Usd 1,123.45', Format::currencyUsd(self::VALUE_DECIMAL, 'Usd '));
     }
 
     public function testReturnPhoneOrAreaCode(): void
     {
-        self::assertEquals('44', Format::returnPhoneOrAreaCode('44999998888', true));
-        self::assertEquals('999998888', Format::returnPhoneOrAreaCode('44999998888'));
+        self::assertEquals('44', Format::returnPhoneOrAreaCode(self::PHONE_UNMASKED, true));
+        self::assertEquals('999998888', Format::returnPhoneOrAreaCode(self::PHONE_UNMASKED));
     }
 
     public function testUcwordsCharset(): void
@@ -192,7 +200,6 @@ class FormatTest extends TestCase
     public function testEmptyToNull(): void
     {
         $array = [
-            0 => '1',
             'a' => '222',
             'b' => 333,
             'c' => null,
@@ -200,11 +207,11 @@ class FormatTest extends TestCase
             'e' => '0',
             'f' => null,
             'g' => [1, 2,],
+            0 => '1',
         ];
 
         self::assertSame($array, Format::emptyToNull(
             [
-                0 => '1',
                 'a' => '222',
                 'b' => 333,
                 'c' => '',
@@ -212,6 +219,7 @@ class FormatTest extends TestCase
                 'e' => '0',
                 'f' => [],
                 'g' => [1, 2,],
+                0 => '1',
             ],
             '0',
         ));
@@ -289,34 +297,34 @@ class FormatTest extends TestCase
     public static function currencyExtensiveProvider(): array
     {
         return [
-            'um centavo' => [0.01, 'um centavo'],
-            'somente centavos' => [0.50, 'cinquenta centavos'],
-            'um real' => [1.00, 'um real'],
-            'real com centavos' => [1.97, 'um real e noventa e sete centavos'],
-            'teens' => [17.00, 'dezessete reais'],
-            'teens em centavos' => [1.17, 'um real e dezessete centavos'],
+            'bilhao' => [1000000000.00, 'um bilhão de reais'],
+            'centena com teens' => [117.00, 'cento e dezessete reais'],
             'centena exata' => [100.00, 'cem reais'],
             'cento e um' => [101.00, 'cento e um reais'],
-            'centena com teens' => [117.00, 'cento e dezessete reais'],
-            'duzentos' => [200.00, 'duzentos reais'],
-            'mil exato' => [1000.00, 'mil reais'],
-            'mil e dezessete' => [1017.00, 'mil e dezessete reais'],
             'dezessete mil' => [17000.00, 'dezessete mil reais'],
-            'milhar com centena quebrada' => [
-                3456.78,
-                'três mil, quatrocentos e cinquenta e seis reais e setenta e oito centavos',
-            ],
-            'milhao exato' => [1000000.00, 'um milhão de reais'],
-            'milhoes exatos' => [2000000.00, 'dois milhões de reais'],
+            'dezessete milhoes' => [17000000.00, 'dezessete milhões de reais'],
+            'duzentos' => [200.00, 'duzentos reais'],
+            'mil e dezessete' => [1017.00, 'mil e dezessete reais'],
+            'mil exato' => [1000.00, 'mil reais'],
             'milhao com centavos' => [1000000.23, 'um milhão de reais e vinte e três centavos'],
             'milhao e milhar' => [1500000.23, 'um milhão e quinhentos mil reais e vinte e três centavos'],
             'milhao e reais' => [1000500.00, 'um milhão e quinhentos reais'],
             'milhao e um real' => [1000001.00, 'um milhão e um real'],
+            'milhao exato' => [1000000.00, 'um milhão de reais'],
+            'milhar com centena quebrada' => [
+                3456.78,
+                'três mil, quatrocentos e cinquenta e seis reais e setenta e oito centavos',
+            ],
             'milhoes com centena quebrada' => [3000123.00, 'três milhões, cento e vinte e três reais'],
-            'dezessete milhoes' => [17000000.00, 'dezessete milhões de reais'],
-            'bilhao' => [1000000000.00, 'um bilhão de reais'],
-            'trilhao' => [1000000000000.00, 'um trilhão de reais'],
+            'milhoes exatos' => [2000000.00, 'dois milhões de reais'],
             'quatrilhao' => [1000000000000000.00, 'um quatrilhão de reais'],
+            'real com centavos' => [1.97, 'um real e noventa e sete centavos'],
+            'somente centavos' => [0.50, 'cinquenta centavos'],
+            'teens' => [17.00, 'dezessete reais'],
+            'teens em centavos' => [1.17, 'um real e dezessete centavos'],
+            'trilhao' => [1000000000000.00, 'um trilhão de reais'],
+            'um centavo' => [0.01, 'um centavo'],
+            'um real' => [1.00, 'um real'],
         ];
     }
 
@@ -341,19 +349,19 @@ class FormatTest extends TestCase
     public function testRestructFileArray(): void
     {
         $fileUploadSingle = [
-            'name' => 'JPG - Validação upload v.1.jpg',
-            'type' => 'image/jpeg',
-            'tmp_name' => '/tmp/phpODnLGo',
             'error' => 0,
+            'name' => self::FILE_NAME_JPG,
             'size' => 8488,
+            'tmp_name' => self::TMP_PATH_JPG,
+            'type' => self::MIME_JPEG,
         ];
 
         $fileUploadMultiple = [
-            'name'     => ['0' => 'JPG - Validação upload v.1.jpg', '1' => 'PDF - Validação upload v.1.pdf'],
-            'type'     => ['0' => 'image/jpeg', '1' => 'application/pdf'],
-            'tmp_name' => ['0' => '/tmp/phpODnLGo', '1' => '/tmp/phpfmb0tL'],
-            'error'    => ['0' => 0, '1' => 0],
-            'size'     => ['0' => 8488, '1' => 818465],
+            'error' => ['0' => 0, '1' => 0],
+            'name' => ['0' => self::FILE_NAME_JPG, '1' => 'PDF - Validação upload v.1.pdf'],
+            'size' => ['0' => 8488, '1' => 818465],
+            'tmp_name' => ['0' => self::TMP_PATH_JPG, '1' => '/tmp/phpfmb0tL'],
+            'type' => ['0' => self::MIME_JPEG, '1' => 'application/pdf'],
         ];
         $resultSingle = Format::restructFileArray($fileUploadSingle);
         $resultMultiple = Format::restructFileArray($fileUploadMultiple);
@@ -436,7 +444,7 @@ class FormatTest extends TestCase
 
     public function testDateAmericanWithoutSlash(): void
     {
-        self::assertEquals('2020-10-10', Format::dateAmerican('2020-10-10'));
+        self::assertEquals(self::DATE_AMERICAN, Format::dateAmerican(self::DATE_AMERICAN));
     }
 
     public function testCurrencyUsdWithFloat(): void
@@ -588,18 +596,18 @@ class FormatTest extends TestCase
 
     public function testCurrencyKeepsNegativeSignFromString(): void
     {
-        self::assertSame('-1.123,45', Format::currency('-1123.45'));
+        self::assertSame('-1.123,45', Format::currency(self::VALUE_DECIMAL_NEGATIVE));
         self::assertSame('-1.123,45', Format::currency(-1123.45));
         self::assertSame('-123,40', Format::currency('-123,4'));
-        self::assertSame('R$ -1.123,45', Format::currency('-1123.45', 'R$ '));
-        self::assertSame('-1,123.45', Format::currencyUsd('-1123.45'));
+        self::assertSame('R$ -1.123,45', Format::currency(self::VALUE_DECIMAL_NEGATIVE, 'R$ '));
+        self::assertSame('-1,123.45', Format::currencyUsd(self::VALUE_DECIMAL_NEGATIVE));
     }
 
     public function testCompanyIdentificationAcceptsLowercase(): void
     {
-        self::assertSame('BR.ASI.L20/26AA-64', Format::companyIdentification('brasil2026aa64'));
-        self::assertSame('BR.ASI.L20/26AA-64', Format::companyIdentification('bRaSiL2026aA64'));
-        self::assertSame('76.027.484/0001-24', Format::companyIdentification('76.027.484/0001-24'));
+        self::assertSame(self::CNPJ_ALPHANUMERIC_MASKED, Format::companyIdentification('brasil2026aa64'));
+        self::assertSame(self::CNPJ_ALPHANUMERIC_MASKED, Format::companyIdentification('bRaSiL2026aA64'));
+        self::assertSame(self::CNPJ_NUMERIC_MASKED, Format::companyIdentification(self::CNPJ_NUMERIC_MASKED));
     }
 
     public function testTelephoneRejectsSignedNumber(): void
@@ -622,11 +630,11 @@ class FormatTest extends TestCase
     public static function invalidDateProvider(): array
     {
         return [
-            'texto' => ['abcdefgh'],
+            'barra invertida' => ['2020/10/31'],
             'dia impossivel' => ['31/02/2020'],
             'mes impossivel' => ['2020-13-01'],
-            'barra invertida' => ['2020/10/31'],
             'numeros soltos' => ['12345678'],
+            'texto' => ['abcdefgh'],
         ];
     }
 
@@ -661,23 +669,23 @@ class FormatTest extends TestCase
 
     public function testDateBrazilAcceptsEveryDocumentedFormat(): void
     {
-        self::assertSame('10/10/2020', Format::dateBrazil('2020-10-10'));
-        self::assertSame('10/10/2020', Format::dateBrazil('10/10/2020'));
+        self::assertSame(self::DATE_BRAZIL, Format::dateBrazil(self::DATE_AMERICAN));
+        self::assertSame(self::DATE_BRAZIL, Format::dateBrazil(self::DATE_BRAZIL));
         self::assertSame('12/05/2020', Format::dateBrazil('12-05-2020'));
         self::assertSame('01/01/2020', Format::dateBrazil(' 2020-01-01 '));
     }
 
     public function testDateAmericanAcceptsEveryDocumentedFormat(): void
     {
-        self::assertSame('2020-10-10', Format::dateAmerican('10/10/2020'));
-        self::assertSame('2020-10-10', Format::dateAmerican('2020-10-10'));
+        self::assertSame(self::DATE_AMERICAN, Format::dateAmerican(self::DATE_BRAZIL));
+        self::assertSame(self::DATE_AMERICAN, Format::dateAmerican(self::DATE_AMERICAN));
         self::assertSame('2020-05-12', Format::dateAmerican('12-05-2020'));
     }
 
     public function testConvertTypesReturnsEmptyErrorsOnSuccess(): void
     {
         $data = ['idade' => '30'];
-        $errors = Format::convertTypes($data, ['idade' => 'convert|int']);
+        $errors = Format::convertTypes($data, ['idade' => self::RULE_CONVERT_INT]);
 
         self::assertSame([], $errors);
         self::assertSame(30, $data['idade']);
@@ -686,7 +694,7 @@ class FormatTest extends TestCase
     public function testConvertTypesReportsFailureInsteadOfSwallowingIt(): void
     {
         $data = ['idade' => 'trinta'];
-        $errors = Format::convertTypes($data, ['idade' => 'convert|int']);
+        $errors = Format::convertTypes($data, ['idade' => self::RULE_CONVERT_INT]);
 
         self::assertCount(1, $errors);
         self::assertStringContainsString("campo 'idade' para int", $errors[0]);
@@ -732,7 +740,7 @@ class FormatTest extends TestCase
     public function testConvertTypesIgnoresRuleForMissingField(): void
     {
         $data = ['x' => '5'];
-        $errors = Format::convertTypes($data, ['inexistente' => 'convert|int']);
+        $errors = Format::convertTypes($data, ['inexistente' => self::RULE_CONVERT_INT]);
 
         self::assertSame([], $errors);
         self::assertArrayNotHasKey('inexistente', $data);
@@ -773,11 +781,11 @@ class FormatTest extends TestCase
     public function testRestructFileArrayReturnsPhpUploadErrors(): void
     {
         $result = Format::restructFileArray([
-            'name' => ['a.jpg'],
-            'type' => ['image/jpeg'],
-            'tmp_name' => [''],
             'error' => [UPLOAD_ERR_INI_SIZE],
+            'name' => ['a.jpg'],
             'size' => [0],
+            'tmp_name' => [''],
+            'type' => [self::MIME_JPEG],
         ]);
 
         self::assertCount(1, $result);
@@ -792,28 +800,28 @@ class FormatTest extends TestCase
     public function testRestructFileArrayIgnoresNonStringName(): void
     {
         self::assertSame([], Format::restructFileArray([
-            'name' => [123],
-            'type' => ['image/jpeg'],
-            'tmp_name' => ['/tmp/x'],
             'error' => [0],
+            'name' => [123],
             'size' => [10],
+            'tmp_name' => ['/tmp/x'],
+            'type' => [self::MIME_JPEG],
         ]));
     }
 
     public function testRestructFileArrayNormalizesSingleUploadIntoList(): void
     {
         $result = Format::restructFileArray([
-            'name' => 'JPG - Validação upload v.1.jpg',
-            'type' => 'image/jpeg',
-            'tmp_name' => '/tmp/phpODnLGo',
             'error' => 0,
+            'name' => self::FILE_NAME_JPG,
             'size' => 8488,
+            'tmp_name' => self::TMP_PATH_JPG,
+            'type' => self::MIME_JPEG,
         ]);
 
         $file = (array) $result[0];
         self::assertCount(1, $result);
         self::assertSame('jpg__validacao_upload_v1.jpg', $file['name']);
-        self::assertSame('image/jpeg', $file['type']);
+        self::assertSame(self::MIME_JPEG, $file['type']);
         self::assertSame(8488, $file['size']);
         self::assertStringEndsWith('jpg__validacao_upload_v1.jpg', (string) $file['name_upload']);
     }
@@ -821,11 +829,11 @@ class FormatTest extends TestCase
     public function testRestructFileArrayFallsBackWhenMetadataIsNotArray(): void
     {
         $result = Format::restructFileArray([
-            'name' => ['a.jpg'],
-            'type' => 'image/jpeg',
-            'tmp_name' => '/tmp/x',
             'error' => 0,
+            'name' => ['a.jpg'],
             'size' => 10,
+            'tmp_name' => '/tmp/x',
+            'type' => self::MIME_JPEG,
         ]);
 
         $file = (array) $result[0];

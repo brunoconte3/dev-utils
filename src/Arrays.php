@@ -62,12 +62,16 @@ class Arrays
                 continue;
             }
 
-            if (is_array($value)) {
-                $nestedResult = self::findValueByKey($value, $searchKey);
-                if ($nestedResult !== []) {
-                    $result[$key] = $nestedResult;
-                }
+            if (!is_array($value)) {
+                continue;
             }
+
+            $nestedResult = self::findValueByKey($value, $searchKey);
+            if ($nestedResult === []) {
+                continue;
+            }
+
+            $result[$key] = $nestedResult;
         }
         return $result;
     }
@@ -85,9 +89,11 @@ class Arrays
             }
 
             $nestedResult = self::findIndexByValue($value, $searchValue);
-            if ($nestedResult !== []) {
-                $result[$key] = $nestedResult;
+            if ($nestedResult === []) {
+                continue;
             }
+
+            $result[$key] = $nestedResult;
         }
         return $result;
     }
@@ -124,9 +130,11 @@ class Arrays
                 }
             }
 
-            if (is_array($value)) {
-                self::convertJsonIndexToArray($value);
+            if (!is_array($value)) {
+                return;
             }
+
+            self::convertJsonIndexToArray($value);
         });
     }
 

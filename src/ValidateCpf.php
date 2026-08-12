@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace DevUtils;
 
 class ValidateCpf
@@ -27,12 +29,12 @@ class ValidateCpf
         }
 
         $remainder = $sum % 11;
-        return ($remainder < 2) ? 0 : 11 - $remainder;
+        return $remainder < 2 ? 0 : 11 - $remainder;
     }
 
     private static function validateRuleCpf(string $cpf): bool
     {
-        $cpf = preg_replace('/[^0-9]/', '', $cpf) ?? '';
+        $cpf = preg_replace('/\D/', '', $cpf) ?? '';
 
         if (strlen($cpf) !== 11) {
             return false;
@@ -54,7 +56,7 @@ class ValidateCpf
 
     private static function cleanCpf(string $cpf): string
     {
-        $cleaned = preg_replace('/[^0-9]/', '', $cpf) ?? '';
+        $cleaned = preg_replace('/\D/', '', $cpf) ?? '';
         return str_pad($cleaned, 11, '0', STR_PAD_LEFT);
     }
 
