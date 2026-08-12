@@ -145,7 +145,7 @@ trait TraitRuleField
             if ($hasOptional && !$ruleValue) {
                 continue;
             }
-            if (in_array(trim(strtolower((string) $key)), self::RULES_WITHOUT_FUNCS)) {
+            if (in_array(trim(strtolower((string) $key)), Rules::RULES_WITHOUT_FUNCS)) {
                 continue;
             }
 
