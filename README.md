@@ -339,7 +339,7 @@ Format::currencyUsd('1123.45'); //Default currency USD ==> 1,123.45 - the 2nd pa
 Format::dateAmerican('12-05-2020'); //return date ==>  2020-05-12
 Format::dateBrazil('2020-05-12'); //return date ==>  12/05/2020
 Format::identifier('73381209000');  //CPF ==>  733.812.090-00
-Format::identifierOrCompany('30720870089'); //CPF/CNPJ Brazil ==> 307.208.700-89
+Format::identifierOrCompany('30720870089'); //CPF/CNPJ Brazil ==> 307.208.700-89 - accepts masked input
 Format::falseToNull(false); //Return ==> null
 Format::lower('CArrO'); //lowercase text ==> carro - the 2nd parameter chooses the charset, UTF-8 default
 //[Apply any type of Mask, accepts space, points and others]

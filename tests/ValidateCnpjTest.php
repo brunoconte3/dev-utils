@@ -5,252 +5,212 @@ declare(strict_types=1);
 namespace DevUtils\Test;
 
 use DevUtils\ValidateCnpj;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
+#[CoversClass(ValidateCnpj::class)]
 final class ValidateCnpjTest extends TestCase
 {
+    private const CNPJ_ZEROS_RAW = '00000000000000';
     private const CNPJ_ZEROS_MASKED = '00.000.000/0000-00';
     private const CNPJ_ONES_MASKED = '11.111.111/1111-11';
     private const CNPJ_TWOS_RAW = '22222222222222';
+    private const CNPJ_VALID_NUMERIC = '32063364000107';
+    private const WEIGHTS_FIRST_DIGIT = [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2];
+    private const WEIGHTS_SECOND_DIGIT = [6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2];
 
-    private static function charValue(string $ch): int
+    /**
+     * @param array<int, int> $weights
+     */
+    private static function weightedCheckDigit(string $value, array $weights): int
     {
-        $n = ord($ch);
-        if ($n >= 48 && $n <= 57) {
-            return $n - 48;
-        }
-        if ($n >= 65 && $n <= 90) {
-            return $n - 48;
-        }
-        return -1;
-    }
-
-    private static function calcDv(string $root): array
-    {
-        $w1 = [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2];
         $sum = 0;
-        for ($i = 0; $i < 12; $i++) {
-            $sum += self::charValue($root[$i]) * $w1[$i];
+        foreach ($weights as $position => $weight) {
+            $sum += (ord($value[$position]) - 48) * $weight;
         }
-        $r1 = $sum % 11;
-        $dv1 = $r1 < 2 ? 0 : 11 - $r1;
 
-        $w2 = [6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2];
-        $sum = 0;
-        for ($i = 0; $i < 13; $i++) {
-            $v = $i < 12 ? self::charValue($root[$i]) : $dv1;
-            $sum += $v * $w2[$i];
-        }
-        $r2 = $sum % 11;
-        $dv2 = $r2 < 2 ? 0 : 11 - $r2;
+        $remainder = $sum % 11;
 
-        return [$dv1, $dv2];
+        return $remainder < 2 ? 0 : 11 - $remainder;
     }
 
-    private static function makeRawCnpj(string $root): string
+    private static function buildCnpj(string $root): string
     {
-        [$dv1, $dv2] = self::calcDv($root);
-        return strtoupper($root) . (string) $dv1 . (string) $dv2;
+        $root = strtoupper($root);
+        $first = self::weightedCheckDigit($root, self::WEIGHTS_FIRST_DIGIT);
+        $second = self::weightedCheckDigit($root . (string) $first, self::WEIGHTS_SECOND_DIGIT);
+
+        return $root . (string) $first . (string) $second;
     }
 
-    private static function maskCnpj(string $raw): string
+    private static function mask(string $cnpj): string
     {
         return sprintf(
             '%s.%s.%s/%s-%s',
-            substr($raw, 0, 2),
-            substr($raw, 2, 3),
-            substr($raw, 5, 3),
-            substr($raw, 8, 4),
-            substr($raw, 12, 2),
+            substr($cnpj, 0, 2),
+            substr($cnpj, 2, 3),
+            substr($cnpj, 5, 3),
+            substr($cnpj, 8, 4),
+            substr($cnpj, 12, 2),
         );
     }
 
-    public function testValidNumericExamples(): void
+    /**
+     * @return array<string, array{0: string}>
+     */
+    public static function validCnpjProvider(): array
     {
-        self::assertTrue(ValidateCnpj::validateCnpj('57.169.078/0001-51'));
-        self::assertFalse(ValidateCnpj::validateCnpj('55.569.078/0001-51'));
-        self::assertTrue(ValidateCnpj::validateCnpj('11.222.333/0001-81'));
-        self::assertFalse(ValidateCnpj::validateCnpj('11.222.333/0001-82'));
-        self::assertTrue(ValidateCnpj::validateCnpj('11222333000181'));
-        self::assertFalse(ValidateCnpj::validateCnpj('11222333000182'));
+        return [
+            'alphanumeric readme example' => ['A1.B2C.3D4/5E6F-59'],
+            'alphanumeric rfb example lowercase' => ['12abc34501de35'],
+            'alphanumeric rfb example masked' => ['12.ABC.345/01DE-35'],
+            'alphanumeric rfb example raw' => ['12ABC34501DE35'],
+            'alphanumeric rfb example with trailing line feed' => ["12ABC34501DE35\n"],
+            'noise between characters' => ['32@063#364$000%107'],
+            'numeric masked' => ['57.169.078/0001-51'],
+            'numeric masked with repeated blocks' => ['11.222.333/0001-81'],
+            'numeric raw' => [self::CNPJ_VALID_NUMERIC],
+            'numeric raw with repeated blocks' => ['11222333000181'],
+            'ones root with valid check digits' => ['11111111111180'],
+            'other numeric masked' => ['11.444.777/0001-61'],
+            'other numeric raw' => ['11444777000161'],
+        ];
     }
 
-    public function testRejectEmptyAndWhitespace(): void
+    /**
+     * @return array<string, array{0: string}>
+     */
+    public static function invalidCnpjProvider(): array
     {
-        self::assertFalse(ValidateCnpj::validateCnpj(''));
-        self::assertFalse(ValidateCnpj::validateCnpj('   '));
+        return [
+            'accented char breaks length' => ['12.ABÇ.345/01DE-35'],
+            'empty' => [''],
+            'letter in first check digit' => ['A1B2C3D45E6FA0'],
+            'letter in second check digit' => ['A1B2C3D45E6F0B'],
+            'masked wrong first check digit' => ['55.569.078/0001-51'],
+            'masked wrong second check digit' => ['11.222.333/0001-82'],
+            'punctuation only' => ['..../-.'],
+            'single zero' => ['0'],
+            'symbols only' => ['@#$%^&*()'],
+            'too long' => ['123456789012345'],
+            'too short' => ['1234567890123'],
+            'truncated letters' => ['AB.CDE'],
+            'whitespace only' => ['   '],
+            'wrong first check digit' => ['32063364000117'],
+            'wrong first check digit again' => ['32063364000197'],
+            'wrong second check digit' => ['32063364000108'],
+            'wrong second check digit again' => ['32063364000109'],
+        ];
     }
 
-    public function testValidAlphanumericMaskedAndRaw(): void
+    /**
+     * @return array<string, array{0: string}>
+     */
+    public static function invalidSequenceProvider(): array
     {
-        $roots = ['ABCDEFGHIJKL', 'A1B2C3D45E6F', 'XYZ123456ABC', 'AAAABBBBCCCC'];
-
-        foreach ($roots as $root) {
-            $raw = self::makeRawCnpj($root);
-            $masked = self::maskCnpj($raw);
-            self::assertTrue(ValidateCnpj::validateCnpj($raw));
-            self::assertTrue(ValidateCnpj::validateCnpj($masked));
-        }
+        return [
+            'eights' => ['88.888.888/8888-88'],
+            'fives' => ['55.555.555/5555-55'],
+            'fours' => ['44.444.444/4444-44'],
+            'nines' => ['99.999.999/9999-99'],
+            'ones' => [self::CNPJ_ONES_MASKED],
+            'sevens' => ['77.777.777/7777-77'],
+            'sixes' => ['66.666.666/6666-66'],
+            'threes' => ['33.333.333/3333-33'],
+            'twos' => ['22.222.222/2222-22'],
+            'zeros' => [self::CNPJ_ZEROS_MASKED],
+        ];
     }
 
-    public function testAcceptLowercase(): void
+    /**
+     * @return array<string, array{0: string}>
+     */
+    public static function alphanumericRootProvider(): array
     {
-        $root = 'abcDefGhijKl';
-        $rawUpper = self::makeRawCnpj(strtoupper($root));
-        $rawLower = strtolower($rawUpper);
-        $maskedLower = strtolower(self::maskCnpj($rawUpper));
-
-        self::assertTrue(ValidateCnpj::validateCnpj($rawLower));
-        self::assertTrue(ValidateCnpj::validateCnpj($maskedLower));
+        return [
+            'digits first' => ['1A2B3C4D5E6F'],
+            'high letters' => ['XYZ123456ABC'],
+            'letters and digits' => ['A1B2C3D45E6F'],
+            'lowercase letters' => ['abcdefghijkl'],
+            'repeated blocks' => ['AAAABBBBCCCC'],
+            'repeated letters' => ['AAAAAAAAAAAA'],
+            'sequential letters' => ['ABCDEFGHIJKL'],
+        ];
     }
 
-    public function testRejectAlphanumericWithWrongDv(): void
+    /**
+     * @return array<string, array{0: string, 1: string|array<int, mixed>|bool, 2: bool}>
+     */
+    public static function exceptionProvider(): array
     {
-        $root = 'XYZ123456ABC';
-        $raw = self::makeRawCnpj($root);
-        $tampered = substr($raw, 0, 13) . ((int)$raw[13] ^ 1);
-        self::assertFalse(ValidateCnpj::validateCnpj($tampered));
+        return [
+            'array with masked value' => [self::CNPJ_ZEROS_MASKED, [self::CNPJ_ZEROS_MASKED], true],
+            'array with non string element' => [self::CNPJ_ZEROS_MASKED, [null, self::CNPJ_ZEROS_RAW], true],
+            'array with raw value' => [self::CNPJ_ZEROS_MASKED, [self::CNPJ_ZEROS_RAW], true],
+            'array without the cnpj' => [self::CNPJ_ZEROS_MASKED, ['11111111111111', self::CNPJ_TWOS_RAW], false],
+            'boolean false' => [self::CNPJ_ZEROS_MASKED, false, false],
+            'boolean true' => [self::CNPJ_ZEROS_MASKED, true, false],
+            'empty array' => [self::CNPJ_ZEROS_MASKED, [], false],
+            'empty string' => [self::CNPJ_ZEROS_MASKED, '', false],
+            'irrelevant for valid cnpj' => [self::CNPJ_VALID_NUMERIC, self::CNPJ_ZEROS_RAW, true],
+            'masked string' => [self::CNPJ_ZEROS_MASKED, self::CNPJ_ZEROS_MASKED, true],
+            'raw string' => [self::CNPJ_ZEROS_MASKED, self::CNPJ_ZEROS_RAW, true],
+            'without valid check digits' => [self::CNPJ_ONES_MASKED, ['11111111111111'], false],
+        ];
     }
 
-    public function testRejectLettersInDv(): void
+    #[DataProvider('validCnpjProvider')]
+    public function testAcceptsValidCnpj(string $cnpj): void
     {
-        $root = 'A1B2C3D45E6F';
-        [$dv1, $dv2] = self::calcDv($root);
-        $withLetterAtDv1 = $root . 'A' . (string) $dv2;
-        $withLetterAtDv2 = $root . (string) $dv1 . 'B';
-
-        self::assertFalse(ValidateCnpj::validateCnpj($withLetterAtDv1));
-        self::assertFalse(ValidateCnpj::validateCnpj($withLetterAtDv2));
+        self::assertTrue(ValidateCnpj::validateCnpj($cnpj));
     }
 
-    public function testSanitizeNoiseAndKeepAlnum(): void
+    #[DataProvider('invalidCnpjProvider')]
+    public function testRejectsInvalidCnpj(string $cnpj): void
     {
-        $root = 'ABCDEFGHIJKL';
-        $raw = self::makeRawCnpj($root);
-        $masked = self::maskCnpj($raw);
-
-        $noisyRaw = preg_replace('/(.)/', '$1!@', $raw);
-        $noisyMasked = preg_replace('/(.)/', '#$1 ', $masked);
-
-        self::assertIsString($noisyRaw);
-        self::assertIsString($noisyMasked);
-        self::assertTrue(ValidateCnpj::validateCnpj($noisyRaw));
-        self::assertTrue(ValidateCnpj::validateCnpj($noisyMasked));
+        self::assertFalse(ValidateCnpj::validateCnpj($cnpj));
     }
 
-    public function testRejectWrongLengthAfterSanitize(): void
+    #[DataProvider('invalidSequenceProvider')]
+    public function testRejectsRepeatedDigitSequences(string $cnpj): void
     {
-        self::assertFalse(ValidateCnpj::validateCnpj('AB.CDE'));
-        self::assertFalse(ValidateCnpj::validateCnpj('123456789012345'));
+        self::assertFalse(ValidateCnpj::validateCnpj($cnpj));
     }
 
-    public function testRejectNumericSequences(): void
+    #[DataProvider('alphanumericRootProvider')]
+    public function testAcceptsCnpjBuiltWithReferenceWeights(string $root): void
+    {
+        $cnpj = self::buildCnpj($root);
+
+        self::assertTrue(ValidateCnpj::validateCnpj($cnpj));
+        self::assertTrue(ValidateCnpj::validateCnpj(self::mask($cnpj)));
+        self::assertTrue(ValidateCnpj::validateCnpj(strtolower(self::mask($cnpj))));
+    }
+
+    #[DataProvider('alphanumericRootProvider')]
+    public function testRejectsTamperedCheckDigits(string $root): void
+    {
+        $cnpj = self::buildCnpj($root);
+        $wrongFirst = substr($cnpj, 0, 12) . (string) (((int) $cnpj[12] + 1) % 10) . $cnpj[13];
+        $wrongSecond = substr($cnpj, 0, 13) . (string) (((int) $cnpj[13] + 1) % 10);
+
+        self::assertFalse(ValidateCnpj::validateCnpj($wrongFirst));
+        self::assertFalse(ValidateCnpj::validateCnpj($wrongSecond));
+    }
+
+    /**
+     * @param string|array<int, mixed>|bool $cnpjException
+     */
+    #[DataProvider('exceptionProvider')]
+    public function testHandlesExceptionList(string $cnpj, string | array | bool $cnpjException, bool $expected): void
+    {
+        self::assertSame($expected, ValidateCnpj::validateCnpj($cnpj, $cnpjException));
+    }
+
+    public function testLettersAreNotTreatedAsRepeatedSequences(): void
     {
         self::assertFalse(ValidateCnpj::validateCnpj(self::CNPJ_ZEROS_MASKED));
-        self::assertFalse(ValidateCnpj::validateCnpj(self::CNPJ_ONES_MASKED));
-        self::assertFalse(ValidateCnpj::validateCnpj('22.222.222/2222-22'));
-        self::assertFalse(ValidateCnpj::validateCnpj('33.333.333/3333-33'));
-        self::assertFalse(ValidateCnpj::validateCnpj('44.444.444/4444-44'));
-        self::assertFalse(ValidateCnpj::validateCnpj('55.555.555/5555-55'));
-        self::assertFalse(ValidateCnpj::validateCnpj('66.666.666/6666-66'));
-        self::assertFalse(ValidateCnpj::validateCnpj('77.777.777/7777-77'));
-        self::assertFalse(ValidateCnpj::validateCnpj('88.888.888/8888-88'));
-        self::assertFalse(ValidateCnpj::validateCnpj('99.999.999/9999-99'));
-    }
-
-    public function testWhitelistStillRequiresValidDv(): void
-    {
-        $raw00 = self::makeRawCnpj(str_repeat('0', 12));
-        self::assertTrue(ValidateCnpj::validateCnpj(self::maskCnpj($raw00), '00000000000000'));
-
-        self::assertFalse(ValidateCnpj::validateCnpj(self::CNPJ_ONES_MASKED, ['11111111111111']));
-        self::assertFalse(ValidateCnpj::validateCnpj('22.222.222/2222-22', [self::CNPJ_TWOS_RAW]));
-
-        $raw11 = self::makeRawCnpj(str_repeat('1', 12));
-        self::assertTrue(ValidateCnpj::validateCnpj(self::maskCnpj($raw11)));
-
-        $raw22 = self::makeRawCnpj(str_repeat('2', 12));
-        self::assertTrue(ValidateCnpj::validateCnpj(self::maskCnpj($raw22)));
-    }
-
-    public function testBooleanExceptionDoesNotWhitelist(): void
-    {
-        self::assertFalse(ValidateCnpj::validateCnpj(self::CNPJ_ZEROS_MASKED, true));
-        self::assertFalse(ValidateCnpj::validateCnpj(self::CNPJ_ONES_MASKED, false));
-    }
-
-    public function testAlphanumericRootsIgnoreNumericBlacklist(): void
-    {
-        $root = 'AAAAAAAAAAAA';
-        $raw = self::makeRawCnpj($root);
-        self::assertTrue(ValidateCnpj::validateCnpj($raw));
-    }
-
-    public function testExceptionWithArrayMultipleValues(): void
-    {
-        self::assertFalse(ValidateCnpj::validateCnpj(self::CNPJ_ZEROS_MASKED, ['11111111111111', self::CNPJ_TWOS_RAW]));
-        self::assertFalse(ValidateCnpj::validateCnpj(self::CNPJ_ONES_MASKED, ['00000000000000', self::CNPJ_TWOS_RAW]));
-    }
-
-    public function testValidCnpjWithOnlyNumbers(): void
-    {
-        self::assertTrue(ValidateCnpj::validateCnpj('32063364000107'));
-        self::assertTrue(ValidateCnpj::validateCnpj('11444777000161'));
-    }
-
-    public function testValidCnpjWithMask(): void
-    {
-        self::assertTrue(ValidateCnpj::validateCnpj('32.063.364/0001-07'));
-        self::assertTrue(ValidateCnpj::validateCnpj('11.444.777/0001-61'));
-    }
-
-    public function testInvalidCnpjWithWrongFirstDigit(): void
-    {
-        self::assertFalse(ValidateCnpj::validateCnpj('32063364000117'));
-        self::assertFalse(ValidateCnpj::validateCnpj('32063364000197'));
-    }
-
-    public function testInvalidCnpjWithWrongSecondDigit(): void
-    {
-        self::assertFalse(ValidateCnpj::validateCnpj('32063364000108'));
-        self::assertFalse(ValidateCnpj::validateCnpj('32063364000109'));
-    }
-
-    public function testCnpjWithSpecialCharactersOnly(): void
-    {
-        self::assertFalse(ValidateCnpj::validateCnpj('..../-.'));
-        self::assertFalse(ValidateCnpj::validateCnpj('@#$%^&*()'));
-    }
-
-    public function testCnpjWithMixedValidAndInvalidChars(): void
-    {
-        self::assertTrue(ValidateCnpj::validateCnpj('32@063#364$000%107'));
-    }
-
-    public function testExceptionWithEmptyArray(): void
-    {
-        self::assertFalse(ValidateCnpj::validateCnpj(self::CNPJ_ZEROS_MASKED, []));
-    }
-
-    public function testExceptionWithEmptyString(): void
-    {
-        self::assertFalse(ValidateCnpj::validateCnpj(self::CNPJ_ZEROS_MASKED, ''));
-    }
-
-    public function testValidAlphanumericWithNumbers(): void
-    {
-        $root = '1A2B3C4D5E6F';
-        $raw = self::makeRawCnpj($root);
-        self::assertTrue(ValidateCnpj::validateCnpj($raw));
-    }
-
-    public function testCnpjTooShort(): void
-    {
-        self::assertFalse(ValidateCnpj::validateCnpj('1234567890123'));
-    }
-
-    public function testCnpjTooLong(): void
-    {
-        self::assertFalse(ValidateCnpj::validateCnpj('123456789012345'));
+        self::assertTrue(ValidateCnpj::validateCnpj(self::buildCnpj('AAAAAAAAAAAA')));
     }
 }

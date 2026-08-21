@@ -84,12 +84,14 @@ class Format extends FormatAux
 
     public static function identifierOrCompany(string $cpfCnpj): string
     {
-        if (strlen($cpfCnpj) === 11) {
-            return self::identifier($cpfCnpj);
+        $sanitized = self::onlyLettersNumbers($cpfCnpj);
+
+        if (strlen($sanitized) === 11) {
+            return self::identifier($sanitized);
         }
 
-        if (strlen($cpfCnpj) === 14) {
-            return self::companyIdentification($cpfCnpj);
+        if (strlen($sanitized) === 14) {
+            return self::companyIdentification($sanitized);
         }
 
         throw new InvalidArgumentException('identifierOrCompany => Valor precisa ser um CPF ou CNPJ!');

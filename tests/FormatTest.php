@@ -97,6 +97,39 @@ class FormatTest extends TestCase
         self::assertEquals('A1.B2C.3D4/5E6F-59', Format::identifierOrCompany('A1B2C3D45E6F59'));
     }
 
+    public function testIdentifierOrCompanyAcceptsMaskedCompany(): void
+    {
+        self::assertSame(self::CNPJ_NUMERIC_MASKED, Format::identifierOrCompany(self::CNPJ_NUMERIC_MASKED));
+        self::assertSame(self::CNPJ_ALPHANUMERIC_MASKED, Format::identifierOrCompany(self::CNPJ_ALPHANUMERIC_MASKED));
+        self::assertSame('K7.CM7.10C/0001-84', Format::identifierOrCompany('K7.CM7.10C/0001-84'));
+        self::assertSame('12.456.571/0001-14', Format::identifierOrCompany('12.456.571/0001-14'));
+    }
+
+    public function testIdentifierOrCompanyAcceptsLowercaseMaskedCompany(): void
+    {
+        self::assertSame(self::CNPJ_ALPHANUMERIC_MASKED, Format::identifierOrCompany('br.asi.l20/26aa-64'));
+        self::assertSame('K7.CM7.10C/0001-84', Format::identifierOrCompany('k7.cm7.10c/0001-84'));
+    }
+
+    public function testIdentifierOrCompanyAcceptsMaskedIdentifier(): void
+    {
+        self::assertSame('307.208.700-89', Format::identifierOrCompany('307.208.700-89'));
+        self::assertSame('894.213.600-10', Format::identifierOrCompany('894.213.600-10'));
+    }
+
+    public function testIdentifierOrCompanyIgnoresSeparatorNoise(): void
+    {
+        self::assertSame('307.208.700-89', Format::identifierOrCompany(' 307 208 700 89 '));
+        self::assertSame(self::CNPJ_NUMERIC_MASKED, Format::identifierOrCompany('76027484/0001-24'));
+    }
+
+    public function testIdentifierOrCompanyRejectsMaskedValueWithWrongLength(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('identifierOrCompany => Valor precisa ser um CPF ou CNPJ!');
+        Format::identifierOrCompany('12.345/6789-0');
+    }
+
     public function testTelephone(): void
     {
         self::assertEquals('(44) 99999-8888', Format::telephone(self::PHONE_UNMASKED));

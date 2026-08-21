@@ -6,6 +6,11 @@ namespace DevUtils;
 
 class ValidateCnpj
 {
+    private const REGEX_CNPJ = '/^[0-9A-Z]{12}[0-9]{2}\z/';
+    private const CHAR_VALUE_OFFSET = 48;
+    private const WEIGHT_FIRST_DIGIT = 5;
+    private const WEIGHT_SECOND_DIGIT = 6;
+
     private const INVALID_SEQUENCES = [
         '00000000000000',
         '11111111111111',
@@ -19,19 +24,28 @@ class ValidateCnpj
         '99999999999999',
     ];
 
+    private static function cleanCnpj(string $cnpj): string
+    {
+        return strtoupper((string) preg_replace('/[^A-Z0-9]/i', '', $cnpj));
+    }
+
     private static function isInvalidSequence(string $cnpj): bool
     {
-        return ctype_digit($cnpj) && in_array($cnpj, self::INVALID_SEQUENCES, true);
+        return in_array($cnpj, self::INVALID_SEQUENCES, true);
     }
 
     private static function isException(string $cnpj, string | array | bool $cnpjException): bool
     {
         if (is_string($cnpjException)) {
-            return $cnpj === $cnpjException;
+            return $cnpj === self::cleanCnpj($cnpjException);
         }
 
         if (is_array($cnpjException)) {
-            return in_array($cnpj, $cnpjException, true);
+            foreach ($cnpjException as $exception) {
+                if (is_string($exception) && $cnpj === self::cleanCnpj($exception)) {
+                    return true;
+                }
+            }
         }
 
         return false;
@@ -48,66 +62,42 @@ class ValidateCnpj
         return self::isException($cnpj, $cnpjException);
     }
 
+    private static function cnpjCharValue(string $ch): int
+    {
+        return ord($ch) - self::CHAR_VALUE_OFFSET;
+    }
+
     private static function calculateDigit(string $cnpj, int $length, int $startWeight): int
     {
         $sum = 0;
         $weight = $startWeight;
 
         for ($i = 0; $i < $length; $i++) {
-            $value = self::cnpjCharValue($cnpj[$i]);
-            if ($value < 0) {
-                return -1;
-            }
-            $sum += $value * $weight;
+            $sum += self::cnpjCharValue($cnpj[$i]) * $weight;
             $weight = $weight === 2 ? 9 : $weight - 1;
         }
 
         $remainder = $sum % 11;
+
         return $remainder < 2 ? 0 : 11 - $remainder;
     }
 
     private static function validateRuleCnpj(string $cnpj): bool
     {
-        if (strlen($cnpj) !== 14 || !ctype_digit(substr($cnpj, 12, 2))) {
+        if ((int) $cnpj[12] !== self::calculateDigit($cnpj, 12, self::WEIGHT_FIRST_DIGIT)) {
             return false;
         }
 
-        $firstDigit = self::calculateDigit($cnpj, 12, 5);
-        if ($firstDigit < 0 || (int) $cnpj[12] !== $firstDigit) {
-            return false;
-        }
-
-        $secondDigit = self::calculateDigit($cnpj . $firstDigit, 13, 6);
-        return $secondDigit >= 0 && (int) $cnpj[13] === $secondDigit;
-    }
-
-    private static function dealCnpj(string $cnpj): string
-    {
-        return strtoupper((string) preg_replace('/[^A-Z0-9]/i', '', $cnpj));
-    }
-
-    private static function cnpjCharValue(string $ch): int
-    {
-        $ascii = ord($ch);
-
-        if ($ascii >= 48 && $ascii <= 57) {
-            return $ascii - 48;
-        }
-
-        if ($ascii >= 65 && $ascii <= 90) {
-            return $ascii - 48;
-        }
-
-        return -1;
+        return (int) $cnpj[13] === self::calculateDigit($cnpj, 13, self::WEIGHT_SECOND_DIGIT);
     }
 
     public static function validateCnpj(string $cnpj, string | array | bool $cnpjException = ''): bool
     {
-        if (empty($cnpj)) {
+        $cnpj = self::cleanCnpj($cnpj);
+
+        if (preg_match(self::REGEX_CNPJ, $cnpj) !== 1) {
             return false;
         }
-
-        $cnpj = self::dealCnpj($cnpj);
 
         if (!self::validateCnpjSequenceInvalidate($cnpj, $cnpjException)) {
             return false;
