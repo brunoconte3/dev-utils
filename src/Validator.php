@@ -40,6 +40,6 @@ class Validator extends Rules
 
     public function getErros(): array
     {
-        return $this->errors ?? [];
+        return $this->errors;
     }
 }

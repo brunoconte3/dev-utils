@@ -75,9 +75,9 @@ class Rules
             $currentErrors = $this->errors[$field];
             if (is_array($currentErrors)) {
                 foreach ($errorList as $error) {
-                    array_push($currentErrors, $error);
+                    $currentErrors[] = $error;
                 }
-                $this->errors[$field] = array_unique($currentErrors);
+                $this->errors[$field] = array_unique($currentErrors, SORT_REGULAR);
             }
         } else {
             $this->errors[$field] = $errorList;

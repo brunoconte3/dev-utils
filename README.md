@@ -620,6 +620,25 @@ Uuid::isValid('01890f87-4f0b-7f6b-8b1d-9f4f9d7c3b5a', 7); // ==> true
 
 ```
 
+Validation follows RFC 9562 strictly, so the following are rejected:
+
+```php
+Uuid::isValid('550e8400-e29b-41d4-c716-446655440000');   // ==> false (variant is not 10xx)
+Uuid::isValid('00000000-0000-0000-0000-000000000000');   // ==> false (nil UUID, no version)
+Uuid::isValid('ffffffff-ffff-ffff-ffff-ffffffffffff');   // ==> false (max UUID, no version)
+Uuid::isValid("550e8400-e29b-41d4-a716-446655440000\n"); // ==> false (trailing characters)
+```
+
+`ValidateUuid::isValid()` accepts only v4 and v7, delegating to the same RFC checks:
+
+```php
+use DevUtils\ValidateUuid;
+
+ValidateUuid::isValid('550e8400-e29b-41d4-a716-446655440000'); // ==> true  (v4)
+ValidateUuid::isValid('01890f87-4f0b-7f6b-8b1d-9f4f9d7c3b5a'); // ==> true  (v7)
+ValidateUuid::isValid('6ba7b810-9dad-11d1-80b4-00c04fd430c8'); // ==> false (v1)
+```
+
 ### Password Generation
 
 Built on `random_int()`, PHP's cryptographically secure generator — safe for real passwords,
