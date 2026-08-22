@@ -90,6 +90,13 @@ class FormatTest extends TestCase
         self::assertEquals('894.213.600-10', Format::identifier('89421360010'));
     }
 
+    public function testIdentifierAcceptsMaskedValue(): void
+    {
+        self::assertSame('894.213.600-10', Format::identifier('894.213.600-10'));
+        self::assertSame('067.981.009-96', Format::identifier('067.981.009-96'));
+        self::assertSame('307.208.700-89', Format::identifier(' 307 208 700 89 '));
+    }
+
     public function testIdentifierOrCompany(): void
     {
         self::assertEquals('307.208.700-89', Format::identifierOrCompany('30720870089'));

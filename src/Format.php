@@ -77,8 +77,9 @@ class Format extends FormatAux
 
     public static function identifier(string $cpf): string
     {
-        parent::validateForFormatting('identifier', 11, $cpf);
-        $retorno = preg_replace("/(\d{3})(\d{3})(\d{3})(\d{2})/", "\$1.\$2.\$3-\$4", $cpf);
+        $sanitized = self::onlyLettersNumbers($cpf);
+        parent::validateForFormatting('identifier', 11, $sanitized);
+        $retorno = preg_replace("/(\d{3})(\d{3})(\d{3})(\d{2})/", "\$1.\$2.\$3-\$4", $sanitized);
         return $retorno ?? '';
     }
 
