@@ -20,11 +20,17 @@ class FormatTest extends TestCase
     private const CPF_OTHER_MASKED = '307.208.700-89';
     private const RULE_CONVERT_INT = 'convert|int';
     private const PHONE_UNMASKED = '44999998888';
+    private const PHONE_MASKED = '(44) 99999-8888';
+    private const PHONE_LANDLINE_MASKED = '(44) 3333-8888';
     private const DATE_BRAZIL = '10/10/2020';
     private const DATE_AMERICAN = '2020-10-10';
     private const VALUE_DECIMAL = '1123.45';
+    private const VALUE_DECIMAL_USD = '1,123.45';
     private const VALUE_DECIMAL_NEGATIVE = '-1123.45';
     private const VALUE_CURRENCY_BRAZIL = '123,40';
+    private const VALUE_POINT_ONLY = '1350.45';
+    private const ZIP_CODE_MASKED = '87020-000';
+    private const MESSAGE_ONLY_NUMBERS = 'apenas números';
     private const FILE_NAME_JPG = 'JPG - Validação upload v.1.jpg';
     private const MIME_JPEG = 'image/jpeg';
     private const TMP_PATH_JPG = '/tmp/phpODnLGo';
@@ -146,7 +152,7 @@ class FormatTest extends TestCase
 
     public function testTelephone(): void
     {
-        self::assertEquals('(44) 99999-8888', Format::telephone(self::PHONE_UNMASKED));
+        self::assertEquals(self::PHONE_MASKED, Format::telephone(self::PHONE_UNMASKED));
     }
 
     public function testZipCode(): void
@@ -224,7 +230,7 @@ class FormatTest extends TestCase
 
     public function testCurrencyUsd(): void
     {
-        self::assertEquals('1,123.45', Format::currencyUsd(self::VALUE_DECIMAL));
+        self::assertEquals(self::VALUE_DECIMAL_USD, Format::currencyUsd(self::VALUE_DECIMAL));
         self::assertEquals('Usd 1,123.45', Format::currencyUsd(self::VALUE_DECIMAL, 'Usd '));
     }
 
@@ -241,7 +247,7 @@ class FormatTest extends TestCase
 
     public function testPointOnlyValue(): void
     {
-        self::assertEquals('1350.45', Format::pointOnlyValue('1.350,45'));
+        self::assertEquals(self::VALUE_POINT_ONLY, Format::pointOnlyValue('1.350,45'));
     }
 
     public function testEmptyToNull(): void
@@ -462,7 +468,7 @@ class FormatTest extends TestCase
 
     public function testTelephoneWith10Digits(): void
     {
-        self::assertEquals('(44) 3333-8888', Format::telephone('4433338888'));
+        self::assertEquals(self::PHONE_LANDLINE_MASKED, Format::telephone('4433338888'));
     }
 
     public function testTelephoneInvalidLengthThrowsException(): void
@@ -485,10 +491,10 @@ class FormatTest extends TestCase
 
     public function testTelephoneAcceptsMaskedValue(): void
     {
-        self::assertSame('(44) 99999-8888', Format::telephone('(44) 99999-8888'));
-        self::assertSame('(44) 99999-8888', Format::telephone('(44)99999-8888'));
-        self::assertSame('(44) 99999-8888', Format::telephone('44 99999-8888'));
-        self::assertSame('(44) 3333-8888', Format::telephone('(44) 3333-8888'));
+        self::assertSame(self::PHONE_MASKED, Format::telephone(self::PHONE_MASKED));
+        self::assertSame(self::PHONE_MASKED, Format::telephone('(44)99999-8888'));
+        self::assertSame(self::PHONE_MASKED, Format::telephone('44 99999-8888'));
+        self::assertSame(self::PHONE_LANDLINE_MASKED, Format::telephone(self::PHONE_LANDLINE_MASKED));
     }
 
     public function testTelephoneRejectsMaskedValueWithWrongLength(): void
@@ -501,15 +507,15 @@ class FormatTest extends TestCase
     public function testTelephoneRejectsMaskedValueWithLetters(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('apenas números');
+        $this->expectExceptionMessage(self::MESSAGE_ONLY_NUMBERS);
         Format::telephone('(44) abcd-efgh');
     }
 
     public function testZipCodeAcceptsMaskedValue(): void
     {
-        self::assertSame('87020-000', Format::zipCode('87020-000'));
-        self::assertSame('87020-000', Format::zipCode('87.020-000'));
-        self::assertSame('87020-000', Format::zipCode('87020 000'));
+        self::assertSame(self::ZIP_CODE_MASKED, Format::zipCode(self::ZIP_CODE_MASKED));
+        self::assertSame(self::ZIP_CODE_MASKED, Format::zipCode('87.020-000'));
+        self::assertSame(self::ZIP_CODE_MASKED, Format::zipCode('87020 000'));
     }
 
     public function testIdentifierRejectsSurroundingSpaces(): void
@@ -564,7 +570,7 @@ class FormatTest extends TestCase
     public function testZipCodeNonNumericThrowsException(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('apenas números');
+        $this->expectExceptionMessage(self::MESSAGE_ONLY_NUMBERS);
         Format::zipCode('abcdefgh');
     }
 
@@ -598,7 +604,7 @@ class FormatTest extends TestCase
 
     public function testCurrencyUsdWithFloat(): void
     {
-        self::assertEquals('1,123.45', Format::currencyUsd(1123.45));
+        self::assertEquals(self::VALUE_DECIMAL_USD, Format::currencyUsd(1123.45));
         self::assertEquals('123.00', Format::currencyUsd(123));
     }
 
@@ -775,19 +781,19 @@ class FormatTest extends TestCase
 
     public function testPointOnlyValueWithBrazilianFormat(): void
     {
-        self::assertSame('1350.45', Format::pointOnlyValue('1.350,45'));
+        self::assertSame(self::VALUE_POINT_ONLY, Format::pointOnlyValue('1.350,45'));
         self::assertSame('1350', Format::pointOnlyValue('1.350'));
         self::assertSame('100.50', Format::pointOnlyValue('100,50'));
         self::assertSame('1234567', Format::pointOnlyValue('1.234.567'));
-        self::assertSame('1350.45', Format::pointOnlyValue('R$ 1.350,45'));
+        self::assertSame(self::VALUE_POINT_ONLY, Format::pointOnlyValue('R$ 1.350,45'));
         self::assertSame('', Format::pointOnlyValue('abc'));
         self::assertSame('', Format::pointOnlyValue(''));
     }
 
     public function testPointOnlyValueWithAmericanFormat(): void
     {
-        self::assertSame('1123.45', Format::pointOnlyValue('1123.45'));
-        self::assertSame('1123.45', Format::pointOnlyValue('1,123.45'));
+        self::assertSame(self::VALUE_DECIMAL, Format::pointOnlyValue(self::VALUE_DECIMAL));
+        self::assertSame(self::VALUE_DECIMAL, Format::pointOnlyValue(self::VALUE_DECIMAL_USD));
         self::assertSame('1234567.89', Format::pointOnlyValue('1,234,567.89'));
         self::assertSame('12.5', Format::pointOnlyValue('12.5'));
         self::assertSame('0.99', Format::pointOnlyValue('0.99'));
@@ -811,7 +817,7 @@ class FormatTest extends TestCase
     public function testIdentifierNonNumericThrowsException(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('apenas números');
+        $this->expectExceptionMessage(self::MESSAGE_ONLY_NUMBERS);
         Format::identifier('abcdefghijk');
     }
 

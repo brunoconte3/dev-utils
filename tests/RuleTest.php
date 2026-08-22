@@ -28,6 +28,9 @@ class RuleTest extends TestCase
     private const VALUE_FULL_NAME = 'Bruno Conte';
     private const VALUE_LONG_TEXT = 'Ele usa um dicionário com mais de 200 palavras!';
     private const FORMAT_DATE_BRAZIL = 'd/m/Y';
+    private const RULE_DDD_PR = 'ddd:pr';
+    private const RULE_EQUALS_REFERENCE = 'equals:reference';
+    private const FIELD_REFERENCE = 'reference';
 
     private function validate(array $data, array $rules): Validator
     {
@@ -862,8 +865,8 @@ class RuleTest extends TestCase
             'dddSpValid' => '11',
         ];
         $rules = [
-            'dddPrError' => 'ddd:pr',
-            'dddPrValid' => 'ddd:pr',
+            'dddPrError' => self::RULE_DDD_PR,
+            'dddPrValid' => self::RULE_DDD_PR,
             'dddSpValid' => 'ddd:sp',
         ];
         self::assertErrorCount(1, $array, $rules);
@@ -1280,8 +1283,8 @@ class RuleTest extends TestCase
             'dddPrValid' => '(44)',
         ];
         $rules = [
-            'dddPrError' => 'ddd:pr',
-            'dddPrValid' => 'ddd:pr',
+            'dddPrError' => self::RULE_DDD_PR,
+            'dddPrValid' => self::RULE_DDD_PR,
         ];
         self::assertErrorCount(1, $array, $rules);
     }
@@ -1484,30 +1487,38 @@ class RuleTest extends TestCase
 
     public function testEqualsMatchesIdenticalNonStringValues(): void
     {
-        self::assertErrorCount(0, ['reference' => 1, 'copy' => 1], ['copy' => 'equals:reference']);
-        self::assertErrorCount(0, ['reference' => 0, 'copy' => 0], ['copy' => 'equals:reference']);
-        self::assertErrorCount(0, ['reference' => 1.5, 'copy' => 1.5], ['copy' => 'equals:reference']);
-        self::assertErrorCount(0, ['reference' => true, 'copy' => true], ['copy' => 'equals:reference']);
-        self::assertErrorCount(0, ['reference' => false, 'copy' => false], ['copy' => 'equals:reference']);
+        $rules = ['copy' => self::RULE_EQUALS_REFERENCE];
+
+        self::assertErrorCount(0, [self::FIELD_REFERENCE => 1, 'copy' => 1], $rules);
+        self::assertErrorCount(0, [self::FIELD_REFERENCE => 0, 'copy' => 0], $rules);
+        self::assertErrorCount(0, [self::FIELD_REFERENCE => 1.5, 'copy' => 1.5], $rules);
+        self::assertErrorCount(0, [self::FIELD_REFERENCE => true, 'copy' => true], $rules);
+        self::assertErrorCount(0, [self::FIELD_REFERENCE => false, 'copy' => false], $rules);
     }
 
     public function testEqualsRejectsDifferentNonStringValues(): void
     {
-        self::assertErrorCount(1, ['reference' => 1, 'copy' => 2], ['copy' => 'equals:reference']);
-        self::assertErrorCount(1, ['reference' => 1.5, 'copy' => 1.6], ['copy' => 'equals:reference']);
-        self::assertErrorCount(1, ['reference' => true, 'copy' => false], ['copy' => 'equals:reference']);
+        $rules = ['copy' => self::RULE_EQUALS_REFERENCE];
+
+        self::assertErrorCount(1, [self::FIELD_REFERENCE => 1, 'copy' => 2], $rules);
+        self::assertErrorCount(1, [self::FIELD_REFERENCE => 1.5, 'copy' => 1.6], $rules);
+        self::assertErrorCount(1, [self::FIELD_REFERENCE => true, 'copy' => false], $rules);
     }
 
     public function testEqualsComparisonStaysStrictBetweenTypes(): void
     {
-        self::assertErrorCount(1, ['reference' => 1, 'copy' => '1'], ['copy' => 'equals:reference']);
-        self::assertErrorCount(1, ['reference' => true, 'copy' => 'true'], ['copy' => 'equals:reference']);
+        $rules = ['copy' => self::RULE_EQUALS_REFERENCE];
+
+        self::assertErrorCount(1, [self::FIELD_REFERENCE => 1, 'copy' => '1'], $rules);
+        self::assertErrorCount(1, [self::FIELD_REFERENCE => true, 'copy' => 'true'], $rules);
     }
 
     public function testEqualsDoesNotThrowOnNullValue(): void
     {
-        self::assertErrorCount(1, ['reference' => null, 'copy' => null], ['copy' => 'equals:reference']);
-        self::assertErrorCount(1, ['reference' => 'x', 'copy' => null], ['copy' => 'equals:reference']);
+        $rules = ['copy' => self::RULE_EQUALS_REFERENCE];
+
+        self::assertErrorCount(1, [self::FIELD_REFERENCE => null, 'copy' => null], $rules);
+        self::assertErrorCount(1, [self::FIELD_REFERENCE => 'x', 'copy' => null], $rules);
     }
 
     public function testLowerWithMixedChars(): void
