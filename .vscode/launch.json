@@ -2,7 +2,7 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Debugar Projeto",
+      "name": "Debug Project",
       "type": "php",
       "request": "launch",
       "port": 9003,
@@ -11,7 +11,7 @@
       }
     },
     {
-      "name": "Debugar Script",
+      "name": "Debug Script",
       "type": "php",
       "request": "launch",
       "program": "${file}",

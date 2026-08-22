@@ -31,21 +31,21 @@ trait TraitFormatString
 
     public static function maskStringHidden(
         string $string,
-        int $qtdHidden,
+        int $hiddenLength,
         int $positionHidden,
         string $char,
     ): ?string {
         if (empty(trim($string))) {
             return null;
         }
-        if ($qtdHidden > strlen($string)) {
+        if ($hiddenLength > strlen($string)) {
             throw new
                 InvalidArgumentException('Quantidade de caracteres para ocultar não pode ser maior que a String!');
         }
-        if ($qtdHidden < 1) {
+        if ($hiddenLength < 1) {
             throw new InvalidArgumentException('Quantidade de caracteres para ocultar não pode ser menor que 1!');
         }
-        $chars = str_repeat($char, $qtdHidden);
+        $chars = str_repeat($char, $hiddenLength);
         if ($positionHidden < 0 || $positionHidden + strlen($chars) > strlen($string)) {
             throw new InvalidArgumentException('Posição para ocultar está fora do intervalo da String!');
         }
@@ -119,7 +119,7 @@ trait TraitFormatString
         return preg_replace('/[^a-zA-Z0-9]/', '', $value) ?? '';
     }
 
-    public static function slugfy(string $text): string
+    public static function slugify(string $text): string
     {
         $noSpecialCharacter = self::removeSpecialCharacters(str_replace('-', ' ', $text)) ?? '';
         $slug = preg_replace('/\s+/', '-', trim($noSpecialCharacter)) ?? '';

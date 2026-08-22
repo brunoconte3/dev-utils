@@ -78,14 +78,14 @@ class UtilityTest extends TestCase
     public static function passwordCharsetProvider(): array
     {
         return [
-            'maiusculas e numeros' => [10, true, false, true, false, '/^[A-Z0-9]+$/'],
-            'sem simbolos' => [12, true, true, true, false, '/^[A-Za-z0-9]+$/'],
-            'somente maiusculas' => [8, true, false, false, false, '/^[A-Z]+$/'],
-            'somente minusculas' => [8, false, true, false, false, '/^[a-z]+$/'],
-            'somente numeros' => [8, false, false, true, false, '/^[0-9]+$/'],
-            'somente simbolos' => [8, false, false, false, true, '/^[@#$!()\-+%=]+$/'],
-            'tamanho minimo de um grupo' => [1, true, false, false, false, '/^[A-Z]$/'],
-            'todos os conjuntos' => [20, true, true, true, true, '/^[A-Za-z0-9@#$!()\-+%=]+$/'],
+            'uppercase and numbers' => [10, true, false, true, false, '/^[A-Z0-9]+$/'],
+            'without symbols' => [12, true, true, true, false, '/^[A-Za-z0-9]+$/'],
+            'uppercase only' => [8, true, false, false, false, '/^[A-Z]+$/'],
+            'lowercase only' => [8, false, true, false, false, '/^[a-z]+$/'],
+            'numbers only' => [8, false, false, true, false, '/^[0-9]+$/'],
+            'symbols only' => [8, false, false, false, true, '/^[@#$!()\-+%=]+$/'],
+            'minimum size of one group' => [1, true, false, false, false, '/^[A-Z]$/'],
+            'all charsets' => [20, true, true, true, true, '/^[A-Za-z0-9@#$!()\-+%=]+$/'],
         ];
     }
 
@@ -121,10 +121,10 @@ class UtilityTest extends TestCase
     public static function passwordLongerThanCharsetProvider(): array
     {
         return [
-            'maiusculas acima do charset' => [50, true, false, false, false],
-            'numeros acima do charset' => [30, false, false, true, false],
-            'simbolos acima do charset' => [20, false, false, false, true],
-            'todos acima do charset' => [100, true, true, true, true],
+            'uppercase above charset' => [50, true, false, false, false],
+            'numbers above charset' => [30, false, false, true, false],
+            'symbols above charset' => [20, false, false, false, true],
+            'all above charset' => [100, true, true, true, true],
         ];
     }
 
@@ -176,8 +176,8 @@ class UtilityTest extends TestCase
     public static function invalidPasswordSizeProvider(): array
     {
         return [
-            'menor que os quatro grupos' => [3],
-            'negativo' => [-1],
+            'smaller than the four groups' => [3],
+            'negative' => [-1],
             'zero' => [0],
         ];
     }
@@ -207,15 +207,15 @@ class UtilityTest extends TestCase
     public static function protocolProvider(): array
     {
         return [
-            'nulo' => [null, 'http'],
+            'null value' => [null, 'http'],
             'off' => ['off', 'http'],
-            'On capitalizado' => ['On', 'https'],
-            'ON maiusculo' => ['ON', 'https'],
-            'on minusculo' => ['on', 'https'],
-            'string vazia' => ['', 'http'],
+            'capitalized on' => ['On', 'https'],
+            'uppercase on' => ['ON', 'https'],
+            'lowercase on' => ['on', 'https'],
+            'empty string' => ['', 'http'],
             'true' => ['true', 'https'],
-            'um' => ['1', 'https'],
-            'valor desconhecido' => ['banana', 'http'],
+            'one' => ['1', 'https'],
+            'unknown value' => ['banana', 'http'],
             'yes' => ['yes', 'https'],
             'zero' => ['0', 'http'],
         ];

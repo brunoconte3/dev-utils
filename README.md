@@ -24,6 +24,7 @@
 - [Data Validation](#data-validation-example)
 - [File Upload Validation](#validating-files-upload)
 - [Validation Types](#validation-types-validators)
+- [Regex Validator](#using-the-regex-validator)
 - [Custom Messages](#defining-custom-message)
 - [String Formatting](#formatting-examples)
 - [Data Comparison](#comparisons-examples)
@@ -182,7 +183,7 @@ if (filter_input(INPUT_SERVER, 'REQUEST_METHOD') === 'POST') {
     $fileUploadSingle = $_FILES['fileUploadSingle'];
     $fileUploadMultiple = $_FILES['fileUploadMultiple'];
 
-    $datas = [
+    $data = [
         'fileUploadSingle' => $fileUploadSingle,
         'fileUploadMultiple' => $fileUploadMultiple,
     ];
@@ -193,8 +194,8 @@ if (filter_input(INPUT_SERVER, 'REQUEST_METHOD') === 'POST') {
     ];
 
     $validator = new DevUtils\Validator();
-    DevUtils\Format::convertTypes($datas, $rules);
-    $validator->set($datas, $rules);
+    DevUtils\Format::convertTypes($data, $rules);
+    $validator->set($data, $rules);
 
     if (!$validator->getErros()) {
         echo '✓ Files validated successfully!';
@@ -218,35 +219,40 @@ Complete list of available validators in the library. Use them in your validatio
 | alphaNoSpecial    | Regular text without accents         |
 | alphaNum          | Alphanumeric characters              |
 | alphaNumNoSpecial | Letters without accents + numbers    |
-| lower             | All lowercase characters             |
+| lower             | No uppercase letters (digits ok)     |
 | notSpace          | Check if contains spaces             |
-| regex             | Custom regular expression validation |
-| upper             | All uppercase characters             |
+| regex             | Custom regex, e.g. regex:/^[0-9]+$/  |
+| upper             | No lowercase letters (digits ok)     |
 
 ### Brazilian Data Validators
 
-| Validator             | Description                                     |
-| --------------------- | ----------------------------------------------- |
-| companyIdentification | Validates CNPJ with or without mask             |
-| ddd                   | Validates DDD by state or general (e.g. ddd:pr) |
-| identifier            | Validates CPF with or without mask              |
-| identifierOrCompany   | Validates CPF or CNPJ                           |
-| phone                 | Phone with DDD (10 or 11 digits)                |
-| plate                 | Vehicle license plate                           |
+| Validator             | Description                                                              |
+| --------------------- | ------------------------------------------------------------------------ |
+| companyIdentification | Validates CNPJ with or without mask, upper or lowercase                  |
+| ddd                   | Validates DDD by state or general (e.g. ddd:pr), with or without mask    |
+| identifier            | Validates CPF with or without mask                                       |
+| identifierOrCompany   | Validates CPF or CNPJ with or without mask, upper or lowercase           |
+| phone                 | Phone with DDD (10 or 11 digits), with or without mask                   |
+| plate                 | Vehicle license plate AAA-0000 or Mercosul AAA0A00, with or without mask |
+| zipcode               | Brazilian CEP (8 digits), with or without mask                           |
 
 ### Date and Time Validators
 
-| Validator              | Description                              |
-| ---------------------- | ---------------------------------------- |
-| dateAmerican           | American date format (MM/DD/YYYY)        |
-| dateBrazil             | Brazilian date format (DD/MM/YYYY)       |
-| dateIso8601            | ISO 8601 date (2025-11-20T10:30:00Z)     |
-| dateNotFuture          | Validates date is not in the future      |
-| dateUTCWithoutTimezone | UTC date without Z (2025-11-20T10:30:00) |
-| hour                   | Validates hour format                    |
-| noWeekend              | Checks if date is not a weekend          |
-| numMonth               | Validates month (1-12)                   |
-| timestamp              | Validates Unix timestamp                 |
+| Validator              | Description                                       |
+| ---------------------- | ------------------------------------------------- |
+| dateAmerican           | Date YYYY-MM-DD or MM/DD/YYYY (8 digits ok)       |
+| dateBrazil             | Date DD/MM/YYYY (or 8 digits: 31122024)           |
+| dateIso8601            | ISO 8601 date, week, ordinal, duration or interval |
+| dateNotFuture          | Date not in the future (DD/MM/YYYY or YYYY-MM-DD) |
+| dateUTCWithoutTimezone | UTC date without Z (2025-11-20T10:30:00)          |
+| hour                   | Hour HH:MM, from 00:00 to 23:59                   |
+| noWeekend              | Date is not Saturday or Sunday                    |
+| numMonth               | Month from 1 to 12 (01 accepted)                  |
+| timestamp              | Date and time YYYY-MM-DD HH:MM:SS (not Unix)      |
+
+`dateAmerican` takes both the database format `2024-12-31` and the US format `12/31/2024`. When a
+slashed date could be read either way — `05/06/2024` is 5 June for Brazil and 6 May for the US — the
+**Brazilian reading wins**, so use `2024-06-05` whenever the source is really American.
 
 ### Type Validators
 
@@ -274,12 +280,12 @@ Complete list of available validators in the library. Use them in your validatio
 
 ### Network and Identifier Validators
 
-| Validator | Description       |
-| --------- | ----------------- |
-| email     | Email validation  |
-| ip        | Valid IP address  |
-| mac       | Valid MAC address |
-| rgbColor  | Valid RGB color   |
+| Validator | Description                                       |
+| --------- | ------------------------------------------------- |
+| email     | Email validation                                  |
+| ip        | Valid IP address                                  |
+| mac       | Valid MAC address                                 |
+| rgbColor  | Valid RGB color (255,255,255 or rgb(255,255,255)) |
 
 ### Numeric Comparison Validators
 
@@ -304,6 +310,49 @@ Complete list of available validators in the library. Use them in your validatio
 | mimeType      | Defines allowed extensions (separated by ;) |
 | requiredFile  | Required file field                         |
 
+### Using the regex validator
+
+The pattern is handed straight to `preg_match()`, so write it **exactly as you would in PHP —
+delimiters included**. Modifiers go after the closing delimiter.
+
+```php
+$rules = [
+    'code'     => 'required|regex:/^[A-Z]{3}[0-9]{4}$/',        // ABC1234
+    'slug'     => 'regex:/^[a-z0-9-]+$/',
+    'name'     => 'regex:/^[a-z ]+$/i',                         // modifiers work
+    'nickname' => 'optional|regex:/^[a-z]+$/',                  // only checked when filled
+    'digits'   => 'regex:/^[0-9]+$/, Only digits are allowed',  // custom message
+];
+```
+
+Delimiters are not optional: `regex:^[0-9]+$` raises `preg_match(): No ending delimiter` and the
+field then fails for every value. The rule name is case-sensitive too — `Regex:` is reported as an
+invalid rule.
+
+#### Characters the pipe syntax cannot carry
+
+The rule string is parsed before it reaches `preg_match()`: `|` separates rules, `,` starts a custom
+message and `:` separates a rule from its parameter. A pattern containing any of them is cut short —
+and it fails quietly, so it is worth knowing in advance:
+
+```php
+'regex:/^(cat|dog)$/'    // '|' splits the rule    -> "Uma regra inválida está sendo aplicada..."
+'regex:/^[0-9]{2,4}$/'   // ',' starts a message   -> pattern is cut and '4}$/' becomes the message
+'regex:/^[a-z]:[0-9]$/'  // ':' splits the param   -> pattern truncated to '/^[a-z]'
+'regex:/^[a-z];[0-9]$/'  // ';' is safe, it is special-cased for this rule
+```
+
+For those patterns, declare that field's rules as a **JSON string**. Nothing is split, so any
+pattern goes through — and the `message` key carries the custom message:
+
+```php
+$rules = [
+    'range' => '{"regex":"/^[0-9]{2,4}$/"}',                          // comma
+    'pet'   => '{"required":true,"regex":"/^(cat|dog)$/"}',           // alternation
+    'time'  => '{"regex":"/^[0-9]{2}:[0-9]{2}$/","message":"Use HH:MM"}',
+];
+```
+
 ---
 
 ## Defining custom message
@@ -315,7 +364,7 @@ After defining some of our rules to the data you can also add a custom message u
 ```php
 <?php
 
-    $validator->set($datas, [
+    $validator->set($data, [
         'name'  => 'required, The name field cannot be empty',
         'email' => 'email, The email field is incorrect|max:50',
         'password' => 'min:8, nat least 8 characters|max:12, no máximo 12 caracteres.',
@@ -331,11 +380,16 @@ require 'vendor/autoload.php';
 
 use DevUtils\Format;
 
+//Methods that accept masked input (companyIdentification, identifier, identifierOrCompany, telephone, zipCode)
+//throw InvalidArgumentException when the value has a leading or trailing space
 Format::companyIdentification('A1B2C3D45E6F59'); //CNPJ ==> A1.B2C.3D4/5E6F-59 - accepts masked input
 Format::convertTimestampBrazilToAmerican('15/04/2021 19:50:25'); //Convert Timestamp Brazil to American format
-Format::currency('113', 'R$ ');//Default currency BR ==> R$ 113,00 - the 2nd parameter chooses the Currency label. A leading '-' is preserved
+//Default currency BR ==> R$ 113,00 - the 2nd parameter chooses the Currency label. A leading '-' is preserved.
+//An empty string returns 0,00, but a value without any digit throws InvalidArgumentException
+Format::currency('113', 'R$ ');
 Format::currencyUsd('1123.45'); //Default currency USD ==> 1,123.45 - the 2nd parameter chooses the Currency label
-//Accepts dd/mm/yyyy, dd-mm-yyyy and yyyy-mm-dd. An invalid date throws InvalidArgumentException
+//Accepts dd/mm/yyyy, mm/dd/yyyy, dd-mm-yyyy and yyyy-mm-dd. An invalid date throws InvalidArgumentException
+//An ambiguous slashed date is read as Brazilian: '05/06/2024' returns 2024-06-05, not 2024-05-06
 Format::dateAmerican('12-05-2020'); //return date ==>  2020-05-12
 Format::dateBrazil('2020-05-12'); //return date ==>  12/05/2020
 Format::identifier('73381209000');  //CPF ==>  733.812.090-00 - accepts masked input
@@ -348,23 +402,24 @@ Format::mask('#### #### #### ####', '1234567890123456'); //Mask ==> 1234 5678 90
 Format::maskStringHidden('065.775.009.96', 3, 4, '*');
 Format::onlyNumbers('548Abc87@'); //Returns only numbers ==> 54887;
 Format::onlyLettersNumbers('548Abc87@'); //Returns only letters and numbers ==> 548Abc87;
-Format::pointOnlyValue('1.350,45'); //Currency for recording on the BD ==>  1350.45
+//Currency for recording on the BD ==> 1350.45 - accepts Brazilian ('1.350,45') and American ('1,350.45') formats
+Format::pointOnlyValue('1.350,45');
 Format::removeAccent('Açafrão'); //Remove accents and character 'ç' ==> Acafrao
 //Removes all special characters ==> "Acafrao com Espaco", 2nd parameter chooses whether to allow space, default true
 Format::removeSpecialCharacters('Açafrão com Espaco %$#@!', true);
 Format::returnPhoneOrAreaCode('44999998888', false); //Returns only the phone number ==> 999998888
 Format::returnPhoneOrAreaCode('44999998888', true); //Returns only the phone's area code ==> 44
 Format::reverse('Abacaxi'); //Returns inverted string ==> ixacabA
-Format::telephone('44999998888');  //Return phone format brazil ==> (44) 99999-8888 - digits only
+Format::telephone('44999998888');  //Return phone format brazil ==> (44) 99999-8888 - accepts masked input
 Format::ucwordsCharset('aÇafrÃo maCaRRão'); //Return first capital letter ==> Açafrão Macarrão
 Format::upper('Moto'); //lowercase text ==> MOTO - the 2nd parameter chooses the charset, UTF-8 default
-Format::zipCode('87030585'); //CEP format brazil ==>  87030-585
+Format::zipCode('87030585'); //CEP format brazil ==>  87030-585 - accepts masked input
 Format::writeDateExtensive('06/11/2020'); //Date by Long Brazilian format ==> sexta-feira, 06 de novembro de 2020
 Format::writeCurrencyExtensive(1.97); //Coin by Extensive Brazilian format ==> um real e noventa e sete centavos
 Format::writeCurrencyExtensive(1000); //==> mil reais
 Format::writeCurrencyExtensive(1000000); //==> um milhão de reais
 Format::convertStringToBinary('amor'); //String to binary ==> 1100001 1101101 1101111 1110010
-Format::slugfy('Polenta frita e Parmesão'); //Returns a slug from a string ==> polenta-frita-e-parmesao
+Format::slugify('Polenta frita e Parmesão'); //Returns a slug from a string ==> polenta-frita-e-parmesao
 
 $data = [
     'treatingIntType' => '12',
@@ -522,7 +577,7 @@ require 'vendor/autoload.php';
 use DevUtils\Compare;
 
 //Returns +30 (+30 days difference)
-//Throws InvalidArgumentException when the date is not dd/mm/yyyy or yyyy-mm-dd (31/02/2020 is rejected)
+//Throws InvalidArgumentException when the date is not dd/mm/yyyy, mm/dd/yyyy or yyyy-mm-dd (31/02/2020 is rejected)
 Compare::daysDifferenceBetweenData('31/05/2020', '30/06/2020'); //Accepts American date too
 
 //Compares if start date is less than end date => Returns [bool]
@@ -582,8 +637,9 @@ ValidateCpf::validateCpf('257.877.760-89'); //Returns boolean, example true [Can
 use DevUtils\ValidateDate;
 //Examples return true
 ValidateDate::validateDateBrazil('29/04/2021'); //Return boolean [Format dd/mm/yyyy]
-ValidateDate::validateDateAmerican('2021-04-29'); //Return boolean [Format yyyy-mm-dd]
-ValidateDate::validateTimeStamp('2021-04-29 11:17:12'); //Return boolean [Format yyyy-mm-dd hh:mm:ss]
+ValidateDate::validateDateAmerican('2021-04-29'); //Return boolean [Format yyyy-mm-dd or mm/dd/yyyy]
+ValidateDate::validateDateAmerican('12/31/2024'); //Return boolean [US format, month first]
+ValidateDate::validateTimestamp('2021-04-29 11:17:12'); //Return boolean [Format yyyy-mm-dd hh:mm:ss]
 ValidateDate::validateDateIso8601('2025-11-20T10:30:00Z'); //Return boolean [Format ISO 8601: 2025-11-20T10:30:00Z]
 ValidateDate::validateDateUTCWithoutTimezone('2025-11-20T10:30:00'); //Return boolean [Format UTC without Z: 2025-11-20T10:30:00]
 
@@ -688,18 +744,18 @@ require 'vendor/autoload.php';
 
 use DevUtils\Arrays;
 
-$array = ['primeiro' => 15, 'segundo' => 25];
-var_dump(Arrays::searchKey($array, 'primeiro'));   // Search for key in array, and Return position ==> returns 0
-var_dump(Arrays::searchKey($array, 'segundo'));    // Search for key in array, and Return position ==> returns 1
-var_dump(Arrays::searchKey($array, 'nao-existe')); // Search for key in array, and Return position ==> returns null
+$array = ['first' => 15, 'second' => 25];
+var_dump(Arrays::searchKey($array, 'first'));   // Search for key in array, and Return position ==> returns 0
+var_dump(Arrays::searchKey($array, 'second'));    // Search for key in array, and Return position ==> returns 1
+var_dump(Arrays::searchKey($array, 'does-not-exist')); // Search for key in array, and Return position ==> returns null
 
-$array = ['primeiro' => 10, 'segundo' => 20];
-Arrays::renameKey($array, 'primeiro', 'novoNome');
-var_dump($array); //Rename array key ==> ['novoNome' => 10, 'segundo' => 20];
+$array = ['first' => 10, 'second' => 20];
+Arrays::renameKey($array, 'first', 'newName');
+var_dump($array); //Rename array key ==> ['newName' => 10, 'second' => 20];
 
 $array = [
-    'frutas' => ['fruta_1' => 'Maçã', 'fruta_2' => 'Pêra', 'fruta_3' => 'fruta', 'fruta_4' => 'Uva'],
-    'verduras' => ['verdura_1' => 'Rúcula', 'verdura_2' => 'Acelga', 'verdura_3' => 'Alface'],
+    'fruits' => ['fruit_1' => 'Maçã', 'fruit_2' => 'Pêra', 'fruit_3' => 'fruit', 'fruit_4' => 'Uva'],
+    'vegetables' => ['vegetable_1' => 'Rúcula', 'vegetable_2' => 'Acelga', 'vegetable_3' => 'Alface'],
     'legume' => 'Tomate'
 ];
 
@@ -707,7 +763,7 @@ $array = [
 var_dump(Arrays::checkExistIndexByValue($array, 'Tomate'));
 
 // Performs the search in the array, through the key and Return an array with all indexes located
-var_dump(Arrays::findValueByKey($array, 'verduras'));
+var_dump(Arrays::findValueByKey($array, 'vegetables'));
 
 // Performs the search in the array, through a value and returns an array with all items located
 var_dump(Arrays::findIndexByValue($array, 'Tomate'));
@@ -717,8 +773,8 @@ Arrays::convertArrayToXml($array, $xml); // Convert array to Xml
 var_dump($xml->asXML());
 
 $array = [
-    'frutas' => ['fruta_1' => 'Maçã', 'fruta_2' => 'Pêra', 'fruta_3' => 'fruta', 'fruta_4' => 'Uva'],
-    'verduras' => '{"verdura_1": "Rúcula", "verdura_2": "Acelga", "verdura_3": "Alface"}'
+    'fruits' => ['fruit_1' => 'Maçã', 'fruit_2' => 'Pêra', 'fruit_3' => 'fruit', 'fruit_4' => 'Uva'],
+    'vegetables' => '{"vegetable_1": "Rúcula", "vegetable_2": "Acelga", "vegetable_3": "Alface"}'
 ];
 
 // Checks the array, if it has any index with JSON and turns it into an array
@@ -726,18 +782,18 @@ Arrays::convertJsonIndexToArray($array);
 var_dump($array);
 
 $array = [
-            'pessoa' => [
-                'pedidos' => ['pedido1', 'pedido2'],
-                'categorias' => [
-                    'subcategorias' => [
-                        'subcategoria1' => 'valor teste'
+            'person' => [
+                'orders' => ['order1', 'order2'],
+                'categories' => [
+                    'subcategories' => [
+                        'subcategory1' => 'test value'
                     ]
                 ]
             ]
         ];
 
 // Checks if a specific index exists in a multilevel array
-var_dump(Arrays::checkExistIndexArrayRecursive($array, 'subcategoria1')); // Return true
+var_dump(Arrays::checkExistIndexArrayRecursive($array, 'subcategory1')); // Return true
 
 ```
 
@@ -790,11 +846,6 @@ Utility::captureClientIp(); // ==> '201.200.25.40', or null when no source is av
 
 Checks, in order: `HTTP_CLIENT_IP`, `HTTP_X_FORWARDED_FOR` and `REMOTE_ADDR`, returning the first
 one that is filled.
-
-> ⚠️ The first two are **request headers, which the client can forge**. Rely on them only when your
-> application sits behind a proxy you control. For security decisions — rate limiting, IP
-> allowlists, audit trails — read `$_SERVER['REMOTE_ADDR']` directly. Note also that
-> `HTTP_X_FORWARDED_FOR` may hold a chain (`client, proxy1, proxy2`) and is returned as is.
 
 ## Check the minimum coverage of CI/CD unit tests using PHPUnit
 

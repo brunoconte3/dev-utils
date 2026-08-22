@@ -52,7 +52,7 @@ trait TraitRuleDate
 
     protected function validateTimestamp(string $field = '', string $value = '', ?string $message = ''): void
     {
-        if (ValidateDate::validateTimeStamp($value)) {
+        if (ValidateDate::validateTimestamp($value)) {
             return;
         }
 

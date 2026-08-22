@@ -96,18 +96,18 @@ class RuleTest extends TestCase
         $validator->set($array, $rules);
         self::assertCount(1, $validator->getErros());
         $array = [
-            'arrayVazioErro' => [],
-            'dadosArrayErro' => 11,
-            'dadosArrayRequired' => ['empresa' => 'cooper'],
+            'emptyArrayError' => [],
+            'arrayDataError' => 11,
+            'arrayDataRequired' => ['company' => 'cooper'],
         ];
         $rules = [
-            'arrayVazioErro' => 'required',
-            'dadosArrayErro' => 'array',
-            'dadosArrayRequired' => 'required|array',
+            'emptyArrayError' => 'required',
+            'arrayDataError' => 'array',
+            'arrayDataRequired' => 'required|array',
         ];
         $expected = [
-            'arrayVazioErro' => 'O campo arrayVazioErro é obrigatório!',
-            'dadosArrayErro' => 'A variável dadosArrayErro não é um array!',
+            'emptyArrayError' => 'O campo emptyArrayError é obrigatório!',
+            'arrayDataError' => 'A variável arrayDataError não é um array!',
         ];
         $validator = new Validator();
         $validator->set($array, $rules);
@@ -308,15 +308,15 @@ class RuleTest extends TestCase
     public function testNumMin(): void
     {
         $array = [
-            'testeErrorNegative' => '-2',
-            'testeErrorNoInt' => 'a',
+            'testErrorNegative' => '-2',
+            'testErrorNoInt' => 'a',
             'testError' => 2,
             'testValid' => 8,
             'testValidZero' => '0',
         ];
         $rules = [
-            'testeErrorNegative' => 'numMin:-2',
-            'testeErrorNoInt' => self::RULE_NUM_MIN_5,
+            'testErrorNegative' => 'numMin:-2',
+            'testErrorNoInt' => self::RULE_NUM_MIN_5,
             'testError' => self::RULE_NUM_MIN_5,
             'testValid' => self::RULE_NUM_MIN_5,
             'testValidZero' => 'numMin:0',
@@ -354,7 +354,7 @@ class RuleTest extends TestCase
         ];
         $rules = [
             'testError' => 'phone',
-            'testInvalidRule' => 'naoExisteEssaRegra',
+            'testInvalidRule' => 'thisRuleDoesNotExist',
             'testMask' => 'phone',
             'testValid' => 'phone',
         ];
@@ -365,12 +365,12 @@ class RuleTest extends TestCase
     {
         self::assertErrorCount(
             1,
-            ['testError' => 'aXI3668', 'testValid' => 'AXI-3668'],
-            ['testError' => 'plate', 'testValid' => 'plate'],
+            ['testError' => 'AXI-36688', 'testValid' => 'AXI-3668', 'testValidNoMask' => 'aXI3668'],
+            ['testError' => 'plate', 'testValid' => 'plate', 'testValidNoMask' => 'plate'],
         );
     }
 
-    public function testRegEx(): void
+    public function testRegex(): void
     {
         self::assertErrorCount(
             1,
@@ -448,7 +448,7 @@ class RuleTest extends TestCase
         );
     }
 
-    public function testZipcode(): void
+    public function testZipCode(): void
     {
         self::assertErrorCount(
             1,
@@ -461,25 +461,25 @@ class RuleTest extends TestCase
     {
         $msg = 'Mensagem customizada aqui, devendo conter no mínimo uma vírgula!';
         $array = [
-            'textoError' => 'abc',
-            'textoValid' => 'abcde',
+            'textError' => 'abc',
+            'textValid' => 'abcde',
         ];
         $rules = [
-            'textoError' => self::RULE_REQUIRED_MIN_5 . $msg . '|max:20',
-            'textoValid' => self::RULE_REQUIRED_MIN_5 . $msg . '|max:20',
+            'textError' => self::RULE_REQUIRED_MIN_5 . $msg . '|max:20',
+            'textValid' => self::RULE_REQUIRED_MIN_5 . $msg . '|max:20',
         ];
         $validator = new Validator();
         $validator->set($array, $rules);
         self::assertCount(1, $validator->getErros());
-        self::assertEquals($msg, $validator->getErros()['textoError']);
+        self::assertEquals($msg, $validator->getErros()['textError']);
     }
 
     public function testNotSpace(): void
     {
         self::assertErrorCount(
             1,
-            ['validarEspacoError' => 'BRU C', 'validarEspacoValid' => 'BRUC'],
-            ['validarEspacoError' => 'notSpace', 'validarEspacoValid' => 'notSpace'],
+            ['spaceError' => 'BRU C', 'spaceValid' => 'BRUC'],
+            ['spaceError' => 'notSpace', 'spaceValid' => 'notSpace'],
         );
     }
 
@@ -487,8 +487,8 @@ class RuleTest extends TestCase
     {
         self::assertErrorCount(
             1,
-            ['validaJsonError' => '"nome": "Bruno"}', 'validaJsonValid' => '{"nome": "Bruno"}'],
-            ['validaJsonError' => 'type:json', 'validaJsonValid' => 'type:json'],
+            ['jsonError' => '"name": "Bruno"}', 'jsonValid' => '{"name": "Bruno"}'],
+            ['jsonError' => 'type:json', 'jsonValid' => 'type:json'],
         );
     }
 
@@ -496,26 +496,26 @@ class RuleTest extends TestCase
     {
         self::assertErrorCount(
             1,
-            ['validaMesError' => 13, 'validaMesValid' => 10],
-            ['validaMesError' => 'numMonth', 'validaMesValid' => 'numMonth'],
+            ['monthError' => 13, 'monthValid' => 10],
+            ['monthError' => 'numMonth', 'monthValid' => 'numMonth'],
         );
     }
 
     public function testIdentifierOrCompany(): void
     {
         $array = [
-            'cpfOuCnpjerror' => '9E.2A4.092.0001/5A',
-            'cpfOuCnpjExceptionError' => '12.123.456/0007-12',
-            'cpfOuCnpjExceptionValid' => '00.000.000/0000-00',
-            'cpfOuCnpjInvalid' => '0966894790',
-            'cpfOuCnpjValid' => 'DE.VUT.ILS/123X-49',
+            'cpfOrCnpjError' => '9E.2A4.092.0001/5A',
+            'cpfOrCnpjExceptionError' => '12.123.456/0007-12',
+            'cpfOrCnpjExceptionValid' => '00.000.000/0000-00',
+            'cpfOrCnpjInvalid' => '0966894790',
+            'cpfOrCnpjValid' => 'DE.VUT.ILS/123X-49',
         ];
         $rules = [
-            'cpfOuCnpjerror' => 'identifierOrCompany',
-            'cpfOuCnpjExceptionError' => 'identifierOrCompany:12123456000712',
-            'cpfOuCnpjExceptionValid' => 'identifierOrCompany:00000000000000;22222222222222',
-            'cpfOuCnpjInvalid' => 'identifierOrCompany',
-            'cpfOuCnpjValid' => 'identifierOrCompany',
+            'cpfOrCnpjError' => 'identifierOrCompany',
+            'cpfOrCnpjExceptionError' => 'identifierOrCompany:12123456000712',
+            'cpfOrCnpjExceptionValid' => 'identifierOrCompany:00000000000000;22222222222222',
+            'cpfOrCnpjInvalid' => 'identifierOrCompany',
+            'cpfOrCnpjValid' => 'identifierOrCompany',
         ];
         self::assertErrorCount(3, $array, $rules);
     }
@@ -672,14 +672,14 @@ class RuleTest extends TestCase
         $array = [
             'dateHourAmericanError' => '2021-04-15 21:01',
             'dateHourAmericanValid' => '2021-04-15 21:01:04',
-            'dateHourBrasilError' => '15/04/2021 21:01',
-            'dateHourBrasilValid' => '15/04/2021 21:01:04',
+            'dateHourBrazilError' => '15/04/2021 21:01',
+            'dateHourBrazilValid' => '15/04/2021 21:01:04',
         ];
         $rules = [
             'dateHourAmericanError' => 'timestamp',
             'dateHourAmericanValid' => 'timestamp',
-            'dateHourBrasilError' => 'timestamp',
-            'dateHourBrasilValid' => 'timestamp',
+            'dateHourBrazilError' => 'timestamp',
+            'dateHourBrazilValid' => 'timestamp',
         ];
         self::assertErrorCount(2, $array, $rules);
     }
@@ -687,14 +687,14 @@ class RuleTest extends TestCase
     public function testEquals(): void
     {
         $array = [
-            'confirmarSenha' => 'mudar123',
-            'regraInvalida' => 'teste',
-            'senha' => 'mudar',
+            'confirmPassword' => 'reset123',
+            'invalidRule' => 'test',
+            'password' => 'reset',
         ];
         $rules = [
-            'confirmarSenha' => 'min:3|max:5|alpha|equals:senha',
-            'regraInvalida' => 'equals',
-            'senha' => 'min:3|max:5|alpha',
+            'confirmPassword' => 'min:3|max:5|alpha|equals:password',
+            'invalidRule' => 'equals',
+            'password' => 'min:3|max:5|alpha',
         ];
         self::assertErrorCount(2, $array, $rules);
     }
@@ -904,19 +904,19 @@ class RuleTest extends TestCase
     public function testValidatorWithEmptyData(): void
     {
         $validator = new Validator();
-        $validator->set([], ['campo' => 'required']);
+        $validator->set([], ['field' => 'required']);
         self::assertArrayHasKey('erro', $validator->getErros());
     }
 
     public function testValidatorWithNestedArray(): void
     {
         $array = [
-            ['nome' => 'Bruno', 'idade' => 30],
-            ['nome' => '', 'idade' => 25],
+            ['name' => 'Bruno', 'age' => 30],
+            ['name' => '', 'age' => 25],
         ];
         $rules = [
-            'idade' => 'required|int',
-            'nome' => 'required|min:2',
+            'age' => 'required|int',
+            'name' => 'required|min:2',
         ];
         $validator = new Validator();
         $validator->set($array, $rules);
@@ -925,8 +925,8 @@ class RuleTest extends TestCase
 
     public function testOptionalWithValue(): void
     {
-        $array = ['campo' => 'ab'];
-        $rules = ['campo' => self::RULE_OPTIONAL_MIN_5];
+        $array = ['field' => 'ab'];
+        $rules = ['field' => self::RULE_OPTIONAL_MIN_5];
         $validator = new Validator();
         $validator->set($array, $rules);
         self::assertCount(1, $validator->getErros());
@@ -934,8 +934,8 @@ class RuleTest extends TestCase
 
     public function testOptionalWithEmptyValue(): void
     {
-        $array = ['campo' => ''];
-        $rules = ['campo' => self::RULE_OPTIONAL_MIN_5];
+        $array = ['field' => ''];
+        $rules = ['field' => self::RULE_OPTIONAL_MIN_5];
         $validator = new Validator();
         $validator->set($array, $rules);
         self::assertCount(0, $validator->getErros());
@@ -1077,7 +1077,7 @@ class RuleTest extends TestCase
         $array = [
             'testError' => 'not a json',
             'testValidArray' => ['key' => 'value'],
-            'testValidString' => '{"nome": "Bruno", "idade": 30}',
+            'testValidString' => '{"name": "Bruno", "idade": 30}',
         ];
         $rules = [
             'testError' => 'json',
@@ -1136,7 +1136,7 @@ class RuleTest extends TestCase
         self::assertErrorCount(1, $array, $rules);
     }
 
-    public function testZipcodeWithMask(): void
+    public function testZipCodeWithMask(): void
     {
         $array = [
             'testError' => '8704751',
@@ -1154,16 +1154,130 @@ class RuleTest extends TestCase
     public function testPlateMercosul(): void
     {
         $array = [
-            'testErrorLower' => 'abc-1234',
-            'testErrorMercosul' => 'ABC1D23',
+            'testErrorFewLetters' => 'AB-1234',
+            'testErrorManyDigits' => 'ABC12345',
+            'testErrorOnlyDigits' => '1234567',
+            'testValidLower' => 'abc-1234',
+            'testValidMercosul' => 'ABC1D23',
+            'testValidMercosulLower' => 'abc1d23',
+            'testValidNoMask' => 'ABC1234',
             'testValidOld' => 'ABC-1234',
         ];
         $rules = [
-            'testErrorLower' => 'plate',
-            'testErrorMercosul' => 'plate',
+            'testErrorFewLetters' => 'plate',
+            'testErrorManyDigits' => 'plate',
+            'testErrorOnlyDigits' => 'plate',
+            'testValidLower' => 'plate',
+            'testValidMercosul' => 'plate',
+            'testValidMercosulLower' => 'plate',
+            'testValidNoMask' => 'plate',
             'testValidOld' => 'plate',
         ];
+        self::assertErrorCount(3, $array, $rules);
+    }
+
+    public function testIdentifierOrCompanyAcceptsLowercaseAlphanumericCompany(): void
+    {
+        $array = [
+            'cnpjLower' => 'br.asi.l20/26aa-64',
+            'cnpjLowerNoMask' => 'brasil2026aa64',
+            'cnpjMixed' => 'Br.Asi.L20/26aa-64',
+            'cnpjOtherLower' => 'k7.cm7.10c/0001-84',
+            'cnpjUpper' => 'BR.ASI.L20/26AA-64',
+        ];
+        $rules = [
+            'cnpjLower' => 'identifierOrCompany',
+            'cnpjLowerNoMask' => 'identifierOrCompany',
+            'cnpjMixed' => 'identifierOrCompany',
+            'cnpjOtherLower' => 'identifierOrCompany',
+            'cnpjUpper' => 'identifierOrCompany',
+        ];
+        self::assertErrorCount(0, $array, $rules);
+    }
+
+    public function testDddAcceptsMaskedValue(): void
+    {
+        $array = [
+            'dddError' => '(00)',
+            'dddMasked' => '(44)',
+            'dddMaskedThreeDigits' => '(011)',
+            'dddSpaced' => ' 44 ',
+        ];
+        $rules = [
+            'dddError' => 'ddd',
+            'dddMasked' => 'ddd',
+            'dddMaskedThreeDigits' => 'ddd',
+            'dddSpaced' => 'ddd',
+        ];
+        self::assertErrorCount(1, $array, $rules);
+    }
+
+    public function testDddByStateAcceptsMaskedValue(): void
+    {
+        $array = [
+            'dddPrError' => '(11)',
+            'dddPrValid' => '(44)',
+        ];
+        $rules = [
+            'dddPrError' => 'ddd:pr',
+            'dddPrValid' => 'ddd:pr',
+        ];
+        self::assertErrorCount(1, $array, $rules);
+    }
+
+    public function testRgbColorAcceptsFunctionNotation(): void
+    {
+        $array = [
+            'rgbError' => 'rgb(256,0,0)',
+            'rgbErrorEmpty' => 'rgb()',
+            'rgbFunction' => 'rgb(255,255,255)',
+            'rgbFunctionSpaced' => 'rgb( 128 , 128 , 128 )',
+            'rgbFunctionUpper' => 'RGB(0,0,0)',
+        ];
+        $rules = [
+            'rgbError' => 'rgbColor',
+            'rgbErrorEmpty' => 'rgbColor',
+            'rgbFunction' => 'rgbColor',
+            'rgbFunctionSpaced' => 'rgbColor',
+            'rgbFunctionUpper' => 'rgbColor',
+        ];
         self::assertErrorCount(2, $array, $rules);
+    }
+
+    public function testValidatorTrimsSurroundingSpacesBeforeRules(): void
+    {
+        $array = [
+            'cpf' => ' 894.213.600-10 ',
+            'ddd' => ' 44 ',
+            'plate' => ' ABC-1234 ',
+            'zip' => ' 87020-000 ',
+        ];
+        $rules = [
+            'cpf' => 'identifier',
+            'ddd' => 'ddd',
+            'plate' => 'plate',
+            'zip' => 'zipcode',
+        ];
+        self::assertErrorCount(0, $array, $rules);
+    }
+
+    public function testZipCodeAcceptsDottedMask(): void
+    {
+        $array = [
+            'zipDotted' => '87.020-000',
+            'zipError' => '870200001',
+            'zipMasked' => '87020-000',
+            'zipNoMask' => '87020000',
+            'zipSpaced' => ' 87020-000 ',
+        ];
+        $rules = [
+            'zipDotted' => 'zipcode',
+            'zipError' => 'zipcode',
+            'zipMasked' => 'zipcode',
+            'zipNoMask' => 'zipcode',
+            'zipSpaced' => 'zipcode',
+        ];
+        self::assertErrorCount(1, $array, $rules);
     }
 
     public function testNumericWithDifferentTypes(): void
@@ -1213,6 +1327,23 @@ class RuleTest extends TestCase
             'testValidWithMask' => 'dateAmerican',
         ];
         self::assertErrorCount(1, $array, $rules);
+    }
+
+    public function testDateAmericanWithUnitedStatesFormat(): void
+    {
+        $array = [
+            'testErrorMonth' => '13/31/2024',
+            'testErrorDay' => '12/32/2024',
+            'testValidEndOfYear' => '12/31/2024',
+            'testValidLeapDay' => '02/29/2024',
+        ];
+        $rules = [
+            'testErrorMonth' => 'dateAmerican',
+            'testErrorDay' => 'dateAmerican',
+            'testValidEndOfYear' => 'dateAmerican',
+            'testValidLeapDay' => 'dateAmerican',
+        ];
+        self::assertErrorCount(2, $array, $rules);
     }
 
     public function testHourWithDifferentFormats(): void
@@ -1378,15 +1509,15 @@ class RuleTest extends TestCase
     {
         $customMsg = 'Este campo é inválido, verifique os requisitos!';
         $array = [
-            'campo' => 'ab',
+            'field' => 'ab',
         ];
         $rules = [
-            'campo' => self::RULE_REQUIRED_MIN_5 . $customMsg,
+            'field' => self::RULE_REQUIRED_MIN_5 . $customMsg,
         ];
         $validator = new Validator();
         $validator->set($array, $rules);
         self::assertCount(1, $validator->getErros());
-        self::assertEquals($customMsg, $validator->getErros()['campo']);
+        self::assertEquals($customMsg, $validator->getErros()['field']);
     }
 
     public function testMinWordsWithExactMatch(): void
@@ -1557,10 +1688,10 @@ class RuleTest extends TestCase
     public function testJsonParamWithMultipleRules(): void
     {
         $array = [
-            'campo' => 'Bruno123',
+            'field' => 'Bruno123',
         ];
         $rules = [
-            'campo' => '{"required":"true","type":"alphaNum","min":"5","max":"20"}',
+            'field' => '{"required":"true","type":"alphaNum","min":"5","max":"20"}',
         ];
         self::assertErrorCount(0, $array, $rules);
     }
@@ -1568,10 +1699,10 @@ class RuleTest extends TestCase
     public function testJsonParamWithInvalidValue(): void
     {
         $array = [
-            'campo' => 'AB',
+            'field' => 'AB',
         ];
         $rules = [
-            'campo' => '{"required":"true","type":"alphaNum","min":"5"}',
+            'field' => '{"required":"true","type":"alphaNum","min":"5"}',
         ];
         self::assertErrorCount(1, $array, $rules);
     }
@@ -1654,20 +1785,20 @@ class RuleTest extends TestCase
 
     public function testUnknownRuleReportsInvalidRuleError(): void
     {
-        $validator = $this->validate(['campo' => 'abc'], ['campo' => 'regraQueNaoExiste']);
+        $validator = $this->validate(['field' => 'abc'], ['field' => 'ruleThatDoesNotExist']);
 
         self::assertSame(
-            ['campo' => 'Uma regra inválida está sendo aplicada no campo campo!'],
+            ['field' => 'Uma regra inválida está sendo aplicada no campo field!'],
             $validator->getErros(),
         );
     }
 
     public function testUnknownRuleWithListValueReportsInvalidRuleError(): void
     {
-        $validator = $this->validate(['campo' => 'abc'], ['campo' => 'regraQueNaoExiste:a;b']);
+        $validator = $this->validate(['field' => 'abc'], ['field' => 'ruleThatDoesNotExist:a;b']);
 
         self::assertSame(
-            ['campo' => 'Uma regra inválida está sendo aplicada no campo campo!'],
+            ['field' => 'Uma regra inválida está sendo aplicada no campo field!'],
             $validator->getErros(),
         );
     }

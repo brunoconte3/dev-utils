@@ -116,8 +116,8 @@ trait TraitRuleFile
     private function isNotImageType(mixed $type, array $imgValid): bool
     {
         if (is_array($type)) {
-            foreach ($type as $valor) {
-                if (!empty($valor) && !in_array($valor, $imgValid)) {
+            foreach ($type as $value) {
+                if (!empty($value) && !in_array($value, $imgValid)) {
                     return true;
                 }
             }

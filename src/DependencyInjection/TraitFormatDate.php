@@ -10,6 +10,17 @@ use InvalidArgumentException;
 
 trait TraitFormatDate
 {
+    private static function americanToIsoDate(string $date): string
+    {
+        if (!str_contains($date, '/')) {
+            return $date;
+        }
+
+        [$month, $day, $year] = explode('/', $date);
+
+        return $year . '-' . $month . '-' . $day;
+    }
+
     private static function toIsoDate(string $date): ?string
     {
         if (ValidateDate::validateDateBrazil($date)) {
@@ -17,7 +28,7 @@ trait TraitFormatDate
         }
 
         if (ValidateDate::validateDateAmerican($date)) {
-            return $date;
+            return self::americanToIsoDate($date);
         }
 
         $parts = explode('-', $date);
@@ -63,7 +74,7 @@ trait TraitFormatDate
 
     public static function convertTimestampBrazilToAmerican(string $dt): string
     {
-        if (!ValidateDate::validateTimeStamp($dt)) {
+        if (!ValidateDate::validateTimestamp($dt)) {
             throw new InvalidArgumentException('Data não é um Timestamp!');
         }
 

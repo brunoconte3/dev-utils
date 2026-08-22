@@ -9,20 +9,20 @@ final class Common
     public static function searchLastLayerRecursive(
         array $arr,
         mixed $param,
-        bool $ultTeste = false
+        bool $found = false
     ): bool {
         foreach ($arr as $value) {
             if (is_array($value)) {
-                $ultTeste = self::searchLastLayerRecursive($value, $param, $ultTeste);
+                $found = self::searchLastLayerRecursive($value, $param, $found);
             } else {
                 if ((int) $value === (int) $param) {
-                    $ultTeste = true;
+                    $found = true;
                 }
             }
-            if ($ultTeste) {
+            if ($found) {
                 break;
             }
         }
-        return $ultTeste;
+        return $found;
     }
 }

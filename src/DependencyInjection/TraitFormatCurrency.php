@@ -43,21 +43,55 @@ trait TraitFormatCurrency
         return $prefix . number_format($value, 2, $decimalSeparator, $thousandsSeparator);
     }
 
+    private static function validateCurrencyValue(string $name, float | int | string $value): void
+    {
+        if (!is_string($value) || trim($value) === '' || preg_match('/\d/', $value) === 1) {
+            return;
+        }
+
+        throw new InvalidArgumentException("$name precisa conter ao menos um número!");
+    }
+
     public static function currency(float | int | string $value, string $coinType = ''): string
     {
+        self::validateCurrencyValue('currency', $value);
         $normalizedValue = self::formatCurrencyForFloat($value);
         return self::formatCurrency($normalizedValue, ',', '.', $coinType);
     }
 
     public static function currencyUsd(float | int | string $value, string $coinType = ''): string
     {
+        self::validateCurrencyValue('currencyUsd', $value);
         $normalizedValue = self::formatCurrencyForFloat($value);
         return self::formatCurrency($normalizedValue, '.', ',', $coinType);
     }
 
+    private static function dotIsDecimalSeparator(string $value): bool
+    {
+        $lastDot = strrpos($value, '.');
+
+        if ($lastDot === false || substr_count($value, '.') > 1) {
+            return false;
+        }
+
+        $decimals = strlen($value) - $lastDot - 1;
+
+        return $decimals === 1 || $decimals === 2;
+    }
+
     public static function pointOnlyValue(string $value): string
     {
-        return str_replace(',', '.', preg_replace('/[^0-9,]/', '', $value) ?? '');
+        $sanitized = (string) preg_replace('/[^0-9,.]/', '', $value);
+
+        if (str_contains($sanitized, ',')) {
+            $lastDot = strrpos($sanitized, '.');
+
+            return $lastDot !== false && $lastDot > strrpos($sanitized, ',')
+                ? str_replace(',', '', $sanitized)
+                : str_replace(',', '.', str_replace('.', '', $sanitized));
+        }
+
+        return self::dotIsDecimalSeparator($sanitized) ? $sanitized : str_replace('.', '', $sanitized);
     }
 
     public static function writeCurrencyExtensive(float $numeral): string

@@ -57,6 +57,7 @@ class Format extends FormatAux
 
     public static function companyIdentification(string $cnpj): string
     {
+        parent::validateSurroundingSpaces('companyIdentification', $cnpj);
         $companyIdentification = (string) preg_replace('/[^A-Z0-9]/', '', strtoupper($cnpj));
 
         if (!preg_match('/^[A-Z0-9]{12}\d{2}$/', $companyIdentification)) {
@@ -77,14 +78,16 @@ class Format extends FormatAux
 
     public static function identifier(string $cpf): string
     {
+        parent::validateSurroundingSpaces('identifier', $cpf);
         $sanitized = self::onlyLettersNumbers($cpf);
         parent::validateForFormatting('identifier', 11, $sanitized);
-        $retorno = preg_replace("/(\d{3})(\d{3})(\d{3})(\d{2})/", "\$1.\$2.\$3-\$4", $sanitized);
-        return $retorno ?? '';
+        $formatted = preg_replace("/(\d{3})(\d{3})(\d{3})(\d{2})/", "\$1.\$2.\$3-\$4", $sanitized);
+        return $formatted ?? '';
     }
 
     public static function identifierOrCompany(string $cpfCnpj): string
     {
+        parent::validateSurroundingSpaces('identifierOrCompany', $cpfCnpj);
         $sanitized = self::onlyLettersNumbers($cpfCnpj);
 
         if (strlen($sanitized) === 11) {
@@ -100,19 +103,26 @@ class Format extends FormatAux
 
     public static function telephone(string $number): string
     {
-        if (!ctype_digit($number)) {
+        parent::validateSurroundingSpaces('telephone', $number);
+        $sanitized = self::onlyLettersNumbers($number);
+
+        if (!ctype_digit($sanitized)) {
             throw new InvalidArgumentException('telephone precisa conter apenas números!');
         }
-        if (strlen($number) < 10 || strlen($number) > 11) {
+        if (strlen($sanitized) < 10 || strlen($sanitized) > 11) {
             throw new InvalidArgumentException('telephone precisa ter 10 ou 11 números!');
         }
-        return '(' . substr($number, 0, 2) . ') ' . substr($number, 2, -4) . '-' . substr($number, -4);
+
+        return '(' . substr($sanitized, 0, 2) . ') ' . substr($sanitized, 2, -4)
+            . '-' . substr($sanitized, -4);
     }
 
     public static function zipCode(string $value): string
     {
-        parent::validateForFormatting('zipCode', 8, $value);
-        return substr($value, 0, 5) . '-' . substr($value, 5, 3);
+        parent::validateSurroundingSpaces('zipCode', $value);
+        $sanitized = self::onlyLettersNumbers($value);
+        parent::validateForFormatting('zipCode', 8, $sanitized);
+        return substr($sanitized, 0, 5) . '-' . substr($sanitized, 5, 3);
     }
 
     public static function arrayToIntReference(array &$array): void

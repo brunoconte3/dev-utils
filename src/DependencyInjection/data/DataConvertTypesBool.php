@@ -11,22 +11,22 @@ class DataConvertTypesBool
     public function arrayData(): array
     {
         return [
-            'tratandoArray' => [1, 2], //true
-            'tratandoClasse' => new stdClass(), //true
-            'tratandoInteiroNegativo' => -42, //true
-            'tratandoInteiroPositivo' => 42, //true
-            'tratandoInteiroZero' => 0, // false
-            'tratandoNull' => null, // false
-            'tratandoQualquerString' => 'string', //false
-            'tratandoStringFalse' => 'false', //false
-            'tratandoStringNo' => 'no', //false
-            'tratandoStringOff' => 'off', //true
-            'tratandoStringOn' => 'on', //true
-            'tratandoStringTrue' => 'true', //true
-            'tratandoStringUm' => '1', // true
-            'tratandoStringVazio' => '', // false
-            'tratandoStringYes' => 'yes', //true
-            'tratandoStringZero' => '0', // false
+            'handlingArray' => [1, 2], //true
+            'handlingClass' => new stdClass(), //true
+            'handlingNegativeInteger' => -42, //true
+            'handlingPositiveInteger' => 42, //true
+            'handlingZeroInteger' => 0, // false
+            'handlingNull' => null, // false
+            'handlingAnyString' => 'string', //false
+            'handlingStringFalse' => 'false', //false
+            'handlingStringNo' => 'no', //false
+            'handlingStringOff' => 'off', //true
+            'handlingStringOn' => 'on', //true
+            'handlingStringTrue' => 'true', //true
+            'handlingStringOne' => '1', // true
+            'handlingEmptyString' => '', // false
+            'handlingStringYes' => 'yes', //true
+            'handlingStringZero' => '0', // false
         ];
     }
 

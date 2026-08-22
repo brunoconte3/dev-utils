@@ -15,28 +15,28 @@ class ValidateDate
     private const ISO_DURATION_DATE = '/^(\d+Y)?(\d+M)?(\d+W)?(\d+D)?$/';
     private const ISO_DURATION_TIME = '/^(\d+H)?(\d+M)?(\d+S)?$/';
 
-    private static function validateYear(string $ano, string $mes, string $dia): bool
+    private static function validateYear(string $year, string $month, string $day): bool
     {
-        return strlen($ano) >= 4
-            && ctype_digit($mes)
-            && ctype_digit($dia)
-            && ctype_digit($ano)
-            && checkdate((int) $mes, (int) $dia, (int) $ano);
+        return strlen($year) >= 4
+            && ctype_digit($month)
+            && ctype_digit($day)
+            && ctype_digit($year)
+            && checkdate((int) $month, (int) $day, (int) $year);
     }
 
     /**
      * @param array{year: int, month: int, day: int} $order
      */
     private static function validateDateWithSeparator(
-        string $data,
+        string $date,
         string $separator,
         array $order
     ): bool {
-        if (strlen($data) < 8 || $separator === '' || !str_contains($data, $separator)) {
+        if (strlen($date) < 8 || $separator === '' || !str_contains($date, $separator)) {
             return false;
         }
 
-        $parts = explode($separator, $data);
+        $parts = explode($separator, $date);
         if (count($parts) !== 3) {
             return false;
         }
@@ -161,25 +161,29 @@ class ValidateDate
         return self::validateDateIso8601($parts[0]) && self::validateDateIso8601($parts[1]);
     }
 
-    public static function validateDateBrazil(string $data): bool
+    public static function validateDateBrazil(string $date): bool
     {
-        return self::validateDateWithSeparator($data, '/', [
+        return self::validateDateWithSeparator($date, '/', [
             'day' => 0,
             'month' => 1,
             'year' => 2,
         ]);
     }
 
-    public static function validateDateAmerican(string $data): bool
+    public static function validateDateAmerican(string $date): bool
     {
-        return self::validateDateWithSeparator($data, '-', [
+        return self::validateDateWithSeparator($date, '-', [
             'day' => 2,
             'month' => 1,
             'year' => 0,
+        ]) || self::validateDateWithSeparator($date, '/', [
+            'day' => 1,
+            'month' => 0,
+            'year' => 2,
         ]);
     }
 
-    public static function validateTimeStamp(string $date): bool
+    public static function validateTimestamp(string $date): bool
     {
         return self::validateDateTimeFormat($date, 'Y-m-d H:i:s')
             || self::validateDateTimeFormat($date, 'd/m/Y H:i:s');

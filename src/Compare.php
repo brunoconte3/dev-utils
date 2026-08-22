@@ -14,6 +14,17 @@ class Compare
     private const DEFAULT_TIMEZONE = 'America/Sao_Paulo';
     private const HOUR_PATTERN = '/^(\d{1,2}):([0-5][0-9]):([0-5][0-9])$/';
 
+    private static function americanToIsoDate(string $date): string
+    {
+        if (!str_contains($date, '/')) {
+            return $date;
+        }
+
+        [$month, $day, $year] = explode('/', $date);
+
+        return $year . '-' . $month . '-' . $day;
+    }
+
     private static function normalizeDateFormat(string $date): string
     {
         $date = trim($date);
@@ -23,10 +34,12 @@ class Compare
         }
 
         if (ValidateDate::validateDateAmerican($date)) {
-            return $date;
+            return self::americanToIsoDate($date);
         }
 
-        throw new InvalidArgumentException("Data inválida: '{$date}'. Formatos aceitos: dd/mm/aaaa ou aaaa-mm-dd.");
+        throw new InvalidArgumentException(
+            "Data inválida: '{$date}'. Formatos aceitos: dd/mm/aaaa, mm/dd/aaaa ou aaaa-mm-dd.",
+        );
     }
 
     private static function normalizeUrl(string $url): string

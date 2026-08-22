@@ -10,7 +10,7 @@ use PHPUnit\Framework\TestCase;
 
 class ValidatorInheritanceTest extends TestCase
 {
-    private const FIELD = 'campo';
+    private const FIELD = 'field';
     private const RULE_MIN_5 = 'min:5';
 
     private static function childValidator(): Validator
@@ -31,7 +31,7 @@ class ValidatorInheritanceTest extends TestCase
         $validator->set([self::FIELD => ''], [self::FIELD => 'required']);
 
         self::assertSame(
-            [self::FIELD => 'O campo campo é obrigatório!'],
+            [self::FIELD => 'O campo field é obrigatório!'],
             $validator->getErros(),
         );
     }
@@ -42,7 +42,7 @@ class ValidatorInheritanceTest extends TestCase
         $validator->set([self::FIELD => 'ab'], [self::FIELD => self::RULE_MIN_5]);
 
         self::assertSame(
-            [self::FIELD => 'O campo campo precisa conter no mínimo 5 caracteres!'],
+            [self::FIELD => 'O campo field precisa conter no mínimo 5 caracteres!'],
             $validator->getErros(),
         );
     }
@@ -53,26 +53,26 @@ class ValidatorInheritanceTest extends TestCase
     public static function ruleProvider(): array
     {
         return [
-            'arrayValues fora da lista' => ['X', 'arrayValues:S-N-T'],
-            'dateBrazil invalido' => ['31/02/2021', 'dateBrazil'],
-            'email invalido' => ['bruno', 'email'],
-            'email valido' => ['bruno@teste.com', 'email'],
-            'hour invalido' => ['99:99', 'hour'],
-            'identifier invalido' => ['11111111111', 'identifier'],
-            'int invalido' => ['abc', 'int'],
-            'json de regras' => ['ab', '{"required":true,"min":5}'],
-            'max excedido' => ['abcdef', 'max:3'],
-            'mensagem customizada' => ['ab', 'min:5, Muito curto'],
-            'min com valor curto' => ['ab', self::RULE_MIN_5],
-            'min com valor ok' => ['abcdef', self::RULE_MIN_5],
-            'phone invalido' => ['123', 'phone'],
-            'pipe com optional' => ['', 'optional|min:5'],
-            'pipe com required e min' => ['ab', 'required|min:5'],
-            'regra inexistente' => ['abc', 'regraQueNaoExiste'],
-            'required com nulo' => [null, 'required'],
-            'required com vazio' => ['', 'required'],
-            'required preenchido' => ['Bruno', 'required'],
-            'upper invalido' => ['abc', 'upper'],
+            'arrayValues out of the list' => ['X', 'arrayValues:S-N-T'],
+            'invalid dateBrazil' => ['31/02/2021', 'dateBrazil'],
+            'invalid email' => ['bruno', 'email'],
+            'valid email' => ['bruno@teste.com', 'email'],
+            'invalid hour' => ['99:99', 'hour'],
+            'invalid identifier' => ['11111111111', 'identifier'],
+            'invalid int' => ['abc', 'int'],
+            'json rules' => ['ab', '{"required":true,"min":5}'],
+            'max exceeded' => ['abcdef', 'max:3'],
+            'custom message' => ['ab', 'min:5, Muito curto'],
+            'min with short value' => ['ab', self::RULE_MIN_5],
+            'min with ok value' => ['abcdef', self::RULE_MIN_5],
+            'invalid phone' => ['123', 'phone'],
+            'pipe with optional' => ['', 'optional|min:5'],
+            'pipe with required and min' => ['ab', 'required|min:5'],
+            'non existent rule' => ['abc', 'ruleThatDoesNotExist'],
+            'required with null' => [null, 'required'],
+            'required with empty' => ['', 'required'],
+            'required filled' => ['Bruno', 'required'],
+            'invalid upper' => ['abc', 'upper'],
         ];
     }
 
@@ -92,8 +92,8 @@ class ValidatorInheritanceTest extends TestCase
 
     public function testChildHandlesEqualsRuleThatNeedsSiblingData(): void
     {
-        $data = ['senha' => 'abc123', 'confirmacao' => 'abc123'];
-        $rules = ['confirmacao' => 'equals:senha'];
+        $data = ['password' => 'abc123', 'confirmation' => 'abc123'];
+        $rules = ['confirmation' => 'equals:password'];
 
         $parent = new Validator();
         $parent->set($data, $rules);
@@ -108,8 +108,8 @@ class ValidatorInheritanceTest extends TestCase
     public function testChildReportsMismatchOnEqualsRule(): void
     {
         $child = self::childValidator();
-        $child->set(['senha' => 'abc123', 'confirmacao' => 'outro'], ['confirmacao' => 'equals:senha']);
+        $child->set(['password' => 'abc123', 'confirmation' => 'other'], ['confirmation' => 'equals:password']);
 
-        self::assertArrayHasKey('confirmacao', $child->getErros());
+        self::assertArrayHasKey('confirmation', $child->getErros());
     }
 }

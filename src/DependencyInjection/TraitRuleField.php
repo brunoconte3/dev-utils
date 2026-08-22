@@ -13,13 +13,13 @@ trait TraitRuleField
     {
         $conf = preg_split('/,/', trim($valueRuleConf), 2);
         $ruleArrayConf = explode(':', is_array($conf) ? $conf[0] : '');
-        $regEx = trim(strtolower($ruleArrayConf[0])) === 'regex';
+        $isRegex = trim(strtolower($ruleArrayConf[0])) === 'regex';
 
-        if (isset($ruleArrayConf[1]) && (strpos($valueRuleConf, ';') > 0) && !$regEx) {
+        if (isset($ruleArrayConf[1]) && (strpos($valueRuleConf, ';') > 0) && !$isRegex) {
             $ruleArrayConf[1] = explode(';', $ruleArrayConf[1]);
         }
         if (is_array($conf) && array_key_exists(1, $conf) && !empty($conf[1])) {
-            $rulesArray['mensagem'] = trim(strip_tags($conf[1]));
+            $rulesArray['message'] = trim(strip_tags($conf[1]));
         }
 
         $keyConf = $ruleArrayConf[0];
@@ -85,14 +85,14 @@ trait TraitRuleField
     ): mixed {
         $auxValue = $errorList;
 
-        foreach (array_keys($errorList) as $chaveErro) {
-            if (!is_array($this->errors[$field]) || !array_key_exists($chaveErro, $this->errors[$field])) {
+        foreach (array_keys($errorList) as $errorKey) {
+            if (!is_array($this->errors[$field]) || !array_key_exists($errorKey, $this->errors[$field])) {
                 continue;
             }
 
-            $auxValue = $this->errors[$field][$chaveErro];
+            $auxValue = $this->errors[$field][$errorKey];
             if (!empty($auxValue) && is_string($auxValue) && Compare::contains($auxValue, 'obrigatório!')) {
-                $this->errors[$field][$chaveErro] = 'O campo ' . (string) $field . ' é obrigatório!';
+                $this->errors[$field][$errorKey] = 'O campo ' . (string) $field . ' é obrigatório!';
                 continue;
             }
 
@@ -131,9 +131,9 @@ trait TraitRuleField
     //irá chamar uma função para cada validação no json de validação, passando o valor para a função
     private function applyFieldRules(string|int $field, mixed $value, array $rulesArray, array $data): void
     {
-        $msgCustomized = $rulesArray['mensagem'] ?? null;
-        if (array_key_exists('mensagem', $rulesArray)) {
-            unset($rulesArray['mensagem']);
+        $msgCustomized = $rulesArray['message'] ?? null;
+        if (array_key_exists('message', $rulesArray)) {
+            unset($rulesArray['message']);
         }
 
         $hasOptional = in_array('optional', $rulesArray);

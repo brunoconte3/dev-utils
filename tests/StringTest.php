@@ -295,12 +295,16 @@ class StringTest extends TestCase
     public function testPlate(): void
     {
         $array = [
-            'testError' => 'ABC1234',
+            'testError' => 'AB-1234',
             'testValid' => 'ABC-1234',
+            'testValidMercosul' => 'ABC1D23',
+            'testValidNoMask' => 'ABC1234',
         ];
         $rules = [
             'testError' => 'plate',
             'testValid' => 'plate',
+            'testValidMercosul' => 'plate',
+            'testValidNoMask' => 'plate',
         ];
         self::assertValidatorErrorCount(1, $array, $rules);
     }
@@ -480,16 +484,20 @@ class StringTest extends TestCase
     public function testLowerWithSpecialChars(): void
     {
         $array = [
-            'testErrorWithNumbers' => 'hello123',
-            'testeValidWithSpecial' => 'hello@world',
+            'testErrorWithUppercase' => 'hello123A',
+            'testValidWithNumbers' => 'hello123',
+            'testValidWithSpecial' => 'hello@world',
+            'testValidWithUnderscore' => 'hello_world',
             'testValid' => 'hello world',
-            'testValidwithoutSpaces' => 'helloworld',
+            'testValidWithoutSpaces' => 'helloworld',
         ];
         $rules = [
-            'testErrorWithNumbers' => 'lower',
-            'testeValidWithSpecial' => 'lower',
+            'testErrorWithUppercase' => 'lower',
+            'testValidWithNumbers' => 'lower',
+            'testValidWithSpecial' => 'lower',
+            'testValidWithUnderscore' => 'lower',
             'testValid' => 'lower',
-            'testValidwithoutSpaces' => 'lower',
+            'testValidWithoutSpaces' => 'lower',
         ];
         self::assertValidatorErrorCount(1, $array, $rules);
     }
@@ -497,14 +505,18 @@ class StringTest extends TestCase
     public function testUpperWithSpecialChars(): void
     {
         $array = [
-            'testErrorWithNumbers' => 'HELLO123',
+            'testErrorWithLowercase' => 'HELLO123a',
+            'testValidWithNumbers' => 'HELLO123',
             'testValid' => 'HELLO WORLD',
             'testValidWithCharacters' => 'HELLO@WORLD',
+            'testValidWithUnderscore' => 'HELLO_WORLD',
         ];
         $rules = [
-            'testErrorWithNumbers' => 'upper',
+            'testErrorWithLowercase' => 'upper',
+            'testValidWithNumbers' => 'upper',
             'testValid' => 'upper',
             'testValidWithCharacters' => 'upper',
+            'testValidWithUnderscore' => 'upper',
         ];
         self::assertValidatorErrorCount(1, $array, $rules);
     }

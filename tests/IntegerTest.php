@@ -59,18 +59,18 @@ class IntegerTest extends TestCase
     public function testIntegerWithCustomMessage(): void
     {
         $msg = 'Mensagem customizada, campo inválido';
-        $array = ['campo' => 'abc'];
-        $rules = ['campo' => 'int, ' . $msg];
+        $array = ['field' => 'abc'];
+        $rules = ['field' => 'int, ' . $msg];
         $validator = new Validator();
         $validator->set($array, $rules);
-        self::assertArrayHasKey('campo', $validator->getErros());
-        self::assertEquals($msg, $validator->getErros()['campo']);
+        self::assertArrayHasKey('field', $validator->getErros());
+        self::assertEquals($msg, $validator->getErros()['field']);
     }
 
     public function testIntegerValid(): void
     {
-        $array = ['numero' => '123', 'negativo' => '-456'];
-        $rules = ['numero' => 'int', 'negativo' => 'int'];
+        $array = ['number' => '123', 'negative' => '-456'];
+        $rules = ['number' => 'int', 'negative' => 'int'];
         $validator = new Validator();
         $validator->set($array, $rules);
         self::assertCount(0, $validator->getErros());
@@ -80,46 +80,46 @@ class IntegerTest extends TestCase
     {
         $array = [
             'float' => '123.45',
-            'inteiro' => '123',
-            'invalido' => 'abc',
-            'negativo' => '-100',
+            'integer' => '123',
+            'invalid' => 'abc',
+            'negative' => '-100',
         ];
         $rules = [
             'float' => 'numeric',
-            'inteiro' => 'numeric',
-            'invalido' => 'numeric',
-            'negativo' => 'numeric',
+            'integer' => 'numeric',
+            'invalid' => 'numeric',
+            'negative' => 'numeric',
         ];
         $validator = new Validator();
         $validator->set($array, $rules);
         self::assertCount(1, $validator->getErros());
-        self::assertArrayHasKey('invalido', $validator->getErros());
+        self::assertArrayHasKey('invalid', $validator->getErros());
     }
 
     public function testNumericWithCustomMessage(): void
     {
         $msg = 'Deve ser numérico, campo inválido';
-        $array = ['campo' => 'texto'];
-        $rules = ['campo' => 'numeric, ' . $msg];
+        $array = ['field' => 'text'];
+        $rules = ['field' => 'numeric, ' . $msg];
         $validator = new Validator();
         $validator->set($array, $rules);
-        self::assertEquals($msg, $validator->getErros()['campo']);
+        self::assertEquals($msg, $validator->getErros()['field']);
     }
 
     public function testNumMax(): void
     {
-        $array = ['excedido' => '150'];
-        $rules = ['excedido' => self::RULE_NUM_MAX_100];
+        $array = ['exceeded' => '150'];
+        $rules = ['exceeded' => self::RULE_NUM_MAX_100];
         $validator = new Validator();
         $validator->set($array, $rules);
         self::assertCount(1, $validator->getErros());
-        self::assertArrayHasKey('excedido', $validator->getErros());
+        self::assertArrayHasKey('exceeded', $validator->getErros());
     }
 
     public function testNumMaxValid(): void
     {
-        $array = ['valido' => '50', 'maximo' => '100',];
-        $rules = ['valido' => self::RULE_NUM_MAX_100, 'maximo' => self::RULE_NUM_MAX_100];
+        $array = ['valid' => '50', 'maximum' => '100',];
+        $rules = ['valid' => self::RULE_NUM_MAX_100, 'maximum' => self::RULE_NUM_MAX_100];
         $validator = new Validator();
         $validator->set($array, $rules);
         self::assertCount(0, $validator->getErros());
@@ -127,8 +127,8 @@ class IntegerTest extends TestCase
 
     public function testNumMaxNegativeValue(): void
     {
-        $array = ['negativo' => '-5'];
-        $rules = ['negativo' => self::RULE_NUM_MAX_100];
+        $array = ['negative' => '-5'];
+        $rules = ['negative' => self::RULE_NUM_MAX_100];
         $validator = new Validator();
         $validator->set($array, $rules);
         self::assertCount(1, $validator->getErros());
@@ -137,35 +137,35 @@ class IntegerTest extends TestCase
     public function testNumMaxWithCustomMessage(): void
     {
         $msg = 'Valor máximo excedido, tente novamente';
-        $array = ['campo' => '200'];
-        $rules = ['campo' => 'numMax:100, ' . $msg];
+        $array = ['field' => '200'];
+        $rules = ['field' => 'numMax:100, ' . $msg];
         $validator = new Validator();
         $validator->set($array, $rules);
-        self::assertEquals($msg, $validator->getErros()['campo']);
+        self::assertEquals($msg, $validator->getErros()['field']);
     }
 
     public function testNumMin(): void
     {
         $array = [
-            'abaixo' => '5',
-            'minimo' => '10',
-            'valido' => '50',
+            'below' => '5',
+            'minimum' => '10',
+            'valid' => '50',
         ];
         $rules = [
-            'abaixo' => self::RULE_NUM_MIN_10,
-            'minimo' => self::RULE_NUM_MIN_10,
-            'valido' => self::RULE_NUM_MIN_10,
+            'below' => self::RULE_NUM_MIN_10,
+            'minimum' => self::RULE_NUM_MIN_10,
+            'valid' => self::RULE_NUM_MIN_10,
         ];
         $validator = new Validator();
         $validator->set($array, $rules);
         self::assertCount(1, $validator->getErros());
-        self::assertArrayHasKey('abaixo', $validator->getErros());
+        self::assertArrayHasKey('below', $validator->getErros());
     }
 
     public function testNumMinNegativeValue(): void
     {
-        $array = ['negativo' => '-5'];
-        $rules = ['negativo' => 'numMin:0'];
+        $array = ['negative' => '-5'];
+        $rules = ['negative' => 'numMin:0'];
         $validator = new Validator();
         $validator->set($array, $rules);
         self::assertCount(1, $validator->getErros());
@@ -173,8 +173,8 @@ class IntegerTest extends TestCase
 
     public function testNumMinNotNumeric(): void
     {
-        $array = ['texto' => 'abc'];
-        $rules = ['texto' => self::RULE_NUM_MIN_10];
+        $array = ['text' => 'abc'];
+        $rules = ['text' => self::RULE_NUM_MIN_10];
         $validator = new Validator();
         $validator->set($array, $rules);
         self::assertCount(1, $validator->getErros());
@@ -183,14 +183,14 @@ class IntegerTest extends TestCase
     public function testNumMonth(): void
     {
         $array = [
-            'comZero' => '01',
-            'dezembro' => '12',
-            'janeiro' => '1',
+            'withZero' => '01',
+            'december' => '12',
+            'january' => '1',
         ];
         $rules = [
-            'comZero' => 'numMonth',
-            'dezembro' => 'numMonth',
-            'janeiro' => 'numMonth',
+            'withZero' => 'numMonth',
+            'december' => 'numMonth',
+            'january' => 'numMonth',
         ];
         $validator = new Validator();
         $validator->set($array, $rules);
@@ -200,15 +200,15 @@ class IntegerTest extends TestCase
     public function testNumMonthInvalid(): void
     {
         $array = [
-            'texto' => 'jan',
-            'tresDigitos' => '123',
-            'treze' => '13',
+            'text' => 'jan',
+            'threeDigits' => '123',
+            'thirteen' => '13',
             'zero' => '0',
         ];
         $rules = [
-            'texto' => 'numMonth',
-            'tresDigitos' => 'numMonth',
-            'treze' => 'numMonth',
+            'text' => 'numMonth',
+            'threeDigits' => 'numMonth',
+            'thirteen' => 'numMonth',
             'zero' => 'numMonth',
         ];
         $validator = new Validator();
@@ -219,20 +219,20 @@ class IntegerTest extends TestCase
     public function testNumMonthWithCustomMessage(): void
     {
         $msg = 'Mês inválido, informe um valor entre 1 e 12';
-        $array = ['mes' => '15'];
-        $rules = ['mes' => 'numMonth, ' . $msg];
+        $array = ['month' => '15'];
+        $rules = ['month' => 'numMonth, ' . $msg];
         $validator = new Validator();
         $validator->set($array, $rules);
-        self::assertEquals($msg, $validator->getErros()['mes']);
+        self::assertEquals($msg, $validator->getErros()['month']);
     }
 
     public function testIntegerTypedWithCustomMessage(): void
     {
         $msg = 'Deve ser inteiro tipado, não string';
-        $array = ['campo' => '123'];
-        $rules = ['campo' => 'integer, ' . $msg];
+        $array = ['field' => '123'];
+        $rules = ['field' => 'integer, ' . $msg];
         $validator = new Validator();
         $validator->set($array, $rules);
-        self::assertEquals($msg, $validator->getErros()['campo']);
+        self::assertEquals($msg, $validator->getErros()['field']);
     }
 }

@@ -37,16 +37,15 @@ new Conf(); // NOSONAR - o construtor existe pelo efeito colateral: define URL_H
 
                     $validator = new Validator();
 
-                    $cpfOuCnpj = Format::identifierOrCompany('K7.CM7.10C/0001-84');
                     $array = [
-                        'cpfOuCnpj' => $cpfOuCnpj,
-                        'dadosEmpresa' => ['empresa' => 'CooperTec'],
-                        'nomeCidade' => 'Maringá',
+                        'cpfOrCnpj' => 'K7.CM7.10C/0001-84',
+                        'companyData' => ['company' => 'CooperTec'],
+                        'cityName' => 'Maringá',
                     ];
                     $rules = [
-                        'cpfOuCnpj' => 'identifierOrCompany',
-                        'dadosEmpresa' => 'required|array',
-                        'nomeCidade' => 'required|alpha',
+                        'cpfOrCnpj' => 'identifierOrCompany',
+                        'companyData' => 'required|array',
+                        'cityName' => 'required|alpha',
                     ];
                     $validator->set($array, $rules);
                     ?>

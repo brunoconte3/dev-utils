@@ -12,7 +12,7 @@ use PHPUnit\Framework\TestCase;
 #[CoversClass(Rules::class)]
 final class RulesErrorAggregationTest extends TestCase
 {
-    private const FIELD = 'arquivo';
+    private const FIELD = 'file';
     private const FILE_NAME = 'JPG - Validação upload v.1.jpg';
     private const RULE_MAX_SIZE = 'maxUploadSize:5550';
     private const ERROR_MAX_SIZE = 'O arquivo JPG - Validação upload v.1.jpg deve conter, no máximo 5550 bytes!';

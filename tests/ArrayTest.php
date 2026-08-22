@@ -11,7 +11,7 @@ use SimpleXMLElement;
 
 class ArrayTest extends TestCase
 {
-    private const VEGETABLE_RUCULA = 'Rúcula';
+    private const VEGETABLE_ARUGULA = 'Rúcula';
 
     private array $fruitArray;
     private array $simpleArray;
@@ -26,67 +26,71 @@ class ArrayTest extends TestCase
         return $isValid;
     }
 
-    private function assertXmlFrutas(SimpleXMLElement $xml): void
+    private function assertXmlFruits(SimpleXMLElement $xml): void
     {
-        self::assertSame('Maçã', (string) $xml->frutas->fruta_1);
-        self::assertSame('Pêra', (string) $xml->frutas->fruta_2);
-        self::assertSame('Uva', (string) $xml->frutas->fruta_4);
-        self::assertCount(4, $xml->frutas->children());
+        self::assertSame('Maçã', (string) $xml->fruits->fruit_1);
+        self::assertSame('Pêra', (string) $xml->fruits->fruit_2);
+        self::assertSame('Uva', (string) $xml->fruits->fruit_4);
+        self::assertCount(4, $xml->fruits->children());
     }
 
-    private function assertXmlVerduras(SimpleXMLElement $xml): void
+    private function assertXmlVegetables(SimpleXMLElement $xml): void
     {
-        self::assertSame(self::VEGETABLE_RUCULA, (string) $xml->verduras->verdura_1);
-        self::assertSame('Acelga', (string) $xml->verduras->verdura_2);
-        self::assertSame('Alface', (string) $xml->verduras->verdura_3);
-        self::assertCount(3, $xml->verduras->children());
+        self::assertSame(self::VEGETABLE_ARUGULA, (string) $xml->vegetables->vegetable_1);
+        self::assertSame('Acelga', (string) $xml->vegetables->vegetable_2);
+        self::assertSame('Alface', (string) $xml->vegetables->vegetable_3);
+        self::assertCount(3, $xml->vegetables->children());
     }
 
     protected function setUp(): void
     {
         $this->fruitArray = [
-            'frutas' => [
-                'fruta_1' => 'Maçã',
-                'fruta_2' => 'Pêra',
-                'fruta_3' => 'fruta',
-                'fruta_4' => 'Uva',
+            'fruits' => [
+                'fruit_1' => 'Maçã',
+                'fruit_2' => 'Pêra',
+                'fruit_3' => 'fruit',
+                'fruit_4' => 'Uva',
             ],
             'legume' => 'Tomate',
-            'verduras' => ['verdura_1' => self::VEGETABLE_RUCULA, 'verdura_2' => 'Acelga', 'verdura_3' => 'Alface'],
+            'vegetables' => [
+                'vegetable_1' => self::VEGETABLE_ARUGULA,
+                'vegetable_2' => 'Acelga',
+                'vegetable_3' => 'Alface',
+            ],
         ];
 
-        $this->simpleArray = ['primeiro' => 15, 'segundo' => 25];
+        $this->simpleArray = ['first' => 15, 'second' => 25];
     }
 
     public function testSearchKey(): void
     {
-        self::assertIsInt(Arrays::searchKey($this->simpleArray, 'primeiro'));
-        self::assertNull(Arrays::searchKey($this->simpleArray, 'nao-existe'));
+        self::assertIsInt(Arrays::searchKey($this->simpleArray, 'first'));
+        self::assertNull(Arrays::searchKey($this->simpleArray, 'does-not-exist'));
     }
 
     public function testRenameKey(): void
     {
-        $array = ['primeiro' => 10, 'segundo' => 20];
-        self::assertTrue(Arrays::renameKey($array, 'primeiro', 'novoNome'));
-        self::assertFalse(Arrays::renameKey($array, 'nao-existe', 'novoNome'));
+        $array = ['first' => 10, 'second' => 20];
+        self::assertTrue(Arrays::renameKey($array, 'first', 'newName'));
+        self::assertFalse(Arrays::renameKey($array, 'does-not-exist', 'newName'));
     }
 
     public function testCheckExistIndexByValue(): void
     {
         self::assertTrue(Arrays::checkExistIndexByValue($this->fruitArray, 'Tomate'));
-        self::assertFalse(Arrays::checkExistIndexByValue($this->fruitArray, 'nao-existe'));
+        self::assertFalse(Arrays::checkExistIndexByValue($this->fruitArray, 'does-not-exist'));
     }
 
     public function testFindValueByKey(): void
     {
-        $result = Arrays::findValueByKey($this->fruitArray, 'fruta_2');
-        self::assertSame(['frutas' => ['fruta_2' => 'Pêra']], $result);
+        $result = Arrays::findValueByKey($this->fruitArray, 'fruit_2');
+        self::assertSame(['fruits' => ['fruit_2' => 'Pêra']], $result);
     }
 
     public function testFindIndexByValue(): void
     {
-        $result = Arrays::findIndexByValue($this->fruitArray, self::VEGETABLE_RUCULA);
-        self::assertSame(['verduras' => ['verdura_1' => self::VEGETABLE_RUCULA]], $result);
+        $result = Arrays::findIndexByValue($this->fruitArray, self::VEGETABLE_ARUGULA);
+        self::assertSame(['vegetables' => ['vegetable_1' => self::VEGETABLE_ARUGULA]], $result);
     }
 
     public function testConvertArrayToXml(): void
@@ -98,12 +102,12 @@ class ArrayTest extends TestCase
         self::assertIsString($xmlString);
         self::assertTrue($this->isValidXml($xmlString));
 
-        self::assertTrue(isset($xml->frutas));
-        self::assertTrue(isset($xml->verduras));
+        self::assertTrue(isset($xml->fruits));
+        self::assertTrue(isset($xml->vegetables));
         self::assertTrue(isset($xml->legume));
 
-        $this->assertXmlFrutas($xml);
-        $this->assertXmlVerduras($xml);
+        $this->assertXmlFruits($xml);
+        $this->assertXmlVegetables($xml);
 
         self::assertSame('Tomate', (string) $xml->legume);
     }
@@ -111,27 +115,27 @@ class ArrayTest extends TestCase
     public function testConvertJsonIndexToArray(): void
     {
         $array = $this->fruitArray;
-        $array['verduras'] = '{"verdura_1": "' . self::VEGETABLE_RUCULA .
-            '", "verdura_2": "Acelga", "verdura_3": "Alface"}';
+        $array['vegetables'] = '{"vegetable_1": "' . self::VEGETABLE_ARUGULA .
+            '", "vegetable_2": "Acelga", "vegetable_3": "Alface"}';
 
         Arrays::convertJsonIndexToArray($array);
 
-        self::assertIsArray($array['verduras']);
-        self::assertSame(self::VEGETABLE_RUCULA, $array['verduras']['verdura_1']);
+        self::assertIsArray($array['vegetables']);
+        self::assertSame(self::VEGETABLE_ARUGULA, $array['vegetables']['vegetable_1']);
     }
 
     public function testCheckExistsIndexArrayRecursive(): void
     {
         $array = [
-            'pessoa' => [
-                'categorias' => [
-                    'subcategorias' => ['subcategoria1' => 'valor teste'],
+            'person' => [
+                'categories' => [
+                    'subcategories' => ['subcategory1' => 'test value'],
                 ],
-                'pedidos' => ['pedido1', 'pedido2'],
+                'orders' => ['order1', 'order2'],
             ],
         ];
-        self::assertTrue(Arrays::checkExistIndexArrayRecursive($array, 'subcategoria1'));
-        self::assertFalse(Arrays::checkExistIndexArrayRecursive($array, 'mercado'));
+        self::assertTrue(Arrays::checkExistIndexArrayRecursive($array, 'subcategory1'));
+        self::assertFalse(Arrays::checkExistIndexArrayRecursive($array, 'market'));
     }
 
     public function testCheckExistsIndexArrayRecursiveWithNull(): void
@@ -143,17 +147,17 @@ class ArrayTest extends TestCase
 
     public function testSearchKeyReturnsCorrectPosition(): void
     {
-        self::assertSame(0, Arrays::searchKey($this->simpleArray, 'primeiro'));
-        self::assertSame(1, Arrays::searchKey($this->simpleArray, 'segundo'));
+        self::assertSame(0, Arrays::searchKey($this->simpleArray, 'first'));
+        self::assertSame(1, Arrays::searchKey($this->simpleArray, 'second'));
     }
 
     public function testRenameKeyPreservesOrder(): void
     {
         $array = ['a' => 1, 'b' => 2, 'c' => 3];
-        Arrays::renameKey($array, 'b', 'novo_b');
+        Arrays::renameKey($array, 'b', 'new_b');
         $keys = array_keys($array);
-        self::assertSame(['a', 'novo_b', 'c'], $keys);
-        self::assertSame(2, $array['novo_b']);
+        self::assertSame(['a', 'new_b', 'c'], $keys);
+        self::assertSame(2, $array['new_b']);
     }
 
     public function testCheckExistIndexByValueInNestedArray(): void
@@ -165,19 +169,19 @@ class ArrayTest extends TestCase
 
     public function testFindValueByKeyCaseInsensitive(): void
     {
-        $result = Arrays::findValueByKey($this->fruitArray, 'FRUTA_1');
-        self::assertSame(['frutas' => ['fruta_1' => 'Maçã']], $result);
+        $result = Arrays::findValueByKey($this->fruitArray, 'FRUIT_1');
+        self::assertSame(['fruits' => ['fruit_1' => 'Maçã']], $result);
     }
 
     public function testFindValueByKeyNested(): void
     {
-        $result = Arrays::findValueByKey($this->fruitArray, 'verdura_1');
-        self::assertArrayHasKey('verduras', $result);
+        $result = Arrays::findValueByKey($this->fruitArray, 'vegetable_1');
+        self::assertArrayHasKey('vegetables', $result);
     }
 
     public function testFindValueByKeyNotFound(): void
     {
-        $result = Arrays::findValueByKey($this->fruitArray, 'nao_existe');
+        $result = Arrays::findValueByKey($this->fruitArray, 'does_not_exist');
         self::assertEmpty($result);
     }
 
@@ -191,30 +195,30 @@ class ArrayTest extends TestCase
 
     public function testFindIndexByValueWithBool(): void
     {
-        $array = ['ativo' => true, 'inativo' => false];
+        $array = ['active' => true, 'inactive' => false];
         $result = Arrays::findIndexByValue($array, true);
-        self::assertArrayHasKey('ativo', $result);
+        self::assertArrayHasKey('active', $result);
     }
 
     public function testFindIndexByValueNested(): void
     {
-        $array = ['nivel1' => ['nivel2' => ['chave' => 'valor_buscado']]];
-        $result = Arrays::findIndexByValue($array, 'valor_buscado');
+        $array = ['level1' => ['level2' => ['key' => 'searched_value']]];
+        $result = Arrays::findIndexByValue($array, 'searched_value');
         self::assertNotEmpty($result);
-        self::assertArrayHasKey('nivel1', $result);
+        self::assertArrayHasKey('level1', $result);
     }
 
     public function testFindIndexByValueNotFound(): void
     {
-        $result = Arrays::findIndexByValue($this->fruitArray, 'nao_existe');
+        $result = Arrays::findIndexByValue($this->fruitArray, 'does_not_exist');
         self::assertEmpty($result);
     }
 
     public function testConvertArrayToXmlWithAttrKey(): void
     {
         $array = [
-            ['@attr' => 'item', 'nome' => 'Produto 1'],
-            ['@attr' => 'item', 'nome' => 'Produto 2'],
+            ['@attr' => 'item', 'name' => 'Produto 1'],
+            ['@attr' => 'item', 'name' => 'Produto 2'],
         ];
         $xml = new SimpleXMLElement('<root/>');
         Arrays::convertArrayToXml($array, $xml);
@@ -226,7 +230,7 @@ class ArrayTest extends TestCase
 
     public function testConvertArrayToXmlWithSpecialChars(): void
     {
-        $array = ['texto' => 'Valor com <tag> & "aspas"'];
+        $array = ['text' => 'Valor com <tag> & "aspas"'];
         $xml = new SimpleXMLElement('<root/>');
         Arrays::convertArrayToXml($array, $xml);
         $xmlString = $xml->asXML();
@@ -236,31 +240,31 @@ class ArrayTest extends TestCase
 
     public function testConvertJsonIndexToArrayInvalidJson(): void
     {
-        $array = ['campo' => 'texto normal não é json'];
+        $array = ['field' => 'texto normal não é json'];
         Arrays::convertJsonIndexToArray($array);
-        self::assertSame('texto normal não é json', $array['campo']);
+        self::assertSame('texto normal não é json', $array['field']);
     }
 
     public function testConvertJsonIndexToArrayEmptyString(): void
     {
-        $array = ['campo' => ''];
+        $array = ['field' => ''];
         Arrays::convertJsonIndexToArray($array);
-        self::assertSame('', $array['campo']);
+        self::assertSame('', $array['field']);
     }
 
     public function testConvertJsonIndexToArrayNestedJson(): void
     {
         $array = [
-            'nivel1' => [
-                'dados' => '{"chave": "valor"}',
+            'level1' => [
+                'data' => '{"key": "value"}',
             ],
         ];
         Arrays::convertJsonIndexToArray($array);
-        $nivel1 = $array['nivel1'];
-        self::assertIsArray($nivel1);
-        $dados = $nivel1['dados'];
-        self::assertIsArray($dados);
-        self::assertSame('valor', $dados['chave']);
+        $level1 = $array['level1'];
+        self::assertIsArray($level1);
+        $data = $level1['data'];
+        self::assertIsArray($data);
+        self::assertSame('value', $data['key']);
     }
 
     public function testRenameKeyToExistingKeyDoesNotOverwrite(): void
@@ -280,7 +284,7 @@ class ArrayTest extends TestCase
 
     public function testConvertArrayToXmlWithNumericKeysProducesValidXml(): void
     {
-        $array = [0 => 'valor', 1 => 'outro'];
+        $array = [0 => 'value', 1 => 'other'];
         $xml = new SimpleXMLElement('<root/>');
         Arrays::convertArrayToXml($array, $xml);
 
@@ -288,20 +292,20 @@ class ArrayTest extends TestCase
         self::assertIsString($xmlString);
         self::assertTrue($this->isValidXml($xmlString));
         self::assertCount(2, $xml->item);
-        self::assertSame('valor', (string) $xml->item[0]);
-        self::assertSame('outro', (string) $xml->item[1]);
+        self::assertSame('value', (string) $xml->item[0]);
+        self::assertSame('other', (string) $xml->item[1]);
     }
 
     public function testConvertArrayToXmlWithNumericKeyAndArrayValue(): void
     {
-        $array = [0 => ['nome' => 'Produto']];
+        $array = [0 => ['name' => 'Produto']];
         $xml = new SimpleXMLElement('<root/>');
         Arrays::convertArrayToXml($array, $xml);
 
         $xmlString = $xml->asXML();
         self::assertIsString($xmlString);
         self::assertTrue($this->isValidXml($xmlString));
-        self::assertSame('Produto', (string) $xml->item->nome);
+        self::assertSame('Produto', (string) $xml->item->name);
     }
 
     public function testFindIndexByValueUsesStrictComparison(): void
@@ -313,31 +317,31 @@ class ArrayTest extends TestCase
     public function testCheckExistIndexByValueCastsToString(): void
     {
         self::assertTrue(Arrays::checkExistIndexByValue(['n' => 15], '15'));
-        self::assertTrue(Arrays::checkExistIndexByValue(['ativo' => true], '1'));
+        self::assertTrue(Arrays::checkExistIndexByValue(['active' => true], '1'));
     }
 
     public function testConvertJsonIndexToArrayWithJsonList(): void
     {
-        $array = ['dados' => '[1, 2, 3]'];
+        $array = ['data' => '[1, 2, 3]'];
         Arrays::convertJsonIndexToArray($array);
-        self::assertIsArray($array['dados']);
-        self::assertSame([1, 2, 3], $array['dados']);
+        self::assertIsArray($array['data']);
+        self::assertSame([1, 2, 3], $array['data']);
     }
 
     public function testConvertJsonIndexToArrayKeepsJsonScalarAsString(): void
     {
-        $array = ['numero' => '123', 'booleano' => 'true'];
+        $array = ['number' => '123', 'boolean' => 'true'];
         Arrays::convertJsonIndexToArray($array);
-        self::assertSame('123', $array['numero']);
-        self::assertSame('true', $array['booleano']);
+        self::assertSame('123', $array['number']);
+        self::assertSame('true', $array['boolean']);
     }
 
     public function testMethodsWithEmptyArray(): void
     {
-        self::assertNull(Arrays::searchKey([], 'qualquer'));
-        self::assertEmpty(Arrays::findValueByKey([], 'qualquer'));
-        self::assertEmpty(Arrays::findIndexByValue([], 'qualquer'));
-        self::assertFalse(Arrays::checkExistIndexByValue([], 'qualquer'));
-        self::assertFalse(Arrays::checkExistIndexArrayRecursive([], 'qualquer'));
+        self::assertNull(Arrays::searchKey([], 'anything'));
+        self::assertEmpty(Arrays::findValueByKey([], 'anything'));
+        self::assertEmpty(Arrays::findIndexByValue([], 'anything'));
+        self::assertFalse(Arrays::checkExistIndexByValue([], 'anything'));
+        self::assertFalse(Arrays::checkExistIndexArrayRecursive([], 'anything'));
     }
 }

@@ -38,22 +38,22 @@ abstract class FormatAux
         throw new InvalidArgumentException($message);
     }
 
-    private static function validateLength(string $nome, int $tamanho, string $value): void
+    private static function validateLength(string $name, int $length, string $value): void
     {
-        if (strlen($value) === $tamanho) {
+        if (strlen($value) === $length) {
             return;
         }
 
-        self::throwInvalidArgumentException("$nome precisa ter $tamanho números!");
+        self::throwInvalidArgumentException("$name precisa ter $length números!");
     }
 
-    private static function validateNumeric(string $nome, string $value): void
+    private static function validateNumeric(string $name, string $value): void
     {
         if (is_numeric($value)) {
             return;
         }
 
-        self::throwInvalidArgumentException("$nome precisa conter apenas números!");
+        self::throwInvalidArgumentException("$name precisa conter apenas números!");
     }
 
     protected static function returnTypeToConvert(array $rules): ?string
@@ -76,10 +76,19 @@ abstract class FormatAux
         };
     }
 
-    protected static function validateForFormatting(string $nome, int $tamanho, string $value): void
+    protected static function validateSurroundingSpaces(string $name, string $value): void
     {
-        self::validateLength($nome, $tamanho, $value);
-        self::validateNumeric($nome, $value);
+        if (trim($value) === $value) {
+            return;
+        }
+
+        self::throwInvalidArgumentException("$name não pode conter espaços no início ou no fim!");
+    }
+
+    protected static function validateForFormatting(string $name, int $length, string $value): void
+    {
+        self::validateLength($name, $length, $value);
+        self::validateNumeric($name, $value);
     }
 
     protected static function extensive(float $value = 0): string

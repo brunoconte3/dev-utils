@@ -115,6 +115,7 @@ trait TraitRuleString
         string $value = '',
         ?string $message = '',
     ): void {
+        $value = Format::onlyNumbers($value);
         $length = strlen($value);
         if ($length !== 2 && $length !== 3) {
             $this->errors[$field] = !empty($message)
@@ -191,7 +192,7 @@ trait TraitRuleString
         string $value = '',
         ?string $message = '',
     ): void {
-        $value = strtoupper((string) preg_replace('/[^A-Z0-9]/', '', $value));
+        $value = (string) preg_replace('/[^A-Z0-9]/', '', strtoupper($value));
         $errorMessage = $message !== null && $message !== '' ? $message : "O campo $field é inválido!";
 
         if ($value === '') {
@@ -230,7 +231,7 @@ trait TraitRuleString
 
     protected function validateLower(string $field = '', string $value = '', ?string $message = ''): void
     {
-        if (ctype_lower(preg_replace('/\W+/', '', $value))) {
+        if (ctype_lower(preg_replace('/[^a-zA-Z]+/', '', $value))) {
             return;
         }
 
@@ -310,13 +311,15 @@ trait TraitRuleString
 
     protected function validatePlate(string $field = '', string $value = '', ?string $message = ''): void
     {
-        if (preg_match('/^[A-Z]{3}-\d{4}+$/', $value)) {
+        $sanitized = (string) preg_replace('/[^A-Z0-9]/', '', strtoupper($value));
+
+        if (preg_match('/^[A-Z]{3}(\d{4}|\d[A-Z]\d{2})$/', $sanitized)) {
             return;
         }
 
         $this->errors[$field] = !empty($message)
             ? $message
-            : "O campo $field deve corresponder ao formato AAA-0000!";
+            : "O campo $field deve corresponder ao formato AAA-0000 ou AAA0A00!";
     }
 
     protected function validatePhone(string $field = '', string $value = '', ?string $message = ''): void
@@ -353,9 +356,14 @@ trait TraitRuleString
 
     protected function validateRgbColor(string $field = '', string $value = '', ?string $message = ''): void
     {
-        $regra = '([01]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])';
-        $pattern = '/^' . $regra . '( *),( *)' . $regra . '( *),( *)' . $regra . '( *)$/';
-        if (preg_match($pattern, $value)) {
+        $sanitized = trim($value);
+        if (preg_match('/^rgb\s*\((.*)\)$/i', $sanitized, $matches) === 1) {
+            $sanitized = trim($matches[1]);
+        }
+
+        $channelPattern = '([01]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])';
+        $pattern = '/^' . $channelPattern . '( *),( *)' . $channelPattern . '( *),( *)' . $channelPattern . '( *)$/';
+        if (preg_match($pattern, $sanitized)) {
             return;
         }
 
@@ -373,7 +381,7 @@ trait TraitRuleString
 
     protected function validateUpper(string $field = '', string $value = '', ?string $message = ''): void
     {
-        if (ctype_upper(preg_replace('/\W+/', '', $value))) {
+        if (ctype_upper(preg_replace('/[^a-zA-Z]+/', '', $value))) {
             return;
         }
 
@@ -393,10 +401,7 @@ trait TraitRuleString
 
     protected function validateZipCode(string $field = '', string $value = '', ?string $message = ''): void
     {
-        if (is_numeric($value) && strlen($value) === 8) {
-            $value = Format::mask('#####-###', $value);
-        }
-        if (preg_match('/^(\d{2}\d{3}-\d{3})+$/', $value)) {
+        if (strlen(Format::onlyNumbers($value)) === 8) {
             return;
         }
 

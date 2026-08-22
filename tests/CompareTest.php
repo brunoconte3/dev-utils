@@ -52,6 +52,7 @@ class CompareTest extends TestCase
             'brazilian positive' => ['31/10/2020', self::DATE_30_11_2020, '+30'],
             'leap day' => ['28/02/2020', '01/03/2020', '+2'],
             'mixed formats' => ['31/10/2020', '2020-11-30', '+30'],
+            'united states positive' => ['10/15/2020', '10/31/2020', '+16'],
             'same day' => [self::DATE_15_10_2020, self::DATE_15_10_2020, '+0'],
             'single digit parts' => ['1/1/2020', '2/1/2020', '+1'],
         ];

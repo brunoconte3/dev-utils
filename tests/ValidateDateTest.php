@@ -16,7 +16,7 @@ class ValidateDateTest extends TestCase
     private const UTC_DATETIME_WITH_MILLISECONDS = '2025-11-20T10:30:00.123+00:00';
     private const UTC_DATETIME_WITHOUT_TIMEZONE = '2025-11-20T10:30:00';
 
-    private static function biuldDataTestDateIso8601Z(): array
+    private static function buildIso8601ZTestData(): array
     {
         return [
             '2025-11-20T10:30:00Z',
@@ -32,7 +32,7 @@ class ValidateDateTest extends TestCase
         ];
     }
 
-    private static function biuldDataDateIsoTest(): array
+    private static function buildIsoDateTestData(): array
     {
         return [
             '2025',
@@ -52,7 +52,7 @@ class ValidateDateTest extends TestCase
             '2025-W48',
             '2025-W48-1',
             '2025-324',
-            ...self::biuldDataTestDateIso8601Z(),
+            ...self::buildIso8601ZTestData(),
         ];
     }
 
@@ -70,8 +70,8 @@ class ValidateDateTest extends TestCase
 
     public function testValidateTimeStamp(): void
     {
-        self::assertEquals(true, ValidateDate::validateTimeStamp('2021-04-29 11:17:12'));
-        self::assertEquals(false, ValidateDate::validateTimeStamp('2021-04-31 11:1'));
+        self::assertEquals(true, ValidateDate::validateTimestamp('2021-04-29 11:17:12'));
+        self::assertEquals(false, ValidateDate::validateTimestamp('2021-04-31 11:1'));
     }
 
     public function testValidateDateNotFuture(): void
@@ -94,7 +94,7 @@ class ValidateDateTest extends TestCase
 
     public function testValidateDateIso8601AllFormats(): void
     {
-        $valid = self::biuldDataDateIsoTest();
+        $valid = self::buildIsoDateTestData();
         foreach ($valid as $v) {
             self::assertIsString($v);
             self::assertTrue(ValidateDate::validateDateIso8601($v), 'Falhou para: ' . $v);
@@ -145,6 +145,17 @@ class ValidateDateTest extends TestCase
         self::assertFalse(ValidateDate::validateDateAmerican('21-04-29'));
     }
 
+    public function testValidateDateAmericanAcceptsUnitedStatesFormat(): void
+    {
+        self::assertTrue(ValidateDate::validateDateAmerican('12/31/2024'));
+        self::assertTrue(ValidateDate::validateDateAmerican('01/15/2024'));
+        self::assertTrue(ValidateDate::validateDateAmerican('02/29/2024'));
+        self::assertFalse(ValidateDate::validateDateAmerican('02/29/2023'));
+        self::assertFalse(ValidateDate::validateDateAmerican('13/31/2024'));
+        self::assertFalse(ValidateDate::validateDateAmerican('12/32/2024'));
+        self::assertFalse(ValidateDate::validateDateAmerican('12-31-2024'));
+    }
+
     public function testValidateDateAmericanLeapYear(): void
     {
         self::assertTrue(ValidateDate::validateDateAmerican('2024-02-29'));
@@ -162,25 +173,25 @@ class ValidateDateTest extends TestCase
 
     public function testValidateTimeStampWithInvalidFormats(): void
     {
-        self::assertFalse(ValidateDate::validateTimeStamp(''));
-        self::assertFalse(ValidateDate::validateTimeStamp('2021-04-29'));
-        self::assertFalse(ValidateDate::validateTimeStamp('2021-04-29 11:17'));
-        self::assertFalse(ValidateDate::validateTimeStamp('29/04/2021'));
+        self::assertFalse(ValidateDate::validateTimestamp(''));
+        self::assertFalse(ValidateDate::validateTimestamp('2021-04-29'));
+        self::assertFalse(ValidateDate::validateTimestamp('2021-04-29 11:17'));
+        self::assertFalse(ValidateDate::validateTimestamp('29/04/2021'));
     }
 
     public function testValidateTimeStampBrazilFormat(): void
     {
-        self::assertTrue(ValidateDate::validateTimeStamp('29/04/2021 11:17:12'));
-        self::assertFalse(ValidateDate::validateTimeStamp('29/04/2021 25:17:12'));
+        self::assertTrue(ValidateDate::validateTimestamp('29/04/2021 11:17:12'));
+        self::assertFalse(ValidateDate::validateTimestamp('29/04/2021 25:17:12'));
     }
 
     public function testValidateTimeStampEdgeTimes(): void
     {
-        self::assertTrue(ValidateDate::validateTimeStamp('2021-04-29 00:00:00'));
-        self::assertTrue(ValidateDate::validateTimeStamp('2021-04-29 23:59:59'));
-        self::assertFalse(ValidateDate::validateTimeStamp('2021-04-29 24:00:00'));
-        self::assertFalse(ValidateDate::validateTimeStamp('2021-04-29 11:60:00'));
-        self::assertFalse(ValidateDate::validateTimeStamp('2021-04-29 11:17:60'));
+        self::assertTrue(ValidateDate::validateTimestamp('2021-04-29 00:00:00'));
+        self::assertTrue(ValidateDate::validateTimestamp('2021-04-29 23:59:59'));
+        self::assertFalse(ValidateDate::validateTimestamp('2021-04-29 24:00:00'));
+        self::assertFalse(ValidateDate::validateTimestamp('2021-04-29 11:60:00'));
+        self::assertFalse(ValidateDate::validateTimestamp('2021-04-29 11:17:60'));
     }
 
     public function testValidateDateNotFutureWithInvalidDate(): void
