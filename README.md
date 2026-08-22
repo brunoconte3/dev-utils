@@ -667,8 +667,8 @@ use DevUtils\ValidatePhone;
 ValidatePhone::validate('44999999999'); //Return boolean [[You can wear a mask]
 
 use DevUtils\ValidateString;
-ValidateString::minWords('Bruno Conte', 2) //Return boolean
-ValidateString::maxWords('Bruno Conte', 2) //Return boolean
+ValidateString::minWords('Bruno Conte', 2); //Return boolean
+ValidateString::maxWords('Bruno Conte', 2); //Return boolean
 ```
 
 ## Generation Utilities

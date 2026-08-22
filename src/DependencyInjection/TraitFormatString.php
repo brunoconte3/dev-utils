@@ -127,6 +127,14 @@ trait TraitFormatString
         return self::lower($slug);
     }
 
+    /**
+     * @deprecated Grafia incorreta mantida por compatibilidade. Use slugify().
+     */
+    public static function slugfy(string $text): string
+    {
+        return self::slugify($text);
+    }
+
     public static function convertStringToBinary(string $string): string
     {
         $characters = str_split($string);

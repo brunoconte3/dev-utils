@@ -429,6 +429,12 @@ class FormatTest extends TestCase
         self::assertEquals('polenta-frita-com-bacon-e-parmesao', Format::slugify('Polenta frita com Bacon e Parmesão'));
     }
 
+    public function testDeprecatedSlugfyStillDelegatesToSlugify(): void
+    {
+        self::assertSame(Format::slugify('Polenta frita e Parmesão'), Format::slugfy('Polenta frita e Parmesão'));
+        self::assertSame('teste-aqui', Format::slugfy('Teste  Aqui'));
+    }
+
     public function testCompanyIdentificationInvalidThrowsException(): void
     {
         $this->expectException(\InvalidArgumentException::class);
