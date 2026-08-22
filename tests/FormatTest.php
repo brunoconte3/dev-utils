@@ -14,6 +14,10 @@ class FormatTest extends TestCase
 {
     private const CNPJ_NUMERIC_MASKED = '76.027.484/0001-24';
     private const CNPJ_ALPHANUMERIC_MASKED = 'BR.ASI.L20/26AA-64';
+    private const CNPJ_OTHER_NUMERIC_MASKED = '12.456.571/0001-14';
+    private const CNPJ_OTHER_ALPHANUMERIC_MASKED = 'K7.CM7.10C/0001-84';
+    private const CPF_MASKED = '894.213.600-10';
+    private const CPF_OTHER_MASKED = '307.208.700-89';
     private const RULE_CONVERT_INT = 'convert|int';
     private const PHONE_UNMASKED = '44999998888';
     private const DATE_BRAZIL = '10/10/2020';
@@ -87,20 +91,20 @@ class FormatTest extends TestCase
 
     public function testIdentifier(): void
     {
-        self::assertEquals('894.213.600-10', Format::identifier('89421360010'));
+        self::assertEquals(self::CPF_MASKED, Format::identifier('89421360010'));
     }
 
     public function testIdentifierAcceptsMaskedValue(): void
     {
-        self::assertSame('894.213.600-10', Format::identifier('894.213.600-10'));
+        self::assertSame(self::CPF_MASKED, Format::identifier(self::CPF_MASKED));
         self::assertSame('067.981.009-96', Format::identifier('067.981.009-96'));
-        self::assertSame('307.208.700-89', Format::identifier('307 208 700 89'));
+        self::assertSame(self::CPF_OTHER_MASKED, Format::identifier('307 208 700 89'));
     }
 
     public function testIdentifierOrCompany(): void
     {
-        self::assertEquals('307.208.700-89', Format::identifierOrCompany('30720870089'));
-        self::assertEquals('12.456.571/0001-14', Format::identifierOrCompany('12456571000114'));
+        self::assertEquals(self::CPF_OTHER_MASKED, Format::identifierOrCompany('30720870089'));
+        self::assertEquals(self::CNPJ_OTHER_NUMERIC_MASKED, Format::identifierOrCompany('12456571000114'));
         self::assertEquals('A1.B2C.3D4/5E6F-59', Format::identifierOrCompany('A1B2C3D45E6F59'));
     }
 
@@ -108,25 +112,28 @@ class FormatTest extends TestCase
     {
         self::assertSame(self::CNPJ_NUMERIC_MASKED, Format::identifierOrCompany(self::CNPJ_NUMERIC_MASKED));
         self::assertSame(self::CNPJ_ALPHANUMERIC_MASKED, Format::identifierOrCompany(self::CNPJ_ALPHANUMERIC_MASKED));
-        self::assertSame('K7.CM7.10C/0001-84', Format::identifierOrCompany('K7.CM7.10C/0001-84'));
-        self::assertSame('12.456.571/0001-14', Format::identifierOrCompany('12.456.571/0001-14'));
+        self::assertSame(
+            self::CNPJ_OTHER_ALPHANUMERIC_MASKED,
+            Format::identifierOrCompany(self::CNPJ_OTHER_ALPHANUMERIC_MASKED),
+        );
+        self::assertSame(self::CNPJ_OTHER_NUMERIC_MASKED, Format::identifierOrCompany(self::CNPJ_OTHER_NUMERIC_MASKED));
     }
 
     public function testIdentifierOrCompanyAcceptsLowercaseMaskedCompany(): void
     {
         self::assertSame(self::CNPJ_ALPHANUMERIC_MASKED, Format::identifierOrCompany('br.asi.l20/26aa-64'));
-        self::assertSame('K7.CM7.10C/0001-84', Format::identifierOrCompany('k7.cm7.10c/0001-84'));
+        self::assertSame(self::CNPJ_OTHER_ALPHANUMERIC_MASKED, Format::identifierOrCompany('k7.cm7.10c/0001-84'));
     }
 
     public function testIdentifierOrCompanyAcceptsMaskedIdentifier(): void
     {
-        self::assertSame('307.208.700-89', Format::identifierOrCompany('307.208.700-89'));
-        self::assertSame('894.213.600-10', Format::identifierOrCompany('894.213.600-10'));
+        self::assertSame(self::CPF_OTHER_MASKED, Format::identifierOrCompany(self::CPF_OTHER_MASKED));
+        self::assertSame(self::CPF_MASKED, Format::identifierOrCompany(self::CPF_MASKED));
     }
 
     public function testIdentifierOrCompanyIgnoresSeparatorNoise(): void
     {
-        self::assertSame('307.208.700-89', Format::identifierOrCompany('307 208 700 89'));
+        self::assertSame(self::CPF_OTHER_MASKED, Format::identifierOrCompany('307 208 700 89'));
         self::assertSame(self::CNPJ_NUMERIC_MASKED, Format::identifierOrCompany('76027484/0001-24'));
     }
 
@@ -509,7 +516,7 @@ class FormatTest extends TestCase
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('identifier não pode conter espaços no início ou no fim!');
-        Format::identifier(' 894.213.600-10 ');
+        Format::identifier(' ' . self::CPF_MASKED . ' ');
     }
 
     public function testIdentifierRejectsLeadingSpaceOnly(): void
