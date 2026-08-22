@@ -1055,6 +1055,40 @@ class RuleTest extends TestCase
         self::assertErrorCount(1, $array, $rules);
     }
 
+    public function testFloatAcceptsZero(): void
+    {
+        $array = [
+            'testError' => 'abc',
+            'testValidZero' => '0',
+            'testValidZeroDecimal' => '0.0',
+            'testValidZeroNative' => 0,
+        ];
+        $rules = [
+            'testError' => 'float',
+            'testValidZero' => 'float',
+            'testValidZeroDecimal' => 'float',
+            'testValidZeroNative' => 'float',
+        ];
+        self::assertErrorCount(1, $array, $rules);
+    }
+
+    public function testIntAcceptsZero(): void
+    {
+        $array = [
+            'testError' => '0.1',
+            'testValidZero' => '0',
+            'testValidZeroNative' => 0,
+            'testValidNegative' => '-1',
+        ];
+        $rules = [
+            'testError' => 'int',
+            'testValidZero' => 'int',
+            'testValidZeroNative' => 'int',
+            'testValidNegative' => 'int',
+        ];
+        self::assertErrorCount(1, $array, $rules);
+    }
+
     public function testBoolWithDifferentValues(): void
     {
         $array = [
@@ -1070,6 +1104,33 @@ class RuleTest extends TestCase
             'testValidYes' => 'bool',
         ];
         self::assertErrorCount(1, $array, $rules);
+    }
+
+    public function testBoolAcceptsFalsyValues(): void
+    {
+        $array = [
+            'testError' => 'sim',
+            'testValidFalse' => 'false',
+            'testValidZero' => '0',
+            'testValidNo' => 'no',
+            'testValidOff' => 'off',
+            'testValidFalseNative' => false,
+        ];
+        $rules = [
+            'testError' => 'bool',
+            'testValidFalse' => 'bool',
+            'testValidZero' => 'bool',
+            'testValidNo' => 'bool',
+            'testValidOff' => 'bool',
+            'testValidFalseNative' => 'bool',
+        ];
+        self::assertErrorCount(1, $array, $rules);
+    }
+
+    public function testBoolRejectsEmptyOnlyThroughRequired(): void
+    {
+        self::assertErrorCount(0, ['testValid' => ''], ['testValid' => 'bool']);
+        self::assertErrorCount(1, ['testError' => ''], ['testError' => 'required|bool']);
     }
 
     public function testJsonWithArray(): void

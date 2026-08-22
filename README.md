@@ -259,7 +259,7 @@ slashed date could be read either way — `05/06/2024` is 5 June for Brazil and 
 | Validator | Description                                 |
 | --------- | ------------------------------------------- |
 | array     | Check if it is an array                     |
-| bool      | Boolean values (true/false, 1/0, yes/no)    |
+| bool      | Boolean (true/false, 1/0, yes/no, on/off)   |
 | float     | Decimal/floating value                      |
 | int       | Integer type (attempts parse)               |
 | integer   | Integer with strict type check              |

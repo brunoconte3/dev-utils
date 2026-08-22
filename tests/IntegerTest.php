@@ -37,7 +37,11 @@ class IntegerTest extends TestCase
         ];
         $validator = new Validator();
         $validator->set($array, $rules);
-        self::assertCount(4, $validator->getErros());
+        $errors = $validator->getErros();
+
+        self::assertCount(2, $errors);
+        self::assertArrayHasKey('testIntError', $errors);
+        self::assertArrayHasKey('testLeftZero', $errors);
     }
 
     public function testIntegerTyped(): void
@@ -54,6 +58,29 @@ class IntegerTest extends TestCase
         $validator = new Validator();
         $validator->set($array, $rules);
         self::assertCount(3, $validator->getErros());
+    }
+
+    public function testIntegerTypedRejectsFloatWithDecimals(): void
+    {
+        $array = [
+            'testErrorDecimal' => 1.2,
+            'testErrorFraction' => 0.5,
+            'testValid' => 5,
+            'testValidZero' => 0,
+        ];
+        $rules = [
+            'testErrorDecimal' => 'integer',
+            'testErrorFraction' => 'integer',
+            'testValid' => 'integer',
+            'testValidZero' => 'integer',
+        ];
+        $validator = new Validator();
+        $validator->set($array, $rules);
+        $errors = $validator->getErros();
+
+        self::assertCount(2, $errors);
+        self::assertArrayHasKey('testErrorDecimal', $errors);
+        self::assertArrayHasKey('testErrorFraction', $errors);
     }
 
     public function testIntegerWithCustomMessage(): void

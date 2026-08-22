@@ -271,18 +271,18 @@ class Rules
 
     protected function validateBoolean(string $field = '', ?string $value = null, ?string $message = null): void
     {
-        if (filter_var($value, FILTER_VALIDATE_BOOLEAN)) {
+        if (filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) !== null) {
             return;
         }
 
         $this->errors[$field] = !empty($message)
             ? $message
-            : "O campo $field só pode conter valores lógicos. (true, 1, yes)!";
+            : "O campo $field só pode conter valores lógicos. (true, false, 1, 0, yes, no, on, off)!";
     }
 
     protected function validateFloating(string $field = '', ?string $value = null, ?string $message = null): void
     {
-        if (filter_var($value, FILTER_VALIDATE_FLOAT)) {
+        if (filter_var($value, FILTER_VALIDATE_FLOAT) !== false) {
             return;
         }
 

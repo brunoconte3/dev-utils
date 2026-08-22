@@ -8,7 +8,7 @@ trait TraitRuleInteger
 {
     protected function validateInteger(string $field = '', ?string $value = null, ?string $message = ''): void
     {
-        if (filter_var($value, FILTER_VALIDATE_INT)) {
+        if (filter_var($value, FILTER_VALIDATE_INT) !== false) {
             return;
         }
 
@@ -17,7 +17,7 @@ trait TraitRuleInteger
 
     protected function validateIntegerTyped(
         string $field = '',
-        string|int|null $value = null,
+        mixed $value = null,
         ?string $message = ''
     ): void {
         if (is_int($value)) {
