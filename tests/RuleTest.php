@@ -1482,6 +1482,34 @@ class RuleTest extends TestCase
         self::assertErrorCount(0, $array, $rules);
     }
 
+    public function testEqualsMatchesIdenticalNonStringValues(): void
+    {
+        self::assertErrorCount(0, ['reference' => 1, 'copy' => 1], ['copy' => 'equals:reference']);
+        self::assertErrorCount(0, ['reference' => 0, 'copy' => 0], ['copy' => 'equals:reference']);
+        self::assertErrorCount(0, ['reference' => 1.5, 'copy' => 1.5], ['copy' => 'equals:reference']);
+        self::assertErrorCount(0, ['reference' => true, 'copy' => true], ['copy' => 'equals:reference']);
+        self::assertErrorCount(0, ['reference' => false, 'copy' => false], ['copy' => 'equals:reference']);
+    }
+
+    public function testEqualsRejectsDifferentNonStringValues(): void
+    {
+        self::assertErrorCount(1, ['reference' => 1, 'copy' => 2], ['copy' => 'equals:reference']);
+        self::assertErrorCount(1, ['reference' => 1.5, 'copy' => 1.6], ['copy' => 'equals:reference']);
+        self::assertErrorCount(1, ['reference' => true, 'copy' => false], ['copy' => 'equals:reference']);
+    }
+
+    public function testEqualsComparisonStaysStrictBetweenTypes(): void
+    {
+        self::assertErrorCount(1, ['reference' => 1, 'copy' => '1'], ['copy' => 'equals:reference']);
+        self::assertErrorCount(1, ['reference' => true, 'copy' => 'true'], ['copy' => 'equals:reference']);
+    }
+
+    public function testEqualsDoesNotThrowOnNullValue(): void
+    {
+        self::assertErrorCount(1, ['reference' => null, 'copy' => null], ['copy' => 'equals:reference']);
+        self::assertErrorCount(1, ['reference' => 'x', 'copy' => null], ['copy' => 'equals:reference']);
+    }
+
     public function testLowerWithMixedChars(): void
     {
         $array = [

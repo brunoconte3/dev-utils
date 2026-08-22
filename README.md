@@ -25,6 +25,7 @@
 - [File Upload Validation](#validating-files-upload)
 - [Validation Types](#validation-types-validators)
 - [Regex Validator](#using-the-regex-validator)
+- [Equals Validator](#using-the-equals-validator)
 - [Custom Messages](#defining-custom-message)
 - [String Formatting](#formatting-examples)
 - [Data Comparison](#comparisons-examples)
@@ -268,15 +269,15 @@ slashed date could be read either way — `05/06/2024` is 5 June for Brazil and 
 
 ### Constraint Validators
 
-| Validator | Description                    |
-| --------- | ------------------------------ |
-| equals    | Field must equal another field |
-| max       | Maximum size                   |
-| maxWords  | Maximum number of words        |
-| min       | Minimum size                   |
-| minWords  | Minimum number of words        |
-| optional  | Validates only if not empty    |
-| required  | Required field                 |
+| Validator | Description                                 |
+| --------- | ------------------------------------------- |
+| equals    | Must match another field (equals:password)  |
+| max       | Maximum number of characters (max:50)       |
+| maxWords  | Maximum number of words (maxWords:10)       |
+| min       | Minimum number of characters (min:8)        |
+| minWords  | Minimum number of words (minWords:2)        |
+| optional  | Skips the remaining rules when empty        |
+| required  | Field must be filled in                     |
 
 ### Network and Identifier Validators
 
@@ -350,6 +351,22 @@ $rules = [
     'range' => '{"regex":"/^[0-9]{2,4}$/"}',                          // comma
     'pet'   => '{"required":true,"regex":"/^(cat|dog)$/"}',           // alternation
     'time'  => '{"regex":"/^[0-9]{2}:[0-9]{2}$/","message":"Use HH:MM"}',
+];
+```
+
+### Using the equals validator
+
+`equals` compares two fields of the same payload. The parameter is the **name of the other field**,
+never a value, and the rule goes on the field being confirmed — that is where the error lands:
+
+```php
+$data = [
+    'password'        => 'abc123',
+    'confirmPassword' => 'abc123',
+];
+$rules = [
+    'password'        => 'required|min:6',
+    'confirmPassword' => 'required|min:6|equals:password, The passwords do not match',
 ];
 ```
 

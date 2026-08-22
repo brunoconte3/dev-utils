@@ -157,7 +157,7 @@ trait TraitRuleString
     protected function validateEquals(
         string $rule,
         string $field = '',
-        string $value = '',
+        mixed $value = '',
         ?string $message = '',
         array $data = [],
     ): void {
