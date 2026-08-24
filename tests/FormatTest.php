@@ -879,6 +879,43 @@ class FormatTest extends TestCase
         self::assertSame('2020-05-12', Format::dateAmerican('12-05-2020'));
     }
 
+    public function testDateBrazilAcceptsUnseparatedDigits(): void
+    {
+        self::assertSame('07/10/2020', Format::dateBrazil('07102020'));
+        self::assertSame('31/12/2024', Format::dateBrazil('31122024'));
+        self::assertSame('24/08/2026', Format::dateBrazil('24082026'));
+    }
+
+    public function testDateBrazilRejectsUnseparatedDigitsInAmericanOrder(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('data inválida');
+        Format::dateBrazil('20201007');
+    }
+
+    public function testDateAmericanAcceptsUnseparatedDigits(): void
+    {
+        self::assertSame('2024-12-31', Format::dateAmerican('20241231'));
+        self::assertSame('2020-10-07', Format::dateAmerican('20201007'));
+        self::assertSame('2026-08-24', Format::dateAmerican('20260824'));
+    }
+
+    public function testDateAmericanRejectsUnseparatedDigitsInBrazilianOrder(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('data inválida');
+        Format::dateAmerican('07102020');
+    }
+
+    public function testWriteDateExtensiveAcceptsUnseparatedDigits(): void
+    {
+        if (extension_loaded('gd')) {
+            self::assertSame('quarta-feira, 07 de outubro de 2020', Format::writeDateExtensive('07102020'));
+        } else {
+            self::assertFalse(extension_loaded('gd'));
+        }
+    }
+
     public function testConvertTypesReturnsEmptyErrorsOnSuccess(): void
     {
         $data = ['age' => '30'];

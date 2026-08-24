@@ -214,16 +214,16 @@ Complete list of available validators in the library. Use them in your validatio
 
 ### Text Validators
 
-| Validator         | Description                          |
-| ----------------- | ------------------------------------ |
-| alpha             | Only alphabetic characters           |
-| alphaNoSpecial    | Regular text without accents         |
-| alphaNum          | Alphanumeric characters              |
-| alphaNumNoSpecial | Letters without accents + numbers    |
-| lower             | No uppercase letters (digits ok)     |
-| notSpace          | Check if contains spaces             |
-| regex             | Custom regex, e.g. regex:/^[0-9]+$/  |
-| upper             | No lowercase letters (digits ok)     |
+| Validator         | Description                         |
+| ----------------- | ----------------------------------- |
+| alpha             | Only alphabetic characters          |
+| alphaNoSpecial    | Regular text without accents        |
+| alphaNum          | Alphanumeric characters             |
+| alphaNumNoSpecial | Letters without accents + numbers   |
+| lower             | No uppercase letters (digits ok)    |
+| notSpace          | Check if contains spaces            |
+| regex             | Custom regex, e.g. regex:/^[0-9]+$/ |
+| upper             | No lowercase letters (digits ok)    |
 
 ### Brazilian Data Validators
 
@@ -239,17 +239,17 @@ Complete list of available validators in the library. Use them in your validatio
 
 ### Date and Time Validators
 
-| Validator              | Description                                       |
-| ---------------------- | ------------------------------------------------- |
-| dateAmerican           | Date YYYY-MM-DD or MM/DD/YYYY (8 digits ok)       |
-| dateBrazil             | Date DD/MM/YYYY (or 8 digits: 31122024)           |
+| Validator              | Description                                        |
+| ---------------------- | -------------------------------------------------- |
+| dateAmerican           | Date YYYY-MM-DD or MM/DD/YYYY (8 digits ok)        |
+| dateBrazil             | Date DD/MM/YYYY (or 8 digits: 31122024)            |
 | dateIso8601            | ISO 8601 date, week, ordinal, duration or interval |
-| dateNotFuture          | Date not in the future (DD/MM/YYYY or YYYY-MM-DD) |
-| dateUTCWithoutTimezone | UTC date without Z (2025-11-20T10:30:00)          |
-| hour                   | Hour HH:MM, from 00:00 to 23:59                   |
-| noWeekend              | Date is not Saturday or Sunday                    |
-| numMonth               | Month from 1 to 12 (01 accepted)                  |
-| timestamp              | Date and time YYYY-MM-DD HH:MM:SS (not Unix)      |
+| dateNotFuture          | Date not in the future (DD/MM/YYYY or YYYY-MM-DD)  |
+| dateUTCWithoutTimezone | UTC date without Z (2025-11-20T10:30:00)           |
+| hour                   | Hour HH:MM, from 00:00 to 23:59                    |
+| noWeekend              | Date is not Saturday or Sunday                     |
+| numMonth               | Month from 1 to 12 (01 accepted)                   |
+| timestamp              | Date and time YYYY-MM-DD HH:MM:SS (not Unix)       |
 
 `dateAmerican` takes both the database format `2024-12-31` and the US format `12/31/2024`. When a
 slashed date could be read either way — `05/06/2024` is 5 June for Brazil and 6 May for the US — the
@@ -269,15 +269,15 @@ slashed date could be read either way — `05/06/2024` is 5 June for Brazil and 
 
 ### Constraint Validators
 
-| Validator | Description                                 |
-| --------- | ------------------------------------------- |
-| equals    | Must match another field (equals:password)  |
-| max       | Maximum number of characters (max:50)       |
-| maxWords  | Maximum number of words (maxWords:10)       |
-| min       | Minimum number of characters (min:8)        |
-| minWords  | Minimum number of words (minWords:2)        |
-| optional  | Skips the remaining rules when empty        |
-| required  | Field must be filled in                     |
+| Validator | Description                                |
+| --------- | ------------------------------------------ |
+| equals    | Must match another field (equals:password) |
+| max       | Maximum number of characters (max:50)      |
+| maxWords  | Maximum number of words (maxWords:10)      |
+| min       | Minimum number of characters (min:8)       |
+| minWords  | Minimum number of words (minWords:2)       |
+| optional  | Skips the remaining rules when empty       |
+| required  | Field must be filled in                    |
 
 ### Network and Identifier Validators
 
@@ -404,11 +404,11 @@ Format::convertTimestampBrazilToAmerican('15/04/2021 19:50:25'); //Convert Times
 //Default currency BR ==> R$ 113,00 - the 2nd parameter chooses the Currency label. A leading '-' is preserved.
 //An empty string returns 0,00, but a value without any digit throws InvalidArgumentException
 Format::currency('113', 'R$ ');
-Format::currencyUsd('1123.45'); //Default currency USD ==> 1,123.45 - the 2nd parameter chooses the Currency label
-//Accepts dd/mm/yyyy, mm/dd/yyyy, dd-mm-yyyy and yyyy-mm-dd. An invalid date throws InvalidArgumentException
-//An ambiguous slashed date is read as Brazilian: '05/06/2024' returns 2024-06-05, not 2024-05-06
+Format::currencyUsd('1123.45'); //Default currency USD ==> 1,123.45 - the 2nd parameter chooses the
 Format::dateAmerican('12-05-2020'); //return date ==>  2020-05-12
 Format::dateBrazil('2020-05-12'); //return date ==>  12/05/2020
+Format::dateBrazil('31122024'); //8 digits ddmmyyyy ==>  31/12/2024
+Format::dateAmerican('20241231'); //8 digits yyyymmdd ==>  2024-12-31
 Format::identifier('73381209000');  //CPF ==>  733.812.090-00 - accepts masked input
 Format::identifierOrCompany('30720870089'); //CPF/CNPJ Brazil ==> 307.208.700-89 - accepts masked input
 Format::falseToNull(false); //Return ==> null
@@ -734,13 +734,13 @@ Two guarantees worth relying on:
 - **Every enabled group is present.** `generatePassword(4)` returns one uppercase, one lowercase,
   one digit and one symbol, so you never have to re-check the password against your own policy.
 
-| Parameter    | Default    | Description                       |
-| ------------ | ---------- | --------------------------------- |
-| `$size`      | *required* | Number of characters              |
-| `$uppercase` | `true`     | Include `A-Z`                     |
-| `$lowercase` | `true`     | Include `a-z`                     |
-| `$numbers`   | `true`     | Include `0-9`                     |
-| `$symbols`   | `true`     | Include `@#$!()-+%=`              |
+| Parameter    | Default    | Description          |
+| ------------ | ---------- | -------------------- |
+| `$size`      | _required_ | Number of characters |
+| `$uppercase` | `true`     | Include `A-Z`        |
+| `$lowercase` | `true`     | Include `a-z`        |
+| `$numbers`   | `true`     | Include `0-9`        |
+| `$symbols`   | `true`     | Include `@#$!()-+%=` |
 
 Impossible requests fail loudly instead of returning a weak password:
 

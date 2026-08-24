@@ -21,8 +21,23 @@ trait TraitFormatDate
         return $year . '-' . $month . '-' . $day;
     }
 
-    private static function toIsoDate(string $date): ?string
+    private static function isoDateFromDigits(string $date, bool $brazilianOrder): ?string
     {
+        $isoDate = $brazilianOrder
+            ? substr($date, 4, 4) . '-' . substr($date, 2, 2) . '-' . substr($date, 0, 2)
+            : substr($date, 0, 4) . '-' . substr($date, 4, 2) . '-' . substr($date, 6, 2);
+
+        [$year, $month, $day] = explode('-', $isoDate);
+
+        return checkdate((int) $month, (int) $day, (int) $year) ? $isoDate : null;
+    }
+
+    private static function toIsoDate(string $date, bool $brazilianOrder): ?string
+    {
+        if (strlen($date) === 8 && ctype_digit($date)) {
+            return self::isoDateFromDigits($date, $brazilianOrder);
+        }
+
         if (ValidateDate::validateDateBrazil($date)) {
             return implode('-', array_reverse(explode('/', $date)));
         }
@@ -39,7 +54,7 @@ trait TraitFormatDate
         return null;
     }
 
-    private static function createDate(string $method, string $date): DateTimeImmutable
+    private static function createDate(string $method, string $date, bool $brazilianOrder = true): DateTimeImmutable
     {
         $trimmed = trim($date);
 
@@ -47,7 +62,7 @@ trait TraitFormatDate
             throw new InvalidArgumentException("$method precisa conter 8 à 10 dígitos!");
         }
 
-        $isoDate = self::toIsoDate($trimmed);
+        $isoDate = self::toIsoDate($trimmed, $brazilianOrder);
         if ($isoDate === null) {
             throw new InvalidArgumentException("$method recebeu uma data inválida: '$date'!");
         }
@@ -62,7 +77,7 @@ trait TraitFormatDate
 
     public static function dateAmerican(string $date): string
     {
-        return self::createDate('dateAmerican', $date)->format('Y-m-d');
+        return self::createDate('dateAmerican', $date, false)->format('Y-m-d');
     }
 
     public static function writeDateExtensive(string $date): string
