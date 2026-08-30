@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace DevUtils;
 
 use DateTime;
@@ -7,28 +9,34 @@ use DateTimeImmutable;
 
 class ValidateDate
 {
-    private static function validateYear(string $ano, string $mes, string $dia): bool
+    private const ISO_CALENDAR_DATE = '/^\d{4}(-?\d{2}(-?\d{2})?)?$/';
+    private const ISO_CALENDAR_TIME = '/^\d{2}(:?\d{2}(:?\d{2}(\.\d+)?)?)?$/';
+    private const ISO_TIMEZONE_SUFFIX = '/(Z|[+-]\d{2}(:?\d{2})?)$/';
+    private const ISO_DURATION_DATE = '/^(\d+Y)?(\d+M)?(\d+W)?(\d+D)?$/';
+    private const ISO_DURATION_TIME = '/^(\d+H)?(\d+M)?(\d+S)?$/';
+
+    private static function validateYear(string $year, string $month, string $day): bool
     {
-        return strlen($ano) >= 4
-            && ctype_digit($mes)
-            && ctype_digit($dia)
-            && ctype_digit($ano)
-            && checkdate((int) $mes, (int) $dia, (int) $ano);
+        return strlen($year) >= 4
+            && ctype_digit($month)
+            && ctype_digit($day)
+            && ctype_digit($year)
+            && checkdate((int) $month, (int) $day, (int) $year);
     }
 
     /**
      * @param array{year: int, month: int, day: int} $order
      */
     private static function validateDateWithSeparator(
-        string $data,
+        string $date,
         string $separator,
         array $order
     ): bool {
-        if (strlen($data) < 8 || $separator === '' || !str_contains($data, $separator)) {
+        if (strlen($date) < 8 || $separator === '' || !str_contains($date, $separator)) {
             return false;
         }
 
-        $parts = explode($separator, $data);
+        $parts = explode($separator, $date);
         if (count($parts) !== 3) {
             return false;
         }
@@ -46,10 +54,28 @@ class ValidateDate
         return $d !== false && $d->format($format) === $date;
     }
 
+    private static function matchesCalendarTime(string $time): bool
+    {
+        if (preg_match(self::ISO_TIMEZONE_SUFFIX, $time, $matches) === 1) {
+            $time = substr($time, 0, strlen($time) - strlen($matches[0]));
+        }
+
+        return preg_match(self::ISO_CALENDAR_TIME, $time) === 1;
+    }
+
+    private static function matchesCalendarPattern(string $input): bool
+    {
+        $segments = explode('T', $input);
+        if (count($segments) > 2 || preg_match(self::ISO_CALENDAR_DATE, $segments[0]) !== 1) {
+            return false;
+        }
+
+        return !isset($segments[1]) || self::matchesCalendarTime($segments[1]);
+    }
+
     private static function isCalendarDateTime(string $input): bool
     {
-        $pattern = '/^\d{4}((-?\d{2})(-?\d{2})?)?(T\d{2}(:?\d{2}(:?\d{2}(\.\d+)?)?)?(Z|[+-]\d{2}(:?\d{2})?)?)?$/';
-        if (!preg_match($pattern, $input)) {
+        if (!self::matchesCalendarPattern($input)) {
             return false;
         }
 
@@ -69,7 +95,7 @@ class ValidateDate
 
     private static function isWeekDate(string $input): bool
     {
-        $pattern = '/^(\d{4})-?W(0[1-9]|[1-4][0-9]|5[0-3])(-?([1-7]))?$/';
+        $pattern = '/^(\d{4})-?W(0[1-9]|[1-4]\d|5[0-3])(-?([1-7]))?$/';
         if (!preg_match($pattern, $input, $matches)) {
             return false;
         }
@@ -101,8 +127,24 @@ class ValidateDate
 
     private static function isDuration(string $input): bool
     {
-        $pattern = '/^P(?!$)(\d+Y)?(\d+M)?(\d+W)?(\d+D)?(T(?=\d)(\d+H)?(\d+M)?(\d+S)?)?$/';
-        return (bool) preg_match($pattern, $input);
+        if (!str_starts_with($input, 'P') || $input === 'P') {
+            return false;
+        }
+
+        $segments = explode('T', substr($input, 1));
+        if (count($segments) > 2) {
+            return false;
+        }
+
+        if ($segments[0] !== '' && preg_match(self::ISO_DURATION_DATE, $segments[0]) !== 1) {
+            return false;
+        }
+
+        if (!isset($segments[1])) {
+            return true;
+        }
+
+        return $segments[1] !== '' && preg_match(self::ISO_DURATION_TIME, $segments[1]) === 1;
     }
 
     private static function isInterval(string $input): bool
@@ -119,25 +161,29 @@ class ValidateDate
         return self::validateDateIso8601($parts[0]) && self::validateDateIso8601($parts[1]);
     }
 
-    public static function validateDateBrazil(string $data): bool
+    public static function validateDateBrazil(string $date): bool
     {
-        return self::validateDateWithSeparator($data, '/', [
+        return self::validateDateWithSeparator($date, '/', [
             'day' => 0,
             'month' => 1,
             'year' => 2,
         ]);
     }
 
-    public static function validateDateAmerican(string $data): bool
+    public static function validateDateAmerican(string $date): bool
     {
-        return self::validateDateWithSeparator($data, '-', [
-            'year' => 0,
-            'month' => 1,
+        return self::validateDateWithSeparator($date, '-', [
             'day' => 2,
+            'month' => 1,
+            'year' => 0,
+        ]) || self::validateDateWithSeparator($date, '/', [
+            'day' => 1,
+            'month' => 0,
+            'year' => 2,
         ]);
     }
 
-    public static function validateTimeStamp(string $date): bool
+    public static function validateTimestamp(string $date): bool
     {
         return self::validateDateTimeFormat($date, 'Y-m-d H:i:s')
             || self::validateDateTimeFormat($date, 'd/m/Y H:i:s');

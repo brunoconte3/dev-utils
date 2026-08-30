@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace DevUtils;
 
 use DevUtils\DependencyInjection\Rules;
@@ -38,6 +40,6 @@ class Validator extends Rules
 
     public function getErros(): array
     {
-        return $this->errors ?? [];
+        return $this->errors;
     }
 }

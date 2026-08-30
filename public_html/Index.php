@@ -4,17 +4,14 @@ declare(strict_types=1);
 
 namespace DevUtils\Test;
 
-use DevUtils\{
-    Validator,
-    Format,
-};
 use DevUtils\conf\Conf;
+use DevUtils\Format;
+use DevUtils\Validator;
 
-require_once '../conf/Conf.php';
-require_once 'AutoInstall.php';
+require_once 'AutoInstall.php'; // NOSONAR - script procedural de bootstrap, não é carregamento de classe
 require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';
 
-(new Conf());
+new Conf(); // NOSONAR - o construtor existe pelo efeito colateral: define URL_HOST, URL e PATH_PROJECT
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -40,24 +37,18 @@ require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPAR
 
                     $validator = new Validator();
 
-                    $cpfOuCnpj = Format::identifierOrCompany('DEVUTILS123404');
-                    echo '<br> Teste dados válidos identifierOrCompany => ' . $cpfOuCnpj;
                     $array = [
-                        'cpfOuCnpj' => $cpfOuCnpj,
-                        'nomeCidade' => 'Maringá',
-                        'dadosEmpresa' => ['empresa' => 'CooperTec'],
+                        'test' => 'value'
                     ];
                     $rules = [
-                        'cpfOuCnpj' => 'identifierOrCompany',
-                        'nomeCidade' => 'required|alpha',
-                        'dadosEmpresa' => 'required|array',
+                        'test' => 'required|min:3|max:5|alpha'
                     ];
                     $validator->set($array, $rules);
                     ?>
                     <pre>
                         <?php
                         if (empty($validator->getErros())) {
-                            echo '<p style="background-color:green;">Sucesso! dados válidos!</p>';
+                            echo '<p style="background-color:green;color:white;">Sucesso! dados válidos!</p>';
                         } else {
                             echo '<p style="background-color:red;">Revise a entrada!<pre></p>';
                             print_r($validator->getErros());
@@ -72,18 +63,18 @@ require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPAR
                         $fileUploadSingle = $_FILES['fileUploadSingle'];
                         $fileUploadMultiple = $_FILES['fileUploadMultiple'];
                         $array = [
+                            'fileUploadMultiple' => $fileUploadMultiple,
                             'fileUploadSingle' => $fileUploadSingle,
-                            'fileUploadMultiple' => $fileUploadMultiple
                         ];
+                        $ruleMultiple = 'fileName|mimeType:jpeg;png|minFile:1|maxFile:3|minUploadSize:10';
+                        $ruleMultiple .= '|minWidth:200|maxWidth:200|minHeight:200|maxHeight:200|';
+                        $ruleMultiple .= 'maxUploadSize:30000';
                         $ruleSingle = 'requiredFile|fileName|mimeType:jpeg;png;jpg;txt;docx;xlsx;pdf|minUploadSize:10|';
                         $ruleSingle .= 'maxUploadSize:30000|maxFile:1|minWidth:200|maxWidth:200|minHeight:200|';
                         $ruleSingle .= 'maxHeight:200';
-                        $ruleMultiple = 'fileName|mimeType:jpeg;png|minFile:1|maxFile:3|minUploadSize:10';
-                        $ruleMultiple .= '|minWidth:200|maxWidth:200|minHeight:200|maxHeight:200|';
-                        $ruleMultiple .= 'maxUploadSize:30000, Mensagem personalizada aqui!';
                         $rules = [
+                            'fileUploadMultiple' => $ruleMultiple,
                             'fileUploadSingle' => $ruleSingle,
-                            'fileUploadMultiple' => $ruleMultiple
                         ];
                         $validator = new Validator();
                         $validator->set($array, $rules); ?>

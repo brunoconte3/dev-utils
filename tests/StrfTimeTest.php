@@ -12,24 +12,31 @@ use PHPUnit\Framework\TestCase;
 
 class StrfTimeTest extends TestCase
 {
+    private const DATE_TIME = '2024-03-15 14:30:45';
+    private const DATE = '2024-03-15';
+    private const DATE_SINGLE_DIGIT_DAY = '2024-03-05';
+    private const DATE_FIRST_OF_YEAR = '2024-01-01';
+    private const FORMAT_AMERICAN = '%Y-%m-%d';
+    private const PATTERN_TWO_DIGITS = '/^\d{2}$/';
+
     private DateTime $fixedDate;
 
     protected function setUp(): void
     {
-        $this->fixedDate = new DateTime('2024-03-15 14:30:45');
+        $this->fixedDate = new DateTime(self::DATE_TIME);
     }
 
     public function testStrftimeWithDateTimeObject(): void
     {
-        $result = StrfTime::strftime('%Y-%m-%d', $this->fixedDate);
-        self::assertSame('2024-03-15', $result);
+        $result = StrfTime::strftime(self::FORMAT_AMERICAN, $this->fixedDate);
+        self::assertSame(self::DATE, $result);
     }
 
     public function testStrftimeWithDateTimeImmutable(): void
     {
-        $date = new DateTimeImmutable('2024-03-15 14:30:45');
-        $result = StrfTime::strftime('%Y-%m-%d', $date);
-        self::assertSame('2024-03-15', $result);
+        $date = new DateTimeImmutable(self::DATE_TIME);
+        $result = StrfTime::strftime(self::FORMAT_AMERICAN, $date);
+        self::assertSame(self::DATE, $result);
     }
 
     public function testStrftimeWithUnixTimestamp(): void
@@ -41,8 +48,8 @@ class StrfTimeTest extends TestCase
 
     public function testStrftimeWithStringDate(): void
     {
-        $result = StrfTime::strftime('%Y-%m-%d', '2024-03-15');
-        self::assertSame('2024-03-15', $result);
+        $result = StrfTime::strftime(self::FORMAT_AMERICAN, self::DATE);
+        self::assertSame(self::DATE, $result);
     }
 
     public function testStrftimeWithNullTimestamp(): void
@@ -64,9 +71,9 @@ class StrfTimeTest extends TestCase
     {
         self::assertSame('11', StrfTime::strftime('%V', $this->fixedDate));
         $result = StrfTime::strftime('%U', $this->fixedDate);
-        self::assertMatchesRegularExpression('/^\d{2}$/', $result);
+        self::assertMatchesRegularExpression(self::PATTERN_TWO_DIGITS, $result);
         $result = StrfTime::strftime('%W', $this->fixedDate);
-        self::assertMatchesRegularExpression('/^\d{2}$/', $result);
+        self::assertMatchesRegularExpression(self::PATTERN_TWO_DIGITS, $result);
     }
 
     public function testStrftimeMonthFormats(): void
@@ -101,7 +108,7 @@ class StrfTimeTest extends TestCase
         self::assertSame('14:30:45', StrfTime::strftime('%T', $this->fixedDate));
         self::assertSame('02:30:45 PM', StrfTime::strftime('%r', $this->fixedDate));
         self::assertSame('03/15/2024', StrfTime::strftime('%D', $this->fixedDate));
-        self::assertSame('2024-03-15', StrfTime::strftime('%F', $this->fixedDate));
+        self::assertSame(self::DATE, StrfTime::strftime('%F', $this->fixedDate));
     }
 
     public function testStrftimeTimezoneFormats(): void
@@ -121,21 +128,21 @@ class StrfTimeTest extends TestCase
 
     public function testStrftimePrefixUnderscore(): void
     {
-        $date = new DateTime('2024-03-05');
+        $date = new DateTime(self::DATE_SINGLE_DIGIT_DAY);
         $result = StrfTime::strftime('%_d', $date);
         self::assertSame(' 5', $result);
     }
 
     public function testStrftimePrefixDash(): void
     {
-        $date = new DateTime('2024-03-05');
+        $date = new DateTime(self::DATE_SINGLE_DIGIT_DAY);
         $result = StrfTime::strftime('%-d', $date);
         self::assertSame('5', $result);
     }
 
     public function testStrftimePrefixHash(): void
     {
-        $date = new DateTime('2024-03-05');
+        $date = new DateTime(self::DATE_SINGLE_DIGIT_DAY);
         $result = StrfTime::strftime('%#d', $date);
         self::assertSame('5', $result);
     }
@@ -156,8 +163,8 @@ class StrfTimeTest extends TestCase
 
     public function testStrftimeWithLocale(): void
     {
-        $result = StrfTime::strftime('%Y-%m-%d', $this->fixedDate, 'en_US');
-        self::assertSame('2024-03-15', $result);
+        $result = StrfTime::strftime(self::FORMAT_AMERICAN, $this->fixedDate, 'en_US');
+        self::assertSame(self::DATE, $result);
     }
 
     public function testStrftimeUnixTimestampFormat(): void
@@ -169,7 +176,7 @@ class StrfTimeTest extends TestCase
     public function testStrftimeCombinedFormats(): void
     {
         $result = StrfTime::strftime('%Y-%m-%d %H:%M:%S', $this->fixedDate);
-        self::assertSame('2024-03-15 14:30:45', $result);
+        self::assertSame(self::DATE_TIME, $result);
     }
 
     public function testStrftimeMultiplePercentEscape(): void
@@ -180,7 +187,7 @@ class StrfTimeTest extends TestCase
 
     public function testStrftimeDayOfYearPadding(): void
     {
-        $firstDay = new DateTime('2024-01-01');
+        $firstDay = new DateTime(self::DATE_FIRST_OF_YEAR);
         self::assertSame('001', StrfTime::strftime('%j', $firstDay));
     }
 
@@ -254,16 +261,16 @@ class StrfTimeTest extends TestCase
     {
         $firstSunday2024 = new DateTime('2024-01-07');
         $resultU = StrfTime::strftime('%U', $firstSunday2024);
-        self::assertMatchesRegularExpression('/^\d{2}$/', $resultU);
+        self::assertMatchesRegularExpression(self::PATTERN_TWO_DIGITS, $resultU);
 
-        $firstMonday2024 = new DateTime('2024-01-01');
+        $firstMonday2024 = new DateTime(self::DATE_FIRST_OF_YEAR);
         $resultW = StrfTime::strftime('%W', $firstMonday2024);
-        self::assertMatchesRegularExpression('/^\d{2}$/', $resultW);
+        self::assertMatchesRegularExpression(self::PATTERN_TWO_DIGITS, $resultW);
     }
 
     public function testStrftimeNegativeTimestamp(): void
     {
-        $result = StrfTime::strftime('%Y-%m-%d', -86400);
+        $result = StrfTime::strftime(self::FORMAT_AMERICAN, -86400);
         self::assertSame('1969-12-31', $result);
     }
 
@@ -347,7 +354,7 @@ class StrfTimeTest extends TestCase
 
     public function testStrftimeIsoWeekNumber(): void
     {
-        $firstWeek = new DateTime('2024-01-01');
+        $firstWeek = new DateTime(self::DATE_FIRST_OF_YEAR);
         $result = StrfTime::strftime('%V', $firstWeek);
         self::assertSame('01', $result);
 

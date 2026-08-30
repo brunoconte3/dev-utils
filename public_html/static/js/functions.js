@@ -1,4 +1,4 @@
-function dispararAlerta(msg, status = 'warning', time = 5000, icon = '') {
+function showAlert(msg, status = 'warning', time = 5000, icon = '') {
     $('.alert').remove();
     $.notify({
         icon: icon,

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace DevUtils\DependencyInjection;
 
 trait TraitRuleArray
@@ -11,9 +13,11 @@ trait TraitRuleArray
 
     protected function validateArray(string $field = '', mixed $value = null, ?string $message = ''): void
     {
-        if (!is_array($value)) {
-            $this->setArrayError($field, $message, "A variável $field não é um array!");
+        if (is_array($value)) {
+            return;
         }
+
+        $this->setArrayError($field, $message, "A variável $field não é um array!");
     }
 
     protected function validateArrayValues(
@@ -23,9 +27,11 @@ trait TraitRuleArray
         ?string $message = '',
     ): void {
         $ruleArray = explode('-', $rule);
-        if (!in_array(trim($value), $ruleArray, true)) {
-            $options = str_replace('-', ',', $rule);
-            $this->setArrayError($field, $message, "O campo $field precisa conter uma das opções [$options] !");
+        if (in_array(trim($value), $ruleArray, true)) {
+            return;
         }
+
+        $options = str_replace('-', ',', $rule);
+        $this->setArrayError($field, $message, "O campo $field precisa conter uma das opções [$options] !");
     }
 }

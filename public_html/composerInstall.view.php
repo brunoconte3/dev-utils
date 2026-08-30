@@ -26,7 +26,7 @@
     </header>
     <div class="container" style="height:10vh;">
         <div class="row d-flex align-items-center justify-content-center h-100">
-            <button id="btnIniciar" class="btn btn-success">
+            <button id="btnStart" class="btn btn-success">
                 <span>Clique Aqui</span><em class="ml-3 fas fa-spinner fa-spin d-none"></em>
             </button>
         </div>
@@ -42,10 +42,10 @@
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns" crossorigin="anonymous"></script>
     <script type="text/javascript" src="static/js/notify.min.js"></script>
-    <script type="text/javascript" src="static/js/funcoes.min.js"></script>
+    <script type="text/javascript" src="static/js/functions.min.js"></script>
     <script type="text/javascript" src="static/js/composer-install.min.js"></script>
 
-    <footer data-diretorio="<?= URL; ?>">
+    <footer data-directory="<?= URL; ?>">
         <div class="col-12 text-center text-muted">
             Se falhar por algum motivo, utilize o comando "composer install" <br><br>
         </div>

@@ -2,11 +2,18 @@
     "name": "brunoconte3/dev-utils",
     "description": "A complete PHP utility library for validating, formatting, comparing data, and more.",
     "keywords": [
-        "validation", "utils", "format", "array", "dev", "utility", "compare"
+        "validation",
+        "utils",
+        "format",
+        "array",
+        "dev",
+        "utility",
+        "compare"
     ],
     "license": "MIT",
     "homepage": "https://github.com/brunoconte3/dev-utils",
-    "authors": [{
+    "authors": [
+        {
             "name": "Bruno Conte",
             "email": "brunoconte3@gmail.com",
             "role": "Creator/Developer"
@@ -91,13 +98,11 @@
         "issues": "https://github.com/brunoconte3/dev-utils/issues",
         "source": "https://github.com/brunoconte3/dev-utils"
     },
-    "suggest": {
-        "ext-gd": "To use the GD implementation",
-        "ext-mbstring": "To use Format::lower() etc.",
-        "ext-intl": "To use Format with Date"
-    },
     "require": {
-        "php": "^8.3"
+        "php": "^8.4",
+        "ext-intl": "*",
+        "ext-json": "*",
+        "ext-mbstring": "*"
     },
     "autoload": {
         "psr-4": {
@@ -112,7 +117,7 @@
     },
     "require-dev": {
         "phpunit/phpunit": "13.1.7",
-        "phpstan/phpstan": "2.1.37"
+        "phpstan/phpstan": "2.1.55"
     },
     "minimum-stability": "stable",
     "prefer-stable": true

@@ -9,6 +9,9 @@ use PHPUnit\Framework\TestCase;
 
 final class ValidateCpfTest extends TestCase
 {
+    private const CPF_VALID_RAW = '11144477735';
+    private const CPF_ROOT = '123456789';
+
     private static function calculateVerificationDigits(string $cpfRoot): array
     {
         $firstDigitSum = 0;
@@ -16,7 +19,7 @@ final class ValidateCpfTest extends TestCase
             $firstDigitSum += (int) $cpfRoot[$position] * $multiplier;
         }
         $firstRemainder = $firstDigitSum % 11;
-        $firstVerificationDigit = ($firstRemainder < 2) ? 0 : 11 - $firstRemainder;
+        $firstVerificationDigit = $firstRemainder < 2 ? 0 : 11 - $firstRemainder;
 
         $secondDigitSum = 0;
         for ($position = 0, $multiplier = 11; $position < 9; $position++, $multiplier--) {
@@ -24,7 +27,7 @@ final class ValidateCpfTest extends TestCase
         }
         $secondDigitSum += $firstVerificationDigit * 2;
         $secondRemainder = $secondDigitSum % 11;
-        $secondVerificationDigit = ($secondRemainder < 2) ? 0 : 11 - $secondRemainder;
+        $secondVerificationDigit = $secondRemainder < 2 ? 0 : 11 - $secondRemainder;
 
         return [$firstVerificationDigit, $secondVerificationDigit];
     }
@@ -42,7 +45,7 @@ final class ValidateCpfTest extends TestCase
             substr($rawCpf, 0, 3),
             substr($rawCpf, 3, 3),
             substr($rawCpf, 6, 3),
-            substr($rawCpf, 9, 2)
+            substr($rawCpf, 9, 2),
         );
     }
 
@@ -52,7 +55,7 @@ final class ValidateCpfTest extends TestCase
         self::assertFalse(ValidateCpf::validateCpf('257.877.700-88'));
         self::assertTrue(ValidateCpf::validateCpf('111.444.777-35'));
         self::assertFalse(ValidateCpf::validateCpf('111.444.777-36'));
-        self::assertTrue(ValidateCpf::validateCpf('11144477735'));
+        self::assertTrue(ValidateCpf::validateCpf(self::CPF_VALID_RAW));
         self::assertFalse(ValidateCpf::validateCpf('11144477736'));
     }
 
@@ -64,7 +67,7 @@ final class ValidateCpfTest extends TestCase
 
     public function testValidMaskedAndRaw(): void
     {
-        $cpfRoots = ['123456789', '987654321', '111222333', '456789012'];
+        $cpfRoots = [self::CPF_ROOT, '987654321', '111222333', '456789012'];
 
         foreach ($cpfRoots as $cpfRoot) {
             $rawCpf = self::generateRawCpf($cpfRoot);
@@ -76,7 +79,7 @@ final class ValidateCpfTest extends TestCase
 
     public function testRejectWithWrongDv(): void
     {
-        $cpfRoot = '123456789';
+        $cpfRoot = self::CPF_ROOT;
         $rawCpf = self::generateRawCpf($cpfRoot);
         $tamperedFirstDigit = substr($rawCpf, 0, 10) . ((int)$rawCpf[10] ^ 1);
         self::assertFalse(ValidateCpf::validateCpf($tamperedFirstDigit));
@@ -87,7 +90,7 @@ final class ValidateCpfTest extends TestCase
 
     public function testAcceptMaskedFormat(): void
     {
-        $cpfRoot = '123456789';
+        $cpfRoot = self::CPF_ROOT;
         $rawCpf = self::generateRawCpf($cpfRoot);
         $maskedCpf = self::formatCpfWithMask($rawCpf);
 
@@ -137,7 +140,7 @@ final class ValidateCpfTest extends TestCase
     {
         $validCpfList = [
             '12345678909',
-            '11144477735',
+            self::CPF_VALID_RAW,
             '25787776089',
         ];
 
@@ -165,7 +168,7 @@ final class ValidateCpfTest extends TestCase
 
     public function testAcceptStandardFormats(): void
     {
-        $cpfRoot = '123456789';
+        $cpfRoot = self::CPF_ROOT;
         $rawCpf = self::generateRawCpf($cpfRoot);
 
         self::assertTrue(ValidateCpf::validateCpf($rawCpf));
@@ -210,7 +213,7 @@ final class ValidateCpfTest extends TestCase
 
     public function testCpfWithMixedValidAndInvalidChars(): void
     {
-        $cpfRoot = '123456789';
+        $cpfRoot = self::CPF_ROOT;
         $rawCpf = self::generateRawCpf($cpfRoot);
         $cpfWithNoise = str_split($rawCpf);
         $noisyCpf = implode('@', $cpfWithNoise);
@@ -220,7 +223,7 @@ final class ValidateCpfTest extends TestCase
     public function testValidCpfWithOnlyNumbers(): void
     {
         self::assertTrue(ValidateCpf::validateCpf('52998224725'));
-        self::assertTrue(ValidateCpf::validateCpf('11144477735'));
+        self::assertTrue(ValidateCpf::validateCpf(self::CPF_VALID_RAW));
     }
 
     public function testValidCpfWithMask(): void

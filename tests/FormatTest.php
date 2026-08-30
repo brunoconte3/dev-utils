@@ -6,48 +6,68 @@ namespace DevUtils\Test;
 
 use DevUtils\DependencyInjection\data\DataConvertTypesBool;
 use DevUtils\Format;
+use InvalidArgumentException;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class FormatTest extends TestCase
 {
-    public static function setUpBeforeClass(): void
-    {
-        require_once './src/DependencyInjection/data/DataConvertTypesBool.php';
-    }
+    private const CNPJ_NUMERIC_MASKED = '76.027.484/0001-24';
+    private const CNPJ_ALPHANUMERIC_MASKED = 'BR.ASI.L20/26AA-64';
+    private const CNPJ_OTHER_NUMERIC_MASKED = '12.456.571/0001-14';
+    private const CNPJ_OTHER_ALPHANUMERIC_MASKED = 'K7.CM7.10C/0001-84';
+    private const CPF_MASKED = '894.213.600-10';
+    private const CPF_OTHER_MASKED = '307.208.700-89';
+    private const RULE_CONVERT_INT = 'convert|int';
+    private const PHONE_UNMASKED = '44999998888';
+    private const PHONE_MASKED = '(44) 99999-8888';
+    private const PHONE_LANDLINE_MASKED = '(44) 3333-8888';
+    private const DATE_BRAZIL = '10/10/2020';
+    private const DATE_AMERICAN = '2020-10-10';
+    private const VALUE_DECIMAL = '1123.45';
+    private const VALUE_DECIMAL_USD = '1,123.45';
+    private const VALUE_DECIMAL_NEGATIVE = '-1123.45';
+    private const VALUE_CURRENCY_BRAZIL = '123,40';
+    private const VALUE_POINT_ONLY = '1350.45';
+    private const ZIP_CODE_MASKED = '87020-000';
+    private const MESSAGE_ONLY_NUMBERS = 'apenas números';
+    private const FILE_NAME_JPG = 'JPG - Validação upload v.1.jpg';
+    private const MIME_JPEG = 'image/jpeg';
+    private const TMP_PATH_JPG = '/tmp/phpODnLGo';
 
     public function testCompanyIdentification(): void
     {
-        self::assertEquals('76.027.484/0001-24', Format::companyIdentification('76027484000124'));
-        self::assertEquals('BR.ASI.L20/26AA-64', Format::companyIdentification('BRASIL2026AA64'));
+        self::assertEquals(self::CNPJ_NUMERIC_MASKED, Format::companyIdentification('76027484000124'));
+        self::assertEquals(self::CNPJ_ALPHANUMERIC_MASKED, Format::companyIdentification('BRASIL2026AA64'));
     }
 
     public function testConvertTypes(): void
     {
         $data = [
-            'tratandoTipoInt' => '12',
-            'tratandoTipoIntZero' => '0',
-            'tratandoTipoIntNegativo' => '-8',
-            'tratandoTipoFloat' => '9.63',
-            'tratandoTipoBoolean' => 'true',
-            'tratandoTipoNumeric' => '11',
+            'treatingBooleanType' => 'true',
+            'handlingFloatType' => '9.63',
+            'treatingIntType' => '12',
+            'treatingNegativeIntType' => '-8',
+            'treatingZeroIntType' => '0',
+            'handlingNumericType' => '11',
         ];
         $rules = [
-            'tratandoTipoInt' => 'convert|int',
-            'tratandoTipoIntZero' => 'convert|int',
-            'tratandoTipoIntNegativo' => 'convert|int',
-            'tratandoTipoFloat' => 'convert|float',
-            'tratandoTipoBoolean' => 'convert|bool',
-            'tratandoTipoNumeric' => 'convert|numeric',
-            'tratandoInexistente' => 'convert|bool',
+            'nonExistentField' => 'convert|bool',
+            'treatingBooleanType' => 'convert|bool',
+            'handlingFloatType' => 'convert|float',
+            'treatingIntType' => self::RULE_CONVERT_INT,
+            'treatingNegativeIntType' => self::RULE_CONVERT_INT,
+            'treatingZeroIntType' => self::RULE_CONVERT_INT,
+            'handlingNumericType' => 'convert|numeric',
         ];
         Format::convertTypes($data, $rules);
-        self::assertIsInt($data['tratandoTipoInt']);
-        self::assertIsInt($data['tratandoTipoIntZero']);
-        self::assertIsInt($data['tratandoTipoIntNegativo']);
-        self::assertIsFloat($data['tratandoTipoFloat']);
-        self::assertIsBool($data['tratandoTipoBoolean']);
-        self::assertIsNumeric($data['tratandoTipoNumeric']);
-        self::assertArrayNotHasKey('tratandoInexistente', $data);
+        self::assertIsInt($data['treatingIntType']);
+        self::assertIsInt($data['treatingZeroIntType']);
+        self::assertIsInt($data['treatingNegativeIntType']);
+        self::assertIsFloat($data['handlingFloatType']);
+        self::assertIsBool($data['treatingBooleanType']);
+        self::assertIsNumeric($data['handlingNumericType']);
+        self::assertArrayNotHasKey('nonExistentField', $data);
     }
 
     public function testConvertTypesBool(): void
@@ -57,39 +77,82 @@ class FormatTest extends TestCase
         $rules = $convertTypesBool->arrayRule();
 
         Format::convertTypes($data, $rules);
-        self::assertIsBool($data['tratandoClasse']);
-        self::assertIsBool($data['tratandoArray']);
-        self::assertIsBool($data['tratandoInteiroPositivo']);
-        self::assertIsBool($data['tratandoInteiroNegativo']);
-        self::assertIsBool($data['tratandoStringTrue']);
-        self::assertIsBool($data['tratandoStringOn']);
-        self::assertIsBool($data['tratandoStringOff']);
-        self::assertIsBool($data['tratandoStringYes']);
-        self::assertIsBool($data['tratandoStringNo']);
-        self::assertIsBool($data['tratandoStringUm']);
-        self::assertIsBool($data['tratandoNull']);
-        self::assertIsBool($data['tratandoInteiroZero']);
-        self::assertIsBool($data['tratandoStringFalse']);
-        self::assertIsBool($data['tratandoQualquerString']);
-        self::assertIsBool($data['tratandoStringZero']);
-        self::assertIsBool($data['tratandoStringVazio']);
+        self::assertIsBool($data['handlingClass']);
+        self::assertIsBool($data['handlingArray']);
+        self::assertIsBool($data['handlingPositiveInteger']);
+        self::assertIsBool($data['handlingNegativeInteger']);
+        self::assertIsBool($data['handlingStringTrue']);
+        self::assertIsBool($data['handlingStringOn']);
+        self::assertIsBool($data['handlingStringOff']);
+        self::assertIsBool($data['handlingStringYes']);
+        self::assertIsBool($data['handlingStringNo']);
+        self::assertIsBool($data['handlingStringOne']);
+        self::assertIsBool($data['handlingNull']);
+        self::assertIsBool($data['handlingZeroInteger']);
+        self::assertIsBool($data['handlingStringFalse']);
+        self::assertIsBool($data['handlingAnyString']);
+        self::assertIsBool($data['handlingStringZero']);
+        self::assertIsBool($data['handlingEmptyString']);
     }
 
     public function testIdentifier(): void
     {
-        self::assertEquals('894.213.600-10', Format::identifier('89421360010'));
+        self::assertEquals(self::CPF_MASKED, Format::identifier('89421360010'));
+    }
+
+    public function testIdentifierAcceptsMaskedValue(): void
+    {
+        self::assertSame(self::CPF_MASKED, Format::identifier(self::CPF_MASKED));
+        self::assertSame('067.981.009-96', Format::identifier('067.981.009-96'));
+        self::assertSame(self::CPF_OTHER_MASKED, Format::identifier('307 208 700 89'));
     }
 
     public function testIdentifierOrCompany(): void
     {
-        self::assertEquals('307.208.700-89', Format::identifierOrCompany('30720870089'));
-        self::assertEquals('12.456.571/0001-14', Format::identifierOrCompany('12456571000114'));
+        self::assertEquals(self::CPF_OTHER_MASKED, Format::identifierOrCompany('30720870089'));
+        self::assertEquals(self::CNPJ_OTHER_NUMERIC_MASKED, Format::identifierOrCompany('12456571000114'));
         self::assertEquals('A1.B2C.3D4/5E6F-59', Format::identifierOrCompany('A1B2C3D45E6F59'));
+    }
+
+    public function testIdentifierOrCompanyAcceptsMaskedCompany(): void
+    {
+        self::assertSame(self::CNPJ_NUMERIC_MASKED, Format::identifierOrCompany(self::CNPJ_NUMERIC_MASKED));
+        self::assertSame(self::CNPJ_ALPHANUMERIC_MASKED, Format::identifierOrCompany(self::CNPJ_ALPHANUMERIC_MASKED));
+        self::assertSame(
+            self::CNPJ_OTHER_ALPHANUMERIC_MASKED,
+            Format::identifierOrCompany(self::CNPJ_OTHER_ALPHANUMERIC_MASKED),
+        );
+        self::assertSame(self::CNPJ_OTHER_NUMERIC_MASKED, Format::identifierOrCompany(self::CNPJ_OTHER_NUMERIC_MASKED));
+    }
+
+    public function testIdentifierOrCompanyAcceptsLowercaseMaskedCompany(): void
+    {
+        self::assertSame(self::CNPJ_ALPHANUMERIC_MASKED, Format::identifierOrCompany('br.asi.l20/26aa-64'));
+        self::assertSame(self::CNPJ_OTHER_ALPHANUMERIC_MASKED, Format::identifierOrCompany('k7.cm7.10c/0001-84'));
+    }
+
+    public function testIdentifierOrCompanyAcceptsMaskedIdentifier(): void
+    {
+        self::assertSame(self::CPF_OTHER_MASKED, Format::identifierOrCompany(self::CPF_OTHER_MASKED));
+        self::assertSame(self::CPF_MASKED, Format::identifierOrCompany(self::CPF_MASKED));
+    }
+
+    public function testIdentifierOrCompanyIgnoresSeparatorNoise(): void
+    {
+        self::assertSame(self::CPF_OTHER_MASKED, Format::identifierOrCompany('307 208 700 89'));
+        self::assertSame(self::CNPJ_NUMERIC_MASKED, Format::identifierOrCompany('76027484/0001-24'));
+    }
+
+    public function testIdentifierOrCompanyRejectsMaskedValueWithWrongLength(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('identifierOrCompany => Valor precisa ser um CPF ou CNPJ!');
+        Format::identifierOrCompany('12.345/6789-0');
     }
 
     public function testTelephone(): void
     {
-        self::assertEquals('(44) 99999-8888', Format::telephone('44999998888'));
+        self::assertEquals(self::PHONE_MASKED, Format::telephone(self::PHONE_UNMASKED));
     }
 
     public function testZipCode(): void
@@ -99,29 +162,29 @@ class FormatTest extends TestCase
 
     public function testDateBrazil(): void
     {
-        self::assertEquals('10/10/2020', Format::dateBrazil('2020-10-10'));
+        self::assertEquals(self::DATE_BRAZIL, Format::dateBrazil(self::DATE_AMERICAN));
     }
 
     public function testDateAmerican(): void
     {
-        self::assertEquals('2020-10-10', Format::dateAmerican('10/10/2020'));
+        self::assertEquals(self::DATE_AMERICAN, Format::dateAmerican(self::DATE_BRAZIL));
     }
 
     public function testArrayToIntReference(): void
     {
         $arrayProcessed = [
-            0 => 1,
-            1 => 123,
             'a' => 222,
             'b' => 333,
             'c' => 0,
+            0 => 1,
+            1 => 123,
         ];
         $arrayReferenced = [
-            0 => '1',
-            1 => '123',
             'a' => '222',
             'b' => 333,
             'c' => '',
+            0 => '1',
+            1 => '123',
         ];
         Format::arrayToIntReference($arrayReferenced);
         self::assertEquals($arrayProcessed, $arrayReferenced);
@@ -130,28 +193,28 @@ class FormatTest extends TestCase
     public function testArrayToInt(): void
     {
         $arrayProcessed = [
-            0 => 1,
-            1 => 123,
             'a' => 222,
             'b' => 333,
             'c' => 0,
+            0 => 1,
+            1 => 123,
         ];
         self::assertEquals($arrayProcessed, Format::arrayToInt([
-            0 => '1',
-            1 => '123',
             'a' => '222',
             'b' => 333,
             'c' => '',
+            0 => '1',
+            1 => '123',
         ]));
     }
 
     public function testCurrency(): void
     {
-        self::assertEquals('1.123,45', Format::currency('1123.45'));
-        self::assertEquals('R$ 1.123,45', Format::currency('1123.45', 'R$ '));
+        self::assertEquals('1.123,45', Format::currency(self::VALUE_DECIMAL));
+        self::assertEquals('R$ 1.123,45', Format::currency(self::VALUE_DECIMAL, 'R$ '));
         self::assertEquals('123,00', Format::currency('123'));
-        self::assertEquals('123,40', Format::currency('123.4'));
-        self::assertEquals('123,40', Format::currency('123,4'));
+        self::assertEquals(self::VALUE_CURRENCY_BRAZIL, Format::currency('123.4'));
+        self::assertEquals(self::VALUE_CURRENCY_BRAZIL, Format::currency('123,4'));
         self::assertEquals('1,00', Format::currency('1'));
         self::assertEquals('1,00', Format::currency('1.00'));
         self::assertEquals('1,00', Format::currency('1,00'));
@@ -161,20 +224,20 @@ class FormatTest extends TestCase
         self::assertEquals('1.123,45', Format::currency(1123.45));
         self::assertEquals('R$ 1.123,45', Format::currency(1123.45, 'R$ '));
         self::assertEquals('123,00', Format::currency(123));
-        self::assertEquals('123,40', Format::currency(123.4));
+        self::assertEquals(self::VALUE_CURRENCY_BRAZIL, Format::currency(123.4));
         self::assertEquals('1.400,00', Format::currency(1400));
     }
 
     public function testCurrencyUsd(): void
     {
-        self::assertEquals('1,123.45', Format::currencyUsd('1123.45'));
-        self::assertEquals('Usd 1,123.45', Format::currencyUsd('1123.45', 'Usd '));
+        self::assertEquals(self::VALUE_DECIMAL_USD, Format::currencyUsd(self::VALUE_DECIMAL));
+        self::assertEquals('Usd 1,123.45', Format::currencyUsd(self::VALUE_DECIMAL, 'Usd '));
     }
 
     public function testReturnPhoneOrAreaCode(): void
     {
-        self::assertEquals('44', Format::returnPhoneOrAreaCode('44999998888', true));
-        self::assertEquals('999998888', Format::returnPhoneOrAreaCode('44999998888'));
+        self::assertEquals('44', Format::returnPhoneOrAreaCode(self::PHONE_UNMASKED, true));
+        self::assertEquals('999998888', Format::returnPhoneOrAreaCode(self::PHONE_UNMASKED));
     }
 
     public function testUcwordsCharset(): void
@@ -184,13 +247,12 @@ class FormatTest extends TestCase
 
     public function testPointOnlyValue(): void
     {
-        self::assertEquals('1350.45', Format::pointOnlyValue('1.350,45'));
+        self::assertEquals(self::VALUE_POINT_ONLY, Format::pointOnlyValue('1.350,45'));
     }
 
     public function testEmptyToNull(): void
     {
         $array = [
-            0 => '1',
             'a' => '222',
             'b' => 333,
             'c' => null,
@@ -198,11 +260,11 @@ class FormatTest extends TestCase
             'e' => '0',
             'f' => null,
             'g' => [1, 2,],
+            0 => '1',
         ];
 
         self::assertSame($array, Format::emptyToNull(
             [
-                0 => '1',
                 'a' => '222',
                 'b' => 333,
                 'c' => '',
@@ -210,6 +272,7 @@ class FormatTest extends TestCase
                 'e' => '0',
                 'f' => [],
                 'g' => [1, 2,],
+                0 => '1',
             ],
             '0',
         ));
@@ -281,35 +344,77 @@ class FormatTest extends TestCase
         }
     }
 
-    public function testWriteCurrencyExtensive(): void
+    /**
+     * @return array<string, array{0: float, 1: string}>
+     */
+    public static function currencyExtensiveProvider(): array
     {
-        self::assertEquals('um real e noventa e sete centavos', Format::writeCurrencyExtensive(1.97));
-        self::assertEquals(
-            'um milhão, quinhentos mil e vinte e três centavos',
-            Format::writeCurrencyExtensive(1500000.23)
-        );
-        self::assertEquals(
-            'três mil, quatrocentos e cinquenta e seis reais e setenta e oito centavos',
-            Format::writeCurrencyExtensive(3456.78)
-        );
+        return [
+            'billion' => [1000000000.00, 'um bilhão de reais'],
+            'hundred with teens' => [117.00, 'cento e dezessete reais'],
+            'exact hundred' => [100.00, 'cem reais'],
+            'one hundred and one' => [101.00, 'cento e um reais'],
+            'seventeen thousand' => [17000.00, 'dezessete mil reais'],
+            'seventeen million' => [17000000.00, 'dezessete milhões de reais'],
+            'two hundred' => [200.00, 'duzentos reais'],
+            'thousand and seventeen' => [1017.00, 'mil e dezessete reais'],
+            'exact thousand' => [1000.00, 'mil reais'],
+            'million with cents' => [1000000.23, 'um milhão de reais e vinte e três centavos'],
+            'million and thousand' => [1500000.23, 'um milhão e quinhentos mil reais e vinte e três centavos'],
+            'million and reais' => [1000500.00, 'um milhão e quinhentos reais'],
+            'million and one real' => [1000001.00, 'um milhão e um real'],
+            'exact million' => [1000000.00, 'um milhão de reais'],
+            'thousand with broken hundred' => [
+                3456.78,
+                'três mil, quatrocentos e cinquenta e seis reais e setenta e oito centavos',
+            ],
+            'millions with broken hundred' => [3000123.00, 'três milhões, cento e vinte e três reais'],
+            'exact millions' => [2000000.00, 'dois milhões de reais'],
+            'quadrillion' => [1000000000000000.00, 'um quatrilhão de reais'],
+            'real with cents' => [1.97, 'um real e noventa e sete centavos'],
+            'cents only' => [0.50, 'cinquenta centavos'],
+            'teens' => [17.00, 'dezessete reais'],
+            'teens in cents' => [1.17, 'um real e dezessete centavos'],
+            'trillion' => [1000000000000.00, 'um trilhão de reais'],
+            'one cent' => [0.01, 'um centavo'],
+            'one real' => [1.00, 'um real'],
+        ];
+    }
+
+    #[DataProvider('currencyExtensiveProvider')]
+    public function testWriteCurrencyExtensive(float $value, string $expected): void
+    {
+        self::assertSame($expected, Format::writeCurrencyExtensive($value));
+    }
+
+    public function testWriteCurrencyExtensiveRoundsBelowOneCentToZero(): void
+    {
+        self::assertSame('zero', Format::writeCurrencyExtensive(0.001));
+    }
+
+    public function testWriteCurrencyExtensiveAboveSupportedLimitThrowsException(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Valor acima do limite suportado');
+        Format::writeCurrencyExtensive(1.0e18);
     }
 
     public function testRestructFileArray(): void
     {
         $fileUploadSingle = [
-            'name' => 'JPG - Validação upload v.1.jpg',
-            'type' => 'image/jpeg',
-            'tmp_name' => '/tmp/phpODnLGo',
             'error' => 0,
+            'name' => self::FILE_NAME_JPG,
             'size' => 8488,
+            'tmp_name' => self::TMP_PATH_JPG,
+            'type' => self::MIME_JPEG,
         ];
 
         $fileUploadMultiple = [
-            'name'     => ['0' => 'JPG - Validação upload v.1.jpg', '1' => 'PDF - Validação upload v.1.pdf'],
-            'type'     => ['0' => 'image/jpeg', '1' => 'application/pdf'],
-            'tmp_name' => ['0' => '/tmp/phpODnLGo', '1' => '/tmp/phpfmb0tL'],
-            'error'    => ['0' => 0, '1' => 0],
-            'size'     => ['0' => 8488, '1' => 818465],
+            'error' => ['0' => 0, '1' => 0],
+            'name' => ['0' => self::FILE_NAME_JPG, '1' => 'PDF - Validação upload v.1.pdf'],
+            'size' => ['0' => 8488, '1' => 818465],
+            'tmp_name' => ['0' => self::TMP_PATH_JPG, '1' => '/tmp/phpfmb0tL'],
+            'type' => ['0' => self::MIME_JPEG, '1' => 'application/pdf'],
         ];
         $resultSingle = Format::restructFileArray($fileUploadSingle);
         $resultMultiple = Format::restructFileArray($fileUploadMultiple);
@@ -332,9 +437,15 @@ class FormatTest extends TestCase
         self::assertNotSame('1100001 1101101 1101111 1110010', Format::convertStringToBinary('casa'));
     }
 
-    public static function testSlugfy(): void
+    public static function testSlugify(): void
     {
-        self::assertEquals('polenta-frita-com-bacon-e-parmesao', Format::slugfy('Polenta frita com Bacon e Parmesão'));
+        self::assertEquals('polenta-frita-com-bacon-e-parmesao', Format::slugify('Polenta frita com Bacon e Parmesão'));
+    }
+
+    public function testDeprecatedSlugfyStillDelegatesToSlugify(): void
+    {
+        self::assertSame(Format::slugify('Polenta frita e Parmesão'), Format::slugfy('Polenta frita e Parmesão'));
+        self::assertSame('teste-aqui', Format::slugfy('Teste  Aqui'));
     }
 
     public function testCompanyIdentificationInvalidThrowsException(): void
@@ -357,7 +468,7 @@ class FormatTest extends TestCase
 
     public function testTelephoneWith10Digits(): void
     {
-        self::assertEquals('(44) 3333-8888', Format::telephone('4433338888'));
+        self::assertEquals(self::PHONE_LANDLINE_MASKED, Format::telephone('4433338888'));
     }
 
     public function testTelephoneInvalidLengthThrowsException(): void
@@ -378,6 +489,91 @@ class FormatTest extends TestCase
         Format::zipCode('123');
     }
 
+    public function testTelephoneAcceptsMaskedValue(): void
+    {
+        self::assertSame(self::PHONE_MASKED, Format::telephone(self::PHONE_MASKED));
+        self::assertSame(self::PHONE_MASKED, Format::telephone('(44)99999-8888'));
+        self::assertSame(self::PHONE_MASKED, Format::telephone('44 99999-8888'));
+        self::assertSame(self::PHONE_LANDLINE_MASKED, Format::telephone(self::PHONE_LANDLINE_MASKED));
+    }
+
+    public function testTelephoneRejectsMaskedValueWithWrongLength(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('10 ou 11 números');
+        Format::telephone('+55 44 99999-8888');
+    }
+
+    public function testTelephoneRejectsMaskedValueWithLetters(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage(self::MESSAGE_ONLY_NUMBERS);
+        Format::telephone('(44) abcd-efgh');
+    }
+
+    public function testZipCodeAcceptsMaskedValue(): void
+    {
+        self::assertSame(self::ZIP_CODE_MASKED, Format::zipCode(self::ZIP_CODE_MASKED));
+        self::assertSame(self::ZIP_CODE_MASKED, Format::zipCode('87.020-000'));
+        self::assertSame(self::ZIP_CODE_MASKED, Format::zipCode('87020 000'));
+    }
+
+    public function testIdentifierRejectsSurroundingSpaces(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('identifier não pode conter espaços no início ou no fim!');
+        Format::identifier(' ' . self::CPF_MASKED . ' ');
+    }
+
+    public function testIdentifierRejectsLeadingSpaceOnly(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('identifier não pode conter espaços no início ou no fim!');
+        Format::identifier(' 89421360010');
+    }
+
+    public function testIdentifierOrCompanyRejectsSurroundingSpaces(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('identifierOrCompany não pode conter espaços no início ou no fim!');
+        Format::identifierOrCompany(' 76.027.484/0001-24 ');
+    }
+
+    public function testCompanyIdentificationRejectsTrailingSpace(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('companyIdentification não pode conter espaços no início ou no fim!');
+        Format::companyIdentification('76.027.484/0001-24 ');
+    }
+
+    public function testTelephoneRejectsSurroundingSpaces(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('telephone não pode conter espaços no início ou no fim!');
+        Format::telephone(' (44) 99999-8888');
+    }
+
+    public function testZipCodeRejectsSurroundingSpaces(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('zipCode não pode conter espaços no início ou no fim!');
+        Format::zipCode(' 87020-000 ');
+    }
+
+    public function testZipCodeRejectsTrailingLineBreak(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('zipCode não pode conter espaços no início ou no fim!');
+        Format::zipCode("87020-000\n");
+    }
+
+    public function testZipCodeNonNumericThrowsException(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage(self::MESSAGE_ONLY_NUMBERS);
+        Format::zipCode('abcdefgh');
+    }
+
     public function testDateBrazilInvalidLengthThrowsException(): void
     {
         $this->expectException(\InvalidArgumentException::class);
@@ -392,12 +588,23 @@ class FormatTest extends TestCase
 
     public function testDateAmericanWithoutSlash(): void
     {
-        self::assertEquals('2020-10-10', Format::dateAmerican('2020-10-10'));
+        self::assertEquals(self::DATE_AMERICAN, Format::dateAmerican(self::DATE_AMERICAN));
+    }
+
+    public function testDateAmericanAcceptsUnitedStatesFormat(): void
+    {
+        self::assertSame('2024-12-31', Format::dateAmerican('12/31/2024'));
+        self::assertSame('2024-01-15', Format::dateAmerican('01/15/2024'));
+    }
+
+    public function testDateAmericanKeepsBrazilianReadingWhenAmbiguous(): void
+    {
+        self::assertSame('2024-06-05', Format::dateAmerican('05/06/2024'));
     }
 
     public function testCurrencyUsdWithFloat(): void
     {
-        self::assertEquals('1,123.45', Format::currencyUsd(1123.45));
+        self::assertEquals(self::VALUE_DECIMAL_USD, Format::currencyUsd(1123.45));
         self::assertEquals('123.00', Format::currencyUsd(123));
     }
 
@@ -421,13 +628,13 @@ class FormatTest extends TestCase
         self::assertEquals('100.50', Format::pointOnlyValue('100,50'));
     }
 
-    public function testMaskStringHiddenQtdGreaterThanStringThrowsException(): void
+    public function testMaskStringHiddenLengthGreaterThanStringThrowsException(): void
     {
         $this->expectException(\InvalidArgumentException::class);
         Format::maskStringHidden('abc', 10, 0, '*');
     }
 
-    public function testMaskStringHiddenQtdLessThanOneThrowsException(): void
+    public function testMaskStringHiddenLengthLessThanOneThrowsException(): void
     {
         $this->expectException(\InvalidArgumentException::class);
         Format::maskStringHidden('abc', 0, 0, '*');
@@ -471,14 +678,16 @@ class FormatTest extends TestCase
         Format::convertTimestampBrazilToAmerican('data-invalida');
     }
 
-    public function testSlugfyWithMultipleSpaces(): void
+    public function testSlugifyWithMultipleSpaces(): void
     {
-        self::assertEquals('teste--aqui', Format::slugfy('Teste  Aqui'));
+        self::assertSame('teste-aqui', Format::slugify('Teste  Aqui'));
+        self::assertSame('teste-aqui', Format::slugify('  Teste   Aqui  '));
+        self::assertSame('teste-aqui', Format::slugify('Teste - Aqui'));
     }
 
-    public function testSlugfyWithDashes(): void
+    public function testSlugifyWithDashes(): void
     {
-        self::assertEquals('teste-aqui', Format::slugfy('Teste-Aqui'));
+        self::assertEquals('teste-aqui', Format::slugify('Teste-Aqui'));
     }
 
     public function testMaskWithDifferentPatterns(): void
@@ -538,5 +747,333 @@ class FormatTest extends TestCase
     public function testCurrencyUsdWithZero(): void
     {
         self::assertEquals('0.00', Format::currencyUsd(0));
+    }
+
+    public function testCurrencyKeepsNegativeSignFromString(): void
+    {
+        self::assertSame('-1.123,45', Format::currency(self::VALUE_DECIMAL_NEGATIVE));
+        self::assertSame('-1.123,45', Format::currency(-1123.45));
+        self::assertSame('-123,40', Format::currency('-123,4'));
+        self::assertSame('R$ -1.123,45', Format::currency(self::VALUE_DECIMAL_NEGATIVE, 'R$ '));
+        self::assertSame('-1,123.45', Format::currencyUsd(self::VALUE_DECIMAL_NEGATIVE));
+    }
+
+    public function testCurrencyRejectsValueWithoutDigits(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('currency precisa conter ao menos um número!');
+        Format::currency('abc');
+    }
+
+    public function testCurrencyUsdRejectsValueWithoutDigits(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('currencyUsd precisa conter ao menos um número!');
+        Format::currencyUsd('R$');
+    }
+
+    public function testCurrencyWithBlankStringReturnsZero(): void
+    {
+        self::assertSame('0,00', Format::currency(''));
+        self::assertSame('0,00', Format::currency('   '));
+        self::assertSame('0.00', Format::currencyUsd(''));
+    }
+
+    public function testPointOnlyValueWithBrazilianFormat(): void
+    {
+        self::assertSame(self::VALUE_POINT_ONLY, Format::pointOnlyValue('1.350,45'));
+        self::assertSame('1350', Format::pointOnlyValue('1.350'));
+        self::assertSame('100.50', Format::pointOnlyValue('100,50'));
+        self::assertSame('1234567', Format::pointOnlyValue('1.234.567'));
+        self::assertSame(self::VALUE_POINT_ONLY, Format::pointOnlyValue('R$ 1.350,45'));
+        self::assertSame('', Format::pointOnlyValue('abc'));
+        self::assertSame('', Format::pointOnlyValue(''));
+    }
+
+    public function testPointOnlyValueWithAmericanFormat(): void
+    {
+        self::assertSame(self::VALUE_DECIMAL, Format::pointOnlyValue(self::VALUE_DECIMAL));
+        self::assertSame(self::VALUE_DECIMAL, Format::pointOnlyValue(self::VALUE_DECIMAL_USD));
+        self::assertSame('1234567.89', Format::pointOnlyValue('1,234,567.89'));
+        self::assertSame('12.5', Format::pointOnlyValue('12.5'));
+        self::assertSame('0.99', Format::pointOnlyValue('0.99'));
+        self::assertSame('1123', Format::pointOnlyValue('1123'));
+    }
+
+    public function testCompanyIdentificationAcceptsLowercase(): void
+    {
+        self::assertSame(self::CNPJ_ALPHANUMERIC_MASKED, Format::companyIdentification('brasil2026aa64'));
+        self::assertSame(self::CNPJ_ALPHANUMERIC_MASKED, Format::companyIdentification('bRaSiL2026aA64'));
+        self::assertSame(self::CNPJ_NUMERIC_MASKED, Format::companyIdentification(self::CNPJ_NUMERIC_MASKED));
+    }
+
+    public function testTelephoneRejectsSignedNumber(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('10 ou 11 números');
+        Format::telephone('+443333888');
+    }
+
+    public function testIdentifierNonNumericThrowsException(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage(self::MESSAGE_ONLY_NUMBERS);
+        Format::identifier('abcdefghijk');
+    }
+
+    /**
+     * @return array<string, array{0: string}>
+     */
+    public static function invalidDateProvider(): array
+    {
+        return [
+            'slash instead of dash' => ['2020/10/31'],
+            'impossible day' => ['31/02/2020'],
+            'impossible month' => ['2020-13-01'],
+            'loose numbers' => ['12345678'],
+            'text' => ['abcdefgh'],
+        ];
+    }
+
+    #[DataProvider('invalidDateProvider')]
+    public function testDateBrazilRejectsInvalidDate(string $invalid): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('data inválida');
+        Format::dateBrazil($invalid);
+    }
+
+    #[DataProvider('invalidDateProvider')]
+    public function testDateAmericanRejectsInvalidDate(string $invalid): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        Format::dateAmerican($invalid);
+    }
+
+    #[DataProvider('invalidDateProvider')]
+    public function testWriteDateExtensiveRejectsInvalidDate(string $invalid): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        Format::writeDateExtensive($invalid);
+    }
+
+    public function testWriteDateExtensiveInvalidLengthThrowsException(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('8 à 10 dígitos');
+        Format::writeDateExtensive('2020');
+    }
+
+    public function testDateBrazilAcceptsEveryDocumentedFormat(): void
+    {
+        self::assertSame(self::DATE_BRAZIL, Format::dateBrazil(self::DATE_AMERICAN));
+        self::assertSame(self::DATE_BRAZIL, Format::dateBrazil(self::DATE_BRAZIL));
+        self::assertSame('12/05/2020', Format::dateBrazil('12-05-2020'));
+        self::assertSame('01/01/2020', Format::dateBrazil(' 2020-01-01 '));
+    }
+
+    public function testDateAmericanAcceptsEveryDocumentedFormat(): void
+    {
+        self::assertSame(self::DATE_AMERICAN, Format::dateAmerican(self::DATE_BRAZIL));
+        self::assertSame(self::DATE_AMERICAN, Format::dateAmerican(self::DATE_AMERICAN));
+        self::assertSame('2020-05-12', Format::dateAmerican('12-05-2020'));
+    }
+
+    public function testDateBrazilAcceptsUnseparatedDigits(): void
+    {
+        self::assertSame('07/10/2020', Format::dateBrazil('07102020'));
+        self::assertSame('31/12/2024', Format::dateBrazil('31122024'));
+        self::assertSame('24/08/2026', Format::dateBrazil('24082026'));
+    }
+
+    public function testDateBrazilRejectsUnseparatedDigitsInAmericanOrder(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('data inválida');
+        Format::dateBrazil('20201007');
+    }
+
+    public function testDateAmericanAcceptsUnseparatedDigits(): void
+    {
+        self::assertSame('2024-12-31', Format::dateAmerican('20241231'));
+        self::assertSame('2020-10-07', Format::dateAmerican('20201007'));
+        self::assertSame('2026-08-24', Format::dateAmerican('20260824'));
+    }
+
+    public function testDateAmericanRejectsUnseparatedDigitsInBrazilianOrder(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('data inválida');
+        Format::dateAmerican('07102020');
+    }
+
+    public function testWriteDateExtensiveAcceptsUnseparatedDigits(): void
+    {
+        if (extension_loaded('gd')) {
+            self::assertSame('quarta-feira, 07 de outubro de 2020', Format::writeDateExtensive('07102020'));
+        } else {
+            self::assertFalse(extension_loaded('gd'));
+        }
+    }
+
+    public function testConvertTypesReturnsEmptyErrorsOnSuccess(): void
+    {
+        $data = ['age' => '30'];
+        $errors = Format::convertTypes($data, ['age' => self::RULE_CONVERT_INT]);
+
+        self::assertSame([], $errors);
+        self::assertSame(30, $data['age']);
+    }
+
+    public function testConvertTypesReportsFailureInsteadOfSwallowingIt(): void
+    {
+        $data = ['age' => 'trinta'];
+        $errors = Format::convertTypes($data, ['age' => self::RULE_CONVERT_INT]);
+
+        self::assertCount(1, $errors);
+        self::assertStringContainsString("campo 'age' para int", $errors[0]);
+        self::assertSame('trinta', $data['age']);
+    }
+
+    public function testConvertTypesReportsFloatFailure(): void
+    {
+        $data = ['price' => 'abc'];
+        $errors = Format::convertTypes($data, ['price' => 'convert|float']);
+
+        self::assertCount(1, $errors);
+        self::assertSame('abc', $data['price']);
+    }
+
+    public function testConvertTypesIgnoresNonStringRule(): void
+    {
+        $data = ['x' => '5'];
+        $errors = Format::convertTypes($data, ['x' => ['convert', 'int']]);
+
+        self::assertSame([], $errors);
+        self::assertSame('5', $data['x']);
+    }
+
+    public function testConvertTypesIgnoresRuleWithoutConvertKeyword(): void
+    {
+        $data = ['x' => '5'];
+        $errors = Format::convertTypes($data, ['x' => 'int']);
+
+        self::assertSame([], $errors);
+        self::assertSame('5', $data['x']);
+    }
+
+    public function testConvertTypesIgnoresRuleWithoutKnownType(): void
+    {
+        $data = ['x' => '5'];
+        $errors = Format::convertTypes($data, ['x' => 'convert|required']);
+
+        self::assertSame([], $errors);
+        self::assertSame('5', $data['x']);
+    }
+
+    public function testConvertTypesIgnoresRuleForMissingField(): void
+    {
+        $data = ['x' => '5'];
+        $errors = Format::convertTypes($data, ['nonExistent' => self::RULE_CONVERT_INT]);
+
+        self::assertSame([], $errors);
+        self::assertArrayNotHasKey('nonExistent', $data);
+    }
+
+    public function testMaskStringHiddenPositionOutOfRangeThrowsException(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('fora do intervalo');
+        Format::maskStringHidden('abcdef', 3, 99, '*');
+    }
+
+    public function testMaskStringHiddenNegativePositionThrowsException(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('fora do intervalo');
+        Format::maskStringHidden('abcdef', 3, -2, '*');
+    }
+
+    public function testMaskStringHiddenAtTheEndOfString(): void
+    {
+        self::assertSame('abc***', Format::maskStringHidden('abcdef', 3, 3, '*'));
+    }
+
+    public function testZeroIsNotTreatedAsEmpty(): void
+    {
+        self::assertSame('0', Format::removeAccent('0'));
+        self::assertSame('0', Format::removeSpecialCharacters('0'));
+        self::assertSame('0', Format::slugify('0'));
+    }
+
+    public function testRestructFileArrayWithEmptyInput(): void
+    {
+        self::assertSame([], Format::restructFileArray());
+        self::assertSame([], Format::restructFileArray([]));
+    }
+
+    public function testRestructFileArrayReturnsPhpUploadErrors(): void
+    {
+        $result = Format::restructFileArray([
+            'error' => [UPLOAD_ERR_INI_SIZE],
+            'name' => ['a.jpg'],
+            'size' => [0],
+            'tmp_name' => [''],
+            'type' => [self::MIME_JPEG],
+        ]);
+
+        self::assertCount(1, $result);
+        self::assertStringContainsString('[a.jpg]', (string) $result[0]);
+    }
+
+    public function testRestructFileArrayWithoutNameKey(): void
+    {
+        self::assertSame([], Format::restructFileArray(['error' => [0]]));
+    }
+
+    public function testRestructFileArrayIgnoresNonStringName(): void
+    {
+        self::assertSame([], Format::restructFileArray([
+            'error' => [0],
+            'name' => [123],
+            'size' => [10],
+            'tmp_name' => ['/tmp/x'],
+            'type' => [self::MIME_JPEG],
+        ]));
+    }
+
+    public function testRestructFileArrayNormalizesSingleUploadIntoList(): void
+    {
+        $result = Format::restructFileArray([
+            'error' => 0,
+            'name' => self::FILE_NAME_JPG,
+            'size' => 8488,
+            'tmp_name' => self::TMP_PATH_JPG,
+            'type' => self::MIME_JPEG,
+        ]);
+
+        $file = (array) $result[0];
+        self::assertCount(1, $result);
+        self::assertSame('jpg__validacao_upload_v1.jpg', $file['name']);
+        self::assertSame(self::MIME_JPEG, $file['type']);
+        self::assertSame(8488, $file['size']);
+        self::assertStringEndsWith('jpg__validacao_upload_v1.jpg', (string) $file['name_upload']);
+    }
+
+    public function testRestructFileArrayFallsBackWhenMetadataIsNotArray(): void
+    {
+        $result = Format::restructFileArray([
+            'error' => 0,
+            'name' => ['a.jpg'],
+            'size' => 10,
+            'tmp_name' => '/tmp/x',
+            'type' => self::MIME_JPEG,
+        ]);
+
+        $file = (array) $result[0];
+        self::assertSame('', $file['type']);
+        self::assertSame('', $file['tmp_name']);
+        self::assertSame(0, $file['error']);
+        self::assertSame(0, $file['size']);
     }
 }
