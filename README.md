@@ -223,6 +223,20 @@ Complete list of available validators in the library. Use them in your validatio
 | regex             | Custom regular expression validation |
 | upper             | All uppercase characters             |
 
+### Password Validators
+
+| Validator       | Description                                                        |
+| --------------- | ------------------------------------------------------------------ |
+| password        | Requires uppercase, lowercase, number and special character       |
+| numericPassword | Requires only numeric characters, suitable for PIN-style passwords |
+
+```php
+$rules = [
+    'password' => 'required|min:8|max:64|password',
+    'pin' => 'required|min:4|max:6|numericPassword',
+];
+```
+
 ### Brazilian Data Validators
 
 | Validator             | Description                                     |

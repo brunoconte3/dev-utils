@@ -341,6 +341,75 @@ class StringTest extends TestCase
         self::assertValidatorErrorCount(1, $array, $rules);
     }
 
+    public function testPassword(): void
+    {
+        $array = [
+            'testValid' => 'Password1!',
+            'testErrorNoUppercase' => 'password1!',
+            'testErrorNoLowercase' => 'PASSWORD1!',
+            'testErrorNoNumber' => 'Password!',
+            'testErrorNoSymbol' => 'Password1',
+        ];
+        $rules = array_fill_keys(array_keys($array), 'password');
+
+        self::assertValidatorErrorCount(4, $array, $rules);
+    }
+
+    public function testNumericPassword(): void
+    {
+        $array = [
+            'testValidWithLeadingZero' => '012345',
+            'testValid' => '123456',
+            'testErrorLetters' => '123a56',
+            'testErrorDecimal' => '123.56',
+            'testErrorWhitespace' => '123 56',
+            'testErrorEmpty' => '',
+        ];
+        $rules = array_fill_keys(array_keys($array), 'numericPassword');
+
+        self::assertValidatorErrorCount(4, $array, $rules);
+    }
+
+    public function testPasswordWithCustomMessage(): void
+    {
+        $message = 'A senha não atende aos requisitos de segurança.';
+        $validator = $this->validate(
+            ['password' => 'password1!'],
+            ['password' => 'password, ' . $message]
+        );
+
+        self::assertSame($message, $validator->getErros()['password']);
+    }
+
+    public function testNumericPasswordWithCustomMessage(): void
+    {
+        $message = 'O PIN deve conter apenas números.';
+        $validator = $this->validate(
+            ['pin' => '12a4'],
+            ['pin' => 'numericPassword, ' . $message]
+        );
+
+        self::assertSame($message, $validator->getErros()['pin']);
+    }
+
+    public function testPasswordValidatorsWithLengthRules(): void
+    {
+        $array = [
+            'validPassword' => 'Password1!',
+            'shortPassword' => 'Aa1!',
+            'validPin' => '0123',
+            'longPin' => '1234567',
+        ];
+        $rules = [
+            'validPassword' => 'required|min:8|max:64|password',
+            'shortPassword' => 'required|min:8|max:64|password',
+            'validPin' => 'required|min:4|max:6|numericPassword',
+            'longPin' => 'required|min:4|max:6|numericPassword',
+        ];
+
+        self::assertValidatorErrorCount(2, $array, $rules);
+    }
+
     public function testNotSpace(): void
     {
         $array = [

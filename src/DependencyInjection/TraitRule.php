@@ -15,7 +15,7 @@ trait TraitRule
             'validateFileUploadMandatory', 'validateDateBrazil', 'validateDateAmerican', 'validateHour',
             'validateTimestamp', 'validateWeekend', 'validateArray', 'validateFieldMandatory', 'validateBoolean',
             'validateFloating', 'validateJson', 'validateDateNotFuture', 'validateDateIso8601',
-            'validateDateUTCWithoutTimezone',
+            'validateDateUTCWithoutTimezone', 'validatePassword', 'validateNumericPassword',
         ];
     }
 
@@ -70,6 +70,7 @@ trait TraitRule
             'notSpace' => 'validateSpace',
             'noWeekend' => 'validateWeekend',
             'numeric' => 'validateNumeric',
+            'numericPassword' => 'validateNumericPassword',
             'numMax' => 'validateNumMax',
             'numMin' => 'validateNumMin',
             'numMonth' => 'validateNumMonth',
@@ -81,6 +82,7 @@ trait TraitRule
         return [
             'optional' => 'validateOptional',
             'phone' => 'validatePhone',
+            'password' => 'validatePassword',
             'ddd' => 'validateDdd',
             'plate' => 'validatePlate',
             'regex' => 'validateRegex',
