@@ -339,6 +339,27 @@ trait TraitRuleString
         $this->errors[$field] = !empty($message) ? $message : "O campo $field não é um telefone válido!";
     }
 
+    protected function validatePassword(string $field = '', string $value = '', ?string $message = ''): void
+    {
+        if (
+            !preg_match('@[A-Z]@', $value)
+            || !preg_match('@[a-z]@', $value)
+            || !preg_match('@[0-9]@', $value)
+            || !preg_match('/[^A-Za-z0-9]/', $value)
+        ) {
+            $this->errors[$field] = !empty($message) ?
+                $message : "O campo $field precisa conter maiúscula, minúscula, número e símbolo!";
+        }
+    }
+
+    protected function validateNumericPassword(string $field = '', string $value = '', ?string $message = ''): void
+    {
+        if (!ctype_digit($value)) {
+            $this->errors[$field] = !empty($message) ?
+                $message : "O campo $field precisa conter apenas números!";
+        }
+    }
+
     protected function validateRegex(
         string $rule = '',
         string $field = '',
