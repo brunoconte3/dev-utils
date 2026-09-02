@@ -24,6 +24,7 @@ class FormatTest extends TestCase
     private const PHONE_LANDLINE_MASKED = '(44) 3333-8888';
     private const DATE_BRAZIL = '10/10/2020';
     private const DATE_AMERICAN = '2020-10-10';
+    private const DATE_BRAZIL_UNSEPARATED = '07102020';
     private const VALUE_DECIMAL = '1123.45';
     private const VALUE_DECIMAL_USD = '1,123.45';
     private const VALUE_DECIMAL_NEGATIVE = '-1123.45';
@@ -31,6 +32,7 @@ class FormatTest extends TestCase
     private const VALUE_POINT_ONLY = '1350.45';
     private const ZIP_CODE_MASKED = '87020-000';
     private const MESSAGE_ONLY_NUMBERS = 'apenas números';
+    private const MESSAGE_INVALID_DATE = 'data inválida';
     private const FILE_NAME_JPG = 'JPG - Validação upload v.1.jpg';
     private const MIME_JPEG = 'image/jpeg';
     private const TMP_PATH_JPG = '/tmp/phpODnLGo';
@@ -839,7 +841,7 @@ class FormatTest extends TestCase
     public function testDateBrazilRejectsInvalidDate(string $invalid): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('data inválida');
+        $this->expectExceptionMessage(self::MESSAGE_INVALID_DATE);
         Format::dateBrazil($invalid);
     }
 
@@ -881,7 +883,7 @@ class FormatTest extends TestCase
 
     public function testDateBrazilAcceptsUnseparatedDigits(): void
     {
-        self::assertSame('07/10/2020', Format::dateBrazil('07102020'));
+        self::assertSame('07/10/2020', Format::dateBrazil(self::DATE_BRAZIL_UNSEPARATED));
         self::assertSame('31/12/2024', Format::dateBrazil('31122024'));
         self::assertSame('24/08/2026', Format::dateBrazil('24082026'));
     }
@@ -889,7 +891,7 @@ class FormatTest extends TestCase
     public function testDateBrazilRejectsUnseparatedDigitsInAmericanOrder(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('data inválida');
+        $this->expectExceptionMessage(self::MESSAGE_INVALID_DATE);
         Format::dateBrazil('20201007');
     }
 
@@ -903,14 +905,17 @@ class FormatTest extends TestCase
     public function testDateAmericanRejectsUnseparatedDigitsInBrazilianOrder(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('data inválida');
-        Format::dateAmerican('07102020');
+        $this->expectExceptionMessage(self::MESSAGE_INVALID_DATE);
+        Format::dateAmerican(self::DATE_BRAZIL_UNSEPARATED);
     }
 
     public function testWriteDateExtensiveAcceptsUnseparatedDigits(): void
     {
         if (extension_loaded('gd')) {
-            self::assertSame('quarta-feira, 07 de outubro de 2020', Format::writeDateExtensive('07102020'));
+            self::assertSame(
+                'quarta-feira, 07 de outubro de 2020',
+                Format::writeDateExtensive(self::DATE_BRAZIL_UNSEPARATED),
+            );
         } else {
             self::assertFalse(extension_loaded('gd'));
         }

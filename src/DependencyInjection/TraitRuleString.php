@@ -344,7 +344,7 @@ trait TraitRuleString
         if (
             !preg_match('@[A-Z]@', $value)
             || !preg_match('@[a-z]@', $value)
-            || !preg_match('@[0-9]@', $value)
+            || !preg_match('@\d@', $value)
             || !preg_match('/[^A-Za-z0-9]/', $value)
         ) {
             $this->errors[$field] = !empty($message) ?
