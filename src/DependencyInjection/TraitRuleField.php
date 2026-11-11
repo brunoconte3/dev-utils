@@ -136,6 +136,10 @@ trait TraitRuleField
             unset($rulesArray['message']);
         }
 
+        if ($this->shouldSkipRulesForRequiredIf($rulesArray, $value, $data)) {
+            return;
+        }
+
         $hasOptional = in_array('optional', $rulesArray);
 
         foreach ($rulesArray as $key => $val) {
@@ -175,6 +179,39 @@ trait TraitRuleField
         return $rulesArray;
     }
 
+    private function findRequiredIfRule(mixed $rules): ?array
+    {
+        if (!is_string($rules) || $rules === '') {
+            return null;
+        }
+
+        $parsed = $this->extractRulesArray($rules, null);
+
+        return array_key_exists(self::RULE_REQUIRED_IF, $parsed) ? $parsed : null;
+    }
+
+    private function validateMissingFieldRequiredIf(string|int $field, mixed $rules, array $data): void
+    {
+        $requiredIf = $this->findRequiredIfRule($rules);
+        if ($requiredIf === null) {
+            return;
+        }
+
+        $message = is_string($requiredIf['message'] ?? null) ? $requiredIf['message'] : null;
+        $conditionMet = $this->requiredIfConditionMet($requiredIf[self::RULE_REQUIRED_IF], $data);
+
+        if ($conditionMet === null) {
+            $this->errors[$field] = $this->requiredIfInvalidMessage($field, $message);
+            return;
+        }
+
+        if (!$conditionMet) {
+            return;
+        }
+
+        $this->errors[$field] = !empty($message) ? $message : $this->missingFieldMessage($field, '[]');
+    }
+
     private function missingFieldMessage(string|int $field, string $jsonRules): string
     {
         $children = array_filter(array_values((array) json_decode($jsonRules, true)), 'is_array');
@@ -186,11 +223,14 @@ trait TraitRuleField
             . ' não foi encontrado nos dados de entrada, indices filhos são obrigatórios!';
     }
 
-    //se o campo é invalido, ele não existe no json de dados no mesmo nivel que a regra
-    //aqui valida se na regra há filhos obrigatorios para esse campo
-    private function validateMissingField(string|int $field, mixed $rules): array
+    private function validateMissingField(string|int $field, mixed $rules, array $data = []): array
     {
-        $jsonRules = $this->levelSubLevelsArrayReturnJson($this->extractMissingFieldRules($rules));
+        $missingFieldRules = $this->extractMissingFieldRules($rules);
+        $this->validateMissingFieldRequiredIf($field, $rules, $data);
+
+        unset($missingFieldRules[self::RULE_REQUIRED_IF]);
+
+        $jsonRules = $this->levelSubLevelsArrayReturnJson($missingFieldRules);
 
         if (strpos(trim(strtolower((string) $jsonRules)), 'required') !== false) {
             $this->errors[$field] = $this->missingFieldMessage($field, (string) $jsonRules);

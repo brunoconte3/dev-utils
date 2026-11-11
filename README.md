@@ -26,6 +26,7 @@
 - [Validation Types](#validation-types-validators)
 - [Regex Validator](#using-the-regex-validator)
 - [Equals Validator](#using-the-equals-validator)
+- [RequiredIf Validator](#using-the-requiredif-validator)
 - [Custom Messages](#defining-custom-message)
 - [String Formatting](#formatting-examples)
 - [Data Comparison](#comparisons-examples)
@@ -283,15 +284,16 @@ slashed date could be read either way — `05/06/2024` is 5 June for Brazil and 
 
 ### Constraint Validators
 
-| Validator | Description                                |
-| --------- | ------------------------------------------ |
-| equals    | Must match another field (equals:password) |
-| max       | Maximum number of characters (max:50)      |
-| maxWords  | Maximum number of words (maxWords:10)      |
-| min       | Minimum number of characters (min:8)       |
-| minWords  | Minimum number of words (minWords:2)       |
-| optional  | Skips the remaining rules when empty       |
-| required  | Field must be filled in                    |
+| Validator  | Description                                                                |
+| ---------- | -------------------------------------------------------------------------- |
+| equals     | Must match another field (equals:password)                                 |
+| max        | Maximum number of characters (max:50)                                      |
+| maxWords   | Maximum number of words (maxWords:10)                                      |
+| min        | Minimum number of characters (min:8)                                       |
+| minWords   | Minimum number of words (minWords:2)                                       |
+| optional   | Skips the remaining rules when empty                                       |
+| required   | Field must be filled in                                                    |
+| requiredIf | Required when another field has a given value (requiredIf:status;canceled) |
 
 ### Network and Identifier Validators
 
@@ -383,6 +385,38 @@ $rules = [
     'confirmPassword' => 'required|min:6|equals:password, The passwords do not match',
 ];
 ```
+
+### Using the requiredIf validator
+
+`requiredIf` makes a field mandatory only when **another field of the same payload** holds one of the
+listed values. The first parameter is the **name of the other field**, followed by the values that
+activate the rule, all separated by `;` (the `,` is reserved for the custom message):
+
+```php
+$data = [
+    'status' => 'canceled',
+    'reason' => '',
+];
+$rules = [
+    'status' => 'required',
+    'reason' => 'requiredIf:status;canceled;suspended, Inform the reason',
+];
+```
+
+Behavior:
+
+- Condition met: the field must be present and filled in, exactly like `required`
+  (when the field is missing from the payload the "not found" error is reported).
+- Condition not met: the field is optional. When it comes empty or missing, **the other rules of the
+  field are skipped** (so `requiredIf:status;canceled|email` does not complain about an empty e-mail);
+  when it comes filled in, the other rules run normally. Do not combine it with `optional`: when the
+  field is empty or missing, `optional` wins and `requiredIf` is not evaluated.
+- Values are compared as text and are case-sensitive. Booleans match `true`/`1` and `false`/`0`.
+- If the other field is missing or `null`, the condition is not met.
+- The other field is looked up at the **same level** of the rule (no dot notation), as in `equals`.
+- A rule without the field name or without at least one value (`requiredIf`, `requiredIf:status`) is
+  reported as an invalid rule.
+- JSON format: `'{"requiredIf":["status","canceled","suspended"]}'`.
 
 ---
 
