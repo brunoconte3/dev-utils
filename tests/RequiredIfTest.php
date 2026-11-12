@@ -13,7 +13,9 @@ class RequiredIfTest extends TestCase
     private const MESSAGE_MANDATORY = 'O campo motivo é obrigatório!';
     private const MESSAGE_MISSING = 'O campo obrigatório motivo não foi encontrado nos dados de entrada!';
     private const MESSAGE_INVALID_RULE =
-        'Uma regra inválida está sendo aplicada no campo motivo, verifique a documentação!';
+    'Uma regra inválida está sendo aplicada no campo motivo, verifique a documentação!';
+    private const RULE_EMAIL_SUFFIX = '|email';
+    private const RULE_TYPE_TWO_OR_THREE = 'requiredIf:tipo;2;3';
 
     private function validate(array $data, array $rules): array
     {
@@ -83,7 +85,7 @@ class RequiredIfTest extends TestCase
 
     public function testConditionNotMetSkipsOtherRulesWhenFieldIsEmpty(): void
     {
-        $rule = self::RULE_CANCELED . '|email';
+        $rule = self::RULE_CANCELED . self::RULE_EMAIL_SUFFIX;
 
         self::assertSame([], $this->validateReason(['status' => 'ativo', 'motivo' => ''], $rule));
         self::assertSame([], $this->validateReason(['status' => 'ativo'], $rule));
@@ -91,7 +93,10 @@ class RequiredIfTest extends TestCase
 
     public function testConditionNotMetStillAppliesOtherRulesWhenFieldIsFilled(): void
     {
-        $errors = $this->validateReason(['status' => 'ativo', 'motivo' => 'invalido'], self::RULE_CANCELED . '|email');
+        $errors = $this->validateReason(
+            ['status' => 'ativo', 'motivo' => 'invalido'],
+            self::RULE_CANCELED . self::RULE_EMAIL_SUFFIX
+        );
 
         self::assertSame(['motivo' => 'O campo motivo deve ser um endereço de e-mail válido!'], $errors);
     }
@@ -109,7 +114,10 @@ class RequiredIfTest extends TestCase
 
     public function testConditionMetWithEmptyFieldDoesNotRunOtherRules(): void
     {
-        $errors = $this->validateReason(['status' => 'cancelado', 'motivo' => ''], self::RULE_CANCELED . '|email');
+        $errors = $this->validateReason(
+            ['status' => 'cancelado', 'motivo' => ''],
+            self::RULE_CANCELED . self::RULE_EMAIL_SUFFIX
+        );
 
         self::assertSame(['motivo' => self::MESSAGE_MANDATORY], $errors);
     }
@@ -152,12 +160,12 @@ class RequiredIfTest extends TestCase
     {
         self::assertSame(
             ['motivo' => self::MESSAGE_MISSING],
-            $this->validateReason(['tipo' => 2], 'requiredIf:tipo;2;3'),
+            $this->validateReason(['tipo' => 2], self::RULE_TYPE_TWO_OR_THREE),
         );
-        self::assertSame([], $this->validateReason(['tipo' => 1], 'requiredIf:tipo;2;3'));
+        self::assertSame([], $this->validateReason(['tipo' => 1], self::RULE_TYPE_TWO_OR_THREE));
         self::assertSame(
             ['motivo' => self::MESSAGE_MISSING],
-            $this->validateReason(['tipo' => '2'], 'requiredIf:tipo;2;3'),
+            $this->validateReason(['tipo' => '2'], self::RULE_TYPE_TWO_OR_THREE),
         );
     }
 

@@ -81,11 +81,11 @@ trait TraitRuleConditional
 
     private function shouldSkipRulesForRequiredIf(array $rulesArray, mixed $value, array $data): bool
     {
-        if (!array_key_exists(self::RULE_REQUIRED_IF, $rulesArray)) {
+        if (!array_key_exists(Rules::RULE_REQUIRED_IF, $rulesArray)) {
             return false;
         }
 
-        $conditionMet = $this->requiredIfConditionMet($rulesArray[self::RULE_REQUIRED_IF], $data);
+        $conditionMet = $this->requiredIfConditionMet($rulesArray[Rules::RULE_REQUIRED_IF], $data);
         if ($conditionMet === null) {
             return false;
         }

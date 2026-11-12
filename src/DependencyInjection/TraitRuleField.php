@@ -187,7 +187,7 @@ trait TraitRuleField
 
         $parsed = $this->extractRulesArray($rules, null);
 
-        return array_key_exists(self::RULE_REQUIRED_IF, $parsed) ? $parsed : null;
+        return array_key_exists(Rules::RULE_REQUIRED_IF, $parsed) ? $parsed : null;
     }
 
     private function validateMissingFieldRequiredIf(string|int $field, mixed $rules, array $data): void
@@ -198,7 +198,7 @@ trait TraitRuleField
         }
 
         $message = is_string($requiredIf['message'] ?? null) ? $requiredIf['message'] : null;
-        $conditionMet = $this->requiredIfConditionMet($requiredIf[self::RULE_REQUIRED_IF], $data);
+        $conditionMet = $this->requiredIfConditionMet($requiredIf[Rules::RULE_REQUIRED_IF], $data);
 
         if ($conditionMet === null) {
             $this->errors[$field] = $this->requiredIfInvalidMessage($field, $message);
@@ -228,7 +228,7 @@ trait TraitRuleField
         $missingFieldRules = $this->extractMissingFieldRules($rules);
         $this->validateMissingFieldRequiredIf($field, $rules, $data);
 
-        unset($missingFieldRules[self::RULE_REQUIRED_IF]);
+        unset($missingFieldRules[Rules::RULE_REQUIRED_IF]);
 
         $jsonRules = $this->levelSubLevelsArrayReturnJson($missingFieldRules);
 

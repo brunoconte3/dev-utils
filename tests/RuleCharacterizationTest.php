@@ -14,6 +14,7 @@ use PHPUnit\Framework\TestCase;
 class RuleCharacterizationTest extends TestCase
 {
     private const MISSING_FIELD_MESSAGE = 'O campo obrigatório a não foi encontrado nos dados de entrada!';
+    private const RULE_EQUALS_A = 'equals:a';
 
     private function validate(array $data, array $rules): array
     {
@@ -89,10 +90,10 @@ class RuleCharacterizationTest extends TestCase
 
     public function testEqualsReceivesTheSiblingFieldsOfTheSameLevel(): void
     {
-        self::assertSame([], $this->validate(['a' => 'x', 'b' => 'x'], ['b' => 'equals:a']));
+        self::assertSame([], $this->validate(['a' => 'x', 'b' => 'x'], ['b' => self::RULE_EQUALS_A]));
         self::assertSame(
             ['b' => 'O campo b é diferente do campo a!'],
-            $this->validate(['a' => 'x', 'b' => 'y'], ['b' => 'equals:a']),
+            $this->validate(['a' => 'x', 'b' => 'y'], ['b' => self::RULE_EQUALS_A]),
         );
     }
 
@@ -100,7 +101,7 @@ class RuleCharacterizationTest extends TestCase
     {
         $errors = $this->validate(
             [['a' => 'x', 'b' => 'x'], ['a' => 'x', 'b' => 'y']],
-            ['b' => 'equals:a'],
+            ['b' => self::RULE_EQUALS_A],
         );
 
         self::assertSame(['b' => 'O campo b é diferente do campo a!'], $errors);
