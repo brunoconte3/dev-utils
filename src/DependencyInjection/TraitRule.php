@@ -118,6 +118,7 @@ trait TraitRule
             'regex' => 'validateRegex',
             'required' => 'validateFieldMandatory',
             'requiredFile' => 'validateFileUploadMandatory',
+            'requiredIf' => 'validateRequiredIf',
             'rgbColor' => 'validateRgbColor',
             'timestamp' => 'validateTimestamp',
             'type' => 'validateFieldType',
