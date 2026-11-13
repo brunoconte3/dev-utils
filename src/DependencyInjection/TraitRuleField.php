@@ -209,7 +209,7 @@ trait TraitRuleField
             return;
         }
 
-        $this->errors[$field] = !empty($message) ? $message : $this->missingFieldMessage($field, '[]');
+        $this->setError($field, $message, $this->missingFieldMessage($field, '[]'));
     }
 
     private function missingFieldMessage(string|int $field, string $jsonRules): string

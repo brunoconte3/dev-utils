@@ -19,6 +19,11 @@ class Rules
     public const RULES_WITHOUT_FUNCS = ['convert'];
     public const string RULE_REQUIRED_IF = 'requiredIf';
 
+    protected function setError(string|int $field, ?string $message, string $defaultMessage): string
+    {
+        return $this->errors[$field] = !empty($message) ? $message : $defaultMessage;
+    }
+
     private function invalidRule(string|int $field = ''): void
     {
         $this->errors[$field] = "Uma regra inválida está sendo aplicada no campo $field!";
@@ -150,14 +155,14 @@ class Rules
         ?string $message = null,
     ): array | string {
         if (is_array($value) && (count($value) <= 0)) {
-            return $this->errors[$field] = !empty($message) ? $message : "O campo $field é obrigatório!";
+            return $this->setError($field, $message, "O campo $field é obrigatório!");
         }
         if (
             !isset($value)
             || $value === false
             || (is_string($value) && empty(trim($value))) && (string) $value !== '0'
         ) {
-            return $this->errors[$field] = !empty($message) ? $message : "O campo $field é obrigatório!";
+            return $this->setError($field, $message, "O campo $field é obrigatório!");
         }
         return [];
     }
@@ -277,9 +282,11 @@ class Rules
             return;
         }
 
-        $this->errors[$field] = !empty($message)
-            ? $message
-            : "O campo $field só pode conter valores lógicos. (true, false, 1, 0, yes, no, on, off)!";
+        $this->setError(
+            $field,
+            $message,
+            "O campo $field só pode conter valores lógicos. (true, false, 1, 0, yes, no, on, off)!",
+        );
     }
 
     protected function validateFloating(string $field = '', ?string $value = null, ?string $message = null): void
@@ -288,9 +295,7 @@ class Rules
             return;
         }
 
-        $this->errors[$field] = !empty($message)
-            ? $message
-            : "O campo $field deve ser do tipo real(flutuante)!";
+        $this->setError($field, $message, "O campo $field deve ser do tipo real(flutuante)!");
     }
 
     protected function validateJson(string $field, mixed $value, ?string $message = null): void
@@ -299,10 +304,10 @@ class Rules
         if (is_string($value)) {
             $arr = json_decode($value, true);
             if (!is_array($arr) || (json_last_error() !== JSON_ERROR_NONE)) {
-                $this->errors[$field] = !empty($message) ? $message : "O campo $field não contém um json válido!";
+                $this->setError($field, $message, "O campo $field não contém um json válido!");
             }
         } else {
-            $this->errors[$field] = !empty($message) ? $message : "O campo $field não contém um json válido!";
+            $this->setError($field, $message, "O campo $field não contém um json válido!");
         }
     }
 }

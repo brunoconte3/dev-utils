@@ -6,18 +6,13 @@ namespace DevUtils\DependencyInjection;
 
 trait TraitRuleArray
 {
-    private function setArrayError(string $field, ?string $message, string $defaultMessage): void
-    {
-        $this->errors[$field] = !empty($message) ? $message : $defaultMessage;
-    }
-
     protected function validateArray(string $field = '', mixed $value = null, ?string $message = ''): void
     {
         if (is_array($value)) {
             return;
         }
 
-        $this->setArrayError($field, $message, "A variável $field não é um array!");
+        $this->setError($field, $message, "A variável $field não é um array!");
     }
 
     protected function validateArrayValues(
@@ -32,6 +27,6 @@ trait TraitRuleArray
         }
 
         $options = str_replace('-', ',', $rule);
-        $this->setArrayError($field, $message, "O campo $field precisa conter uma das opções [$options] !");
+        $this->setError($field, $message, "O campo $field precisa conter uma das opções [$options] !");
     }
 }

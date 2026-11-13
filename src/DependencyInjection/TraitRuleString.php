@@ -25,9 +25,7 @@ trait TraitRuleString
             return;
         }
 
-        $this->errors[$field] = !empty($message)
-            ? $message
-            : "O campo $field só pode conter caracteres alfabéticos!";
+        $this->setError($field, $message, "O campo $field só pode conter caracteres alfabéticos!");
     }
 
     protected function validateAlphaNoSpecial(string $field = '', string $value = '', ?string $message = ''): void
@@ -36,9 +34,11 @@ trait TraitRuleString
             return;
         }
 
-        $this->errors[$field] = !empty($message)
-            ? $message
-            : "O campo $field só pode conter caracteres alfabéticos regular, não pode ter ascentos!";
+        $this->setError(
+            $field,
+            $message,
+            "O campo $field só pode conter caracteres alfabéticos regular, não pode ter ascentos!",
+        );
     }
 
     protected function validateAlphaNumNoSpecial(
@@ -50,9 +50,11 @@ trait TraitRuleString
             return;
         }
 
-        $this->errors[$field] = !empty($message)
-            ? $message
-            : "O campo $field só pode conter letras sem acentos e números, não pode carácter especial!";
+        $this->setError(
+            $field,
+            $message,
+            "O campo $field só pode conter letras sem acentos e números, não pode carácter especial!",
+        );
     }
 
     protected function validateAlphaNumerics(string $field = '', string $value = '', ?string $message = ''): void
@@ -66,9 +68,7 @@ trait TraitRuleString
             return;
         }
 
-        $this->errors[$field] = !empty($message)
-            ? $message
-            : "O campo $field só pode conter caracteres alfanuméricos!";
+        $this->setError($field, $message, "O campo $field só pode conter caracteres alfanuméricos!");
     }
 
     protected function validateCompanyIdentification(
@@ -81,9 +81,7 @@ trait TraitRuleString
             return;
         }
 
-        $this->errors[$field] = !empty($message)
-            ? $message
-            : "O campo $field é inválido!";
+        $this->setError($field, $message, "O campo $field é inválido!");
     }
 
     private function dddListForLength(int $length): array
@@ -118,9 +116,7 @@ trait TraitRuleString
         $value = Format::onlyNumbers($value);
         $length = strlen($value);
         if ($length !== 2 && $length !== 3) {
-            $this->errors[$field] = !empty($message)
-                ? $message
-                : "O campo $field deve conter dois ou três dígitos";
+            $this->setError($field, $message, "O campo $field deve conter dois ou três dígitos");
             return;
         }
 
@@ -130,17 +126,14 @@ trait TraitRuleString
             if ($this->dddBelongsToState($arrayDdd, $rule, $value)) {
                 return;
             }
-            $this->errors[$field] = !empty($message) ? $message : 'O campo ' . $field .
-                ' não é válido para a sigla ' . $rule;
+            $this->setError($field, $message, 'O campo ' . $field . ' não é válido para a sigla ' . $rule);
         }
 
         if (Common::searchLastLayerRecursive($arrayDdd, $value)) {
             return;
         }
 
-        $this->errors[$field] = !empty($message)
-            ? $message
-            : "O campo $field é um ddd inexistente ou inválido";
+        $this->setError($field, $message, "O campo $field é um ddd inexistente ou inválido");
     }
 
     protected function validateEmail(string $field = '', string $value = '', ?string $message = ''): void
@@ -149,9 +142,7 @@ trait TraitRuleString
             return;
         }
 
-        $this->errors[$field] = !empty($message)
-            ? $message
-            : "O campo $field deve ser um endereço de e-mail válido!";
+        $this->setError($field, $message, "O campo $field deve ser um endereço de e-mail válido!");
     }
 
     protected function validateEquals(
@@ -162,13 +153,13 @@ trait TraitRuleString
         array $data = [],
     ): void {
         if (!isset($data[$rule])) {
-            $this->errors[$field] = !empty($message)
-                ? $message
-                : "Uma regra inválida está sendo aplicada no campo $field, verifique a documentação!";
+            $this->setError(
+                $field,
+                $message,
+                "Uma regra inválida está sendo aplicada no campo $field, verifique a documentação!",
+            );
         } elseif ($value !== $data[$rule]) {
-            $this->errors[$field] = !empty($message)
-                ? $message
-                : "O campo $field é diferente do campo $rule!";
+            $this->setError($field, $message, "O campo $field é diferente do campo $rule!");
         }
     }
 
@@ -181,9 +172,7 @@ trait TraitRuleString
             return;
         }
 
-        $this->errors[$field] = !empty($message)
-            ? $message
-            : "O campo $field é inválido!";
+        $this->setError($field, $message, "O campo $field é inválido!");
     }
 
     protected function validateIdentifierOrCompany(
@@ -224,9 +213,7 @@ trait TraitRuleString
             return;
         }
 
-        $this->errors[$field] = !empty($message)
-            ? $message
-            : "O campo $field deve ser um endereço de IP válido!";
+        $this->setError($field, $message, "O campo $field deve ser um endereço de IP válido!");
     }
 
     protected function validateLower(string $field = '', string $value = '', ?string $message = ''): void
@@ -235,7 +222,7 @@ trait TraitRuleString
             return;
         }
 
-        $this->errors[$field] = !empty($message) ? $message : "O campo $field precisa ser tudo minúsculo!";
+        $this->setError($field, $message, "O campo $field precisa ser tudo minúsculo!");
     }
 
     protected function validateMac(string $field = '', string $value = '', ?string $message = ''): void
@@ -244,9 +231,7 @@ trait TraitRuleString
             return;
         }
 
-        $this->errors[$field] = !empty($message)
-            ? $message
-            : "O campo $field deve ser um endereço de MAC válido!";
+        $this->setError($field, $message, "O campo $field deve ser um endereço de MAC válido!");
     }
 
     protected function validateMinimumField(
@@ -259,9 +244,7 @@ trait TraitRuleString
             return;
         }
 
-        $this->errors[$field] = !empty($message)
-            ? $message
-            : "O campo $field precisa conter no mínimo $rule caracteres!";
+        $this->setError($field, $message, "O campo $field precisa conter no mínimo $rule caracteres!");
     }
 
     protected function validateMinimumWords(
@@ -274,9 +257,7 @@ trait TraitRuleString
             return;
         }
 
-        $this->errors[$field] = !empty($message)
-            ? $message
-            : "O campo $field precisa conter no mínimo $rule palavras!";
+        $this->setError($field, $message, "O campo $field precisa conter no mínimo $rule palavras!");
     }
 
     protected function validateMaximumWords(
@@ -289,9 +270,7 @@ trait TraitRuleString
             return;
         }
 
-        $this->errors[$field] = !empty($message)
-            ? $message
-            : "O campo $field precisa conter no máximo $rule palavras!";
+        $this->setError($field, $message, "O campo $field precisa conter no máximo $rule palavras!");
     }
 
     protected function validateMaximumField(
@@ -304,9 +283,7 @@ trait TraitRuleString
             return;
         }
 
-        $this->errors[$field] = !empty($message)
-            ? $message
-            : "O campo $field precisa conter no máximo $rule caracteres!";
+        $this->setError($field, $message, "O campo $field precisa conter no máximo $rule caracteres!");
     }
 
     protected function validatePlate(string $field = '', string $value = '', ?string $message = ''): void
@@ -317,9 +294,7 @@ trait TraitRuleString
             return;
         }
 
-        $this->errors[$field] = !empty($message)
-            ? $message
-            : "O campo $field deve corresponder ao formato AAA-0000 ou AAA0A00!";
+        $this->setError($field, $message, "O campo $field deve corresponder ao formato AAA-0000 ou AAA0A00!");
     }
 
     protected function validatePhone(string $field = '', string $value = '', ?string $message = ''): void
@@ -336,7 +311,7 @@ trait TraitRuleString
             return;
         }
 
-        $this->errors[$field] = !empty($message) ? $message : "O campo $field não é um telefone válido!";
+        $this->setError($field, $message, "O campo $field não é um telefone válido!");
     }
 
     protected function validatePassword(string $field = '', string $value = '', ?string $message = ''): void
@@ -350,9 +325,7 @@ trait TraitRuleString
             return;
         }
 
-        $this->errors[$field] = !empty($message)
-            ? $message
-            : "O campo $field precisa conter maiúscula, minúscula, número e símbolo!";
+        $this->setError($field, $message, "O campo $field precisa conter maiúscula, minúscula, número e símbolo!");
     }
 
     protected function validateNumericPassword(string $field = '', string $value = '', ?string $message = ''): void
@@ -361,9 +334,7 @@ trait TraitRuleString
             return;
         }
 
-        $this->errors[$field] = !empty($message)
-            ? $message
-            : "O campo $field precisa conter apenas números!";
+        $this->setError($field, $message, "O campo $field precisa conter apenas números!");
     }
 
     protected function validateRegex(
@@ -376,9 +347,7 @@ trait TraitRuleString
             return;
         }
 
-        $this->errors[$field] = !empty($message)
-            ? $message
-            : "O campo $field precisa conter um valor com formato válido!";
+        $this->setError($field, $message, "O campo $field precisa conter um valor com formato válido!");
     }
 
     protected function validateRgbColor(string $field = '', string $value = '', ?string $message = ''): void
@@ -394,7 +363,7 @@ trait TraitRuleString
             return;
         }
 
-        $this->errors[$field] = !empty($message) ? $message : "O campo $field não é um RGB Color!";
+        $this->setError($field, $message, "O campo $field não é um RGB Color!");
     }
 
     protected function validateSpace(string $field = '', string $value = '', ?string $message = ''): void
@@ -403,7 +372,7 @@ trait TraitRuleString
             return;
         }
 
-        $this->errors[$field] = !empty($message) ? $message : "O campo $field não pode conter espaço!";
+        $this->setError($field, $message, "O campo $field não pode conter espaço!");
     }
 
     protected function validateUpper(string $field = '', string $value = '', ?string $message = ''): void
@@ -412,7 +381,7 @@ trait TraitRuleString
             return;
         }
 
-        $this->errors[$field] = !empty($message) ? $message : "O campo $field precisa ser tudo maiúsculo!";
+        $this->setError($field, $message, "O campo $field precisa ser tudo maiúsculo!");
     }
 
     protected function validateUrl(string $field = '', string $value = '', ?string $message = ''): void
@@ -421,9 +390,7 @@ trait TraitRuleString
             return;
         }
 
-        $this->errors[$field] = !empty($message)
-            ? $message
-            : "O campo $field deve ser um endereço de URL válida!";
+        $this->setError($field, $message, "O campo $field deve ser um endereço de URL válida!");
     }
 
     protected function validateZipCode(string $field = '', string $value = '', ?string $message = ''): void
@@ -432,8 +399,6 @@ trait TraitRuleString
             return;
         }
 
-        $this->errors[$field] = !empty($message)
-            ? $message
-            : "O campo $field deve corresponder ao formato 00000-000!";
+        $this->setError($field, $message, "O campo $field deve corresponder ao formato 00000-000!");
     }
 }
