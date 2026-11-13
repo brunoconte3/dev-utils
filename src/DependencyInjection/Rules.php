@@ -8,6 +8,7 @@ class Rules
 {
     use TraitRule;
     use TraitRuleArray;
+    use TraitRuleConditional;
     use TraitRuleDate;
     use TraitRuleInteger;
     use TraitRuleField;
@@ -16,6 +17,7 @@ class Rules
 
     protected array $errors = [];
     public const RULES_WITHOUT_FUNCS = ['convert'];
+    public const string RULE_REQUIRED_IF = 'requiredIf';
 
     private function invalidRule(string|int $field = ''): void
     {
@@ -58,7 +60,7 @@ class Rules
 
         if (in_array($method, $this->methodsNoRuleValue())) {
             call_user_func_array($call, [$field, $value, $msgCustomized]);
-        } elseif ($method === 'validateEquals') {
+        } elseif (in_array($method, ['validateEquals', 'validateRequiredIf'], true)) {
             call_user_func_array($call, [$val, $field, $value, $msgCustomized, $data]);
         } else {
             call_user_func_array($call, [$val, $field, $value, $msgCustomized]);
@@ -260,7 +262,7 @@ class Rules
     ): array {
         //se o campo é valido, ele existe no json de dados, no mesmo nivel que a regra
         if (!$valid) {
-            return $this->validateMissingField($field, $rules);
+            return $this->validateMissingField($field, $rules, $data);
         }
 
         $rulesArray = $this->extractRulesArray($rules, $value);
