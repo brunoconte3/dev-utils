@@ -20,9 +20,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v5
 
-      - name: Run PHP_CodeSniffer
-        uses: chindit/actions-phpcs@master
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
         with:
-          files: "**.php"
-          standard: phpcs.xml
-          dir: src/
+          php-version: "8.4"
+          tools: phpcs
+
+      - name: Run PHP_CodeSniffer
+        run: phpcs --standard=phpcs.xml src/
