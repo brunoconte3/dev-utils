@@ -48,21 +48,21 @@ class FormatTest extends TestCase
     public function testConvertTypes(): void
     {
         $data = [
-            'treatingBooleanType' => 'true',
             'handlingFloatType' => '9.63',
+            'handlingNumericType' => '11',
+            'treatingBooleanType' => 'true',
             'treatingIntType' => '12',
             'treatingNegativeIntType' => '-8',
             'treatingZeroIntType' => '0',
-            'handlingNumericType' => '11',
         ];
         $rules = [
+            'handlingFloatType' => 'convert|float',
+            'handlingNumericType' => 'convert|numeric',
             'nonExistentField' => 'convert|bool',
             'treatingBooleanType' => 'convert|bool',
-            'handlingFloatType' => 'convert|float',
             'treatingIntType' => self::RULE_CONVERT_INT,
             'treatingNegativeIntType' => self::RULE_CONVERT_INT,
             'treatingZeroIntType' => self::RULE_CONVERT_INT,
-            'handlingNumericType' => 'convert|numeric',
         ];
         Format::convertTypes($data, $rules);
         self::assertIsInt($data['treatingIntType']);
@@ -355,33 +355,33 @@ class FormatTest extends TestCase
     {
         return [
             'billion' => [1000000000.00, 'um bilhão de reais'],
-            'hundred with teens' => [117.00, 'cento e dezessete reais'],
+            'cents only' => [0.50, 'cinquenta centavos'],
             'exact hundred' => [100.00, 'cem reais'],
-            'one hundred and one' => [101.00, 'cento e um reais'],
-            'seventeen thousand' => [17000.00, 'dezessete mil reais'],
-            'seventeen million' => [17000000.00, 'dezessete milhões de reais'],
-            'two hundred' => [200.00, 'duzentos reais'],
-            'thousand and seventeen' => [1017.00, 'mil e dezessete reais'],
-            'exact thousand' => [1000.00, 'mil reais'],
-            'million with cents' => [1000000.23, 'um milhão de reais e vinte e três centavos'],
-            'million and thousand' => [1500000.23, 'um milhão e quinhentos mil reais e vinte e três centavos'],
-            'million and reais' => [1000500.00, 'um milhão e quinhentos reais'],
-            'million and one real' => [1000001.00, 'um milhão e um real'],
             'exact million' => [1000000.00, 'um milhão de reais'],
+            'exact millions' => [2000000.00, 'dois milhões de reais'],
+            'exact thousand' => [1000.00, 'mil reais'],
+            'hundred with teens' => [117.00, 'cento e dezessete reais'],
+            'million and one real' => [1000001.00, 'um milhão e um real'],
+            'million and reais' => [1000500.00, 'um milhão e quinhentos reais'],
+            'million and thousand' => [1500000.23, 'um milhão e quinhentos mil reais e vinte e três centavos'],
+            'millions with broken hundred' => [3000123.00, 'três milhões, cento e vinte e três reais'],
+            'million with cents' => [1000000.23, 'um milhão de reais e vinte e três centavos'],
+            'one cent' => [0.01, 'um centavo'],
+            'one hundred and one' => [101.00, 'cento e um reais'],
+            'one real' => [1.00, 'um real'],
+            'quadrillion' => [1000000000000000.00, 'um quatrilhão de reais'],
+            'real with cents' => [1.97, 'um real e noventa e sete centavos'],
+            'seventeen million' => [17000000.00, 'dezessete milhões de reais'],
+            'seventeen thousand' => [17000.00, 'dezessete mil reais'],
+            'teens' => [17.00, 'dezessete reais'],
+            'teens in cents' => [1.17, 'um real e dezessete centavos'],
+            'thousand and seventeen' => [1017.00, 'mil e dezessete reais'],
             'thousand with broken hundred' => [
                 3456.78,
                 'três mil, quatrocentos e cinquenta e seis reais e setenta e oito centavos',
             ],
-            'millions with broken hundred' => [3000123.00, 'três milhões, cento e vinte e três reais'],
-            'exact millions' => [2000000.00, 'dois milhões de reais'],
-            'quadrillion' => [1000000000000000.00, 'um quatrilhão de reais'],
-            'real with cents' => [1.97, 'um real e noventa e sete centavos'],
-            'cents only' => [0.50, 'cinquenta centavos'],
-            'teens' => [17.00, 'dezessete reais'],
-            'teens in cents' => [1.17, 'um real e dezessete centavos'],
             'trillion' => [1000000000000.00, 'um trilhão de reais'],
-            'one cent' => [0.01, 'um centavo'],
-            'one real' => [1.00, 'um real'],
+            'two hundred' => [200.00, 'duzentos reais'],
         ];
     }
 
@@ -831,10 +831,10 @@ class FormatTest extends TestCase
     public static function invalidDateProvider(): array
     {
         return [
-            'slash instead of dash' => ['2020/10/31'],
             'impossible day' => ['31/02/2020'],
             'impossible month' => ['2020-13-01'],
             'loose numbers' => ['12345678'],
+            'slash instead of dash' => ['2020/10/31'],
             'text' => ['abcdefgh'],
         ];
     }
@@ -886,11 +886,8 @@ class FormatTest extends TestCase
 
     public function testDateBrazilAcceptsUnseparatedDigits(): void
     {
-<<<<<<< HEAD
         self::assertSame('07/10/2020', Format::dateBrazil(self::DATE_BRAZIL_UNSEPARATED));
-=======
         self::assertSame('07/10/2020', Format::dateBrazil(self::DATE_BRAZIL_UNMASKED));
->>>>>>> origin/master
         self::assertSame('31/12/2024', Format::dateBrazil('31122024'));
         self::assertSame('24/08/2026', Format::dateBrazil('24082026'));
     }
@@ -898,11 +895,8 @@ class FormatTest extends TestCase
     public function testDateBrazilRejectsUnseparatedDigitsInAmericanOrder(): void
     {
         $this->expectException(InvalidArgumentException::class);
-<<<<<<< HEAD
         $this->expectExceptionMessage(self::MESSAGE_INVALID_DATE);
-=======
         $this->expectExceptionMessage(self::INVALID_DATE);
->>>>>>> origin/master
         Format::dateBrazil('20201007');
     }
 
@@ -916,13 +910,12 @@ class FormatTest extends TestCase
     public function testDateAmericanRejectsUnseparatedDigitsInBrazilianOrder(): void
     {
         $this->expectException(InvalidArgumentException::class);
-<<<<<<< HEAD
+
         $this->expectExceptionMessage(self::MESSAGE_INVALID_DATE);
         Format::dateAmerican(self::DATE_BRAZIL_UNSEPARATED);
-=======
+
         $this->expectExceptionMessage(self::INVALID_DATE);
         Format::dateAmerican(self::DATE_BRAZIL_UNMASKED);
->>>>>>> origin/master
     }
 
     public function testWriteDateExtensiveAcceptsUnseparatedDigits(): void
@@ -930,11 +923,8 @@ class FormatTest extends TestCase
         if (extension_loaded('gd')) {
             self::assertSame(
                 'quarta-feira, 07 de outubro de 2020',
-<<<<<<< HEAD
                 Format::writeDateExtensive(self::DATE_BRAZIL_UNSEPARATED),
-=======
-                Format::writeDateExtensive(self::DATE_BRAZIL_UNMASKED)
->>>>>>> origin/master
+                Format::writeDateExtensive(self::DATE_BRAZIL_UNMASKED),
             );
         } else {
             self::assertFalse(extension_loaded('gd'));

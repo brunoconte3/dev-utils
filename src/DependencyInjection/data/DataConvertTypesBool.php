@@ -11,22 +11,22 @@ class DataConvertTypesBool
     public function arrayData(): array
     {
         return [
+            'handlingAnyString' => 'string', //false
             'handlingArray' => [1, 2], //true
             'handlingClass' => new stdClass(), //true
+            'handlingEmptyString' => '', // false
             'handlingNegativeInteger' => -42, //true
-            'handlingPositiveInteger' => 42, //true
-            'handlingZeroInteger' => 0, // false
             'handlingNull' => null, // false
-            'handlingAnyString' => 'string', //false
+            'handlingPositiveInteger' => 42, //true
             'handlingStringFalse' => 'false', //false
             'handlingStringNo' => 'no', //false
             'handlingStringOff' => 'off', //true
             'handlingStringOn' => 'on', //true
-            'handlingStringTrue' => 'true', //true
             'handlingStringOne' => '1', // true
-            'handlingEmptyString' => '', // false
+            'handlingStringTrue' => 'true', //true
             'handlingStringYes' => 'yes', //true
             'handlingStringZero' => '0', // false
+            'handlingZeroInteger' => 0, // false
         ];
     }
 

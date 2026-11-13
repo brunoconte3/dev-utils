@@ -27,15 +27,15 @@ final class UuidTest extends TestCase
             'v1' => [self::UUID_V1, 1],
             'v2' => ['000003e8-cbb4-21ed-b200-325096b39f47', 2],
             'v3' => ['a3bb189e-8bf9-3888-9912-ace4e6543002', 3],
+            'v4 mixed case' => ['550E8400-e29b-41D4-A716-446655440000', 4],
+            'v4 variant 8' => ['550e8400-e29b-41d4-8716-446655440000', 4],
+            'v4 variant 9' => ['550e8400-e29b-41d4-9716-446655440000', 4],
+            'v4 variant b' => ['550e8400-e29b-41d4-b716-446655440000', 4],
             'v4' => [self::UUID_V4, 4],
             'v5' => ['74738ff5-5367-5958-9aee-98fffdcd1876', 5],
             'v6' => ['1ef0c0d5-cf31-6f45-86a9-1e2b72a3e1ef', 6],
             'v7' => [self::UUID_V7, 7],
             'v8' => ['320c3d4d-cc00-875b-8ec9-32d5f69181c0', 8],
-            'v4 variant 8' => ['550e8400-e29b-41d4-8716-446655440000', 4],
-            'v4 variant 9' => ['550e8400-e29b-41d4-9716-446655440000', 4],
-            'v4 variant b' => ['550e8400-e29b-41d4-b716-446655440000', 4],
-            'v4 mixed case' => ['550E8400-e29b-41D4-A716-446655440000', 4],
         ];
     }
 
@@ -68,9 +68,9 @@ final class UuidTest extends TestCase
             'trailing tab' => ["550e8400-e29b-41d4-a716-446655440000\t"],
             'truncated' => ['550e8400-e29b-41d4-a716'],
             'urn prefix' => ['urn:uuid:550e8400-e29b-41d4-a716-446655440000'],
+            'words' => ['not-a-uuid'],
             'wrong hyphen position' => ['550e84-00e29b-41d4-a716-446655440000'],
             'wrong hyphen position on third group' => ['550e8400-e29b41d4-a716-446655440000'],
-            'words' => ['not-a-uuid'],
         ];
     }
 

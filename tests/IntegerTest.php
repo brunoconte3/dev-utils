@@ -210,14 +210,14 @@ class IntegerTest extends TestCase
     public function testNumMonth(): void
     {
         $array = [
-            'withZero' => '01',
             'december' => '12',
             'january' => '1',
+            'withZero' => '01',
         ];
         $rules = [
-            'withZero' => 'numMonth',
             'december' => 'numMonth',
             'january' => 'numMonth',
+            'withZero' => 'numMonth',
         ];
         $validator = new Validator();
         $validator->set($array, $rules);
@@ -228,14 +228,14 @@ class IntegerTest extends TestCase
     {
         $array = [
             'text' => 'jan',
-            'threeDigits' => '123',
             'thirteen' => '13',
+            'threeDigits' => '123',
             'zero' => '0',
         ];
         $rules = [
             'text' => 'numMonth',
-            'threeDigits' => 'numMonth',
             'thirteen' => 'numMonth',
+            'threeDigits' => 'numMonth',
             'zero' => 'numMonth',
         ];
         $validator = new Validator();

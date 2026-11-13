@@ -99,18 +99,18 @@ class RuleTest extends TestCase
         $validator->set($array, $rules);
         self::assertCount(1, $validator->getErros());
         $array = [
-            'emptyArrayError' => [],
             'arrayDataError' => 11,
             'arrayDataRequired' => ['company' => 'cooper'],
+            'emptyArrayError' => [],
         ];
         $rules = [
-            'emptyArrayError' => 'required',
             'arrayDataError' => 'array',
             'arrayDataRequired' => 'required|array',
+            'emptyArrayError' => 'required',
         ];
         $expected = [
-            'emptyArrayError' => 'O campo emptyArrayError é obrigatório!',
             'arrayDataError' => 'A variável arrayDataError não é um array!',
+            'emptyArrayError' => 'O campo emptyArrayError é obrigatório!',
         ];
         $validator = new Validator();
         $validator->set($array, $rules);
@@ -311,16 +311,16 @@ class RuleTest extends TestCase
     public function testNumMin(): void
     {
         $array = [
+            'testError' => 2,
             'testErrorNegative' => '-2',
             'testErrorNoInt' => 'a',
-            'testError' => 2,
             'testValid' => 8,
             'testValidZero' => '0',
         ];
         $rules = [
+            'testError' => self::RULE_NUM_MIN_5,
             'testErrorNegative' => 'numMin:-2',
             'testErrorNoInt' => self::RULE_NUM_MIN_5,
-            'testError' => self::RULE_NUM_MIN_5,
             'testValid' => self::RULE_NUM_MIN_5,
             'testValidZero' => 'numMin:0',
         ];
@@ -1079,15 +1079,15 @@ class RuleTest extends TestCase
     {
         $array = [
             'testError' => '0.1',
+            'testValidNegative' => '-1',
             'testValidZero' => '0',
             'testValidZeroNative' => 0,
-            'testValidNegative' => '-1',
         ];
         $rules = [
             'testError' => 'int',
+            'testValidNegative' => 'int',
             'testValidZero' => 'int',
             'testValidZeroNative' => 'int',
-            'testValidNegative' => 'int',
         ];
         self::assertErrorCount(1, $array, $rules);
     }
@@ -1114,18 +1114,18 @@ class RuleTest extends TestCase
         $array = [
             'testError' => 'sim',
             'testValidFalse' => 'false',
-            'testValidZero' => '0',
+            'testValidFalseNative' => false,
             'testValidNo' => 'no',
             'testValidOff' => 'off',
-            'testValidFalseNative' => false,
+            'testValidZero' => '0',
         ];
         $rules = [
             'testError' => 'bool',
             'testValidFalse' => 'bool',
-            'testValidZero' => 'bool',
+            'testValidFalseNative' => 'bool',
             'testValidNo' => 'bool',
             'testValidOff' => 'bool',
-            'testValidFalseNative' => 'bool',
+            'testValidZero' => 'bool',
         ];
         self::assertErrorCount(1, $array, $rules);
     }
@@ -1396,14 +1396,14 @@ class RuleTest extends TestCase
     public function testDateAmericanWithUnitedStatesFormat(): void
     {
         $array = [
-            'testErrorMonth' => '13/31/2024',
             'testErrorDay' => '12/32/2024',
+            'testErrorMonth' => '13/31/2024',
             'testValidEndOfYear' => '12/31/2024',
             'testValidLeapDay' => '02/29/2024',
         ];
         $rules = [
-            'testErrorMonth' => 'dateAmerican',
             'testErrorDay' => 'dateAmerican',
+            'testErrorMonth' => 'dateAmerican',
             'testValidEndOfYear' => 'dateAmerican',
             'testValidLeapDay' => 'dateAmerican',
         ];

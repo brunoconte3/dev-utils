@@ -112,8 +112,8 @@ trait TraitRule
         return [
             'ddd' => 'validateDdd',
             'optional' => 'validateOptional',
-            'phone' => 'validatePhone',
             'password' => 'validatePassword',
+            'phone' => 'validatePhone',
             'plate' => 'validatePlate',
             'regex' => 'validateRegex',
             'required' => 'validateFieldMandatory',

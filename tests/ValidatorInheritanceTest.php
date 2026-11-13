@@ -54,25 +54,25 @@ class ValidatorInheritanceTest extends TestCase
     {
         return [
             'arrayValues out of the list' => ['X', 'arrayValues:S-N-T'],
+            'custom message' => ['ab', 'min:5, Muito curto'],
             'invalid dateBrazil' => ['31/02/2021', 'dateBrazil'],
             'invalid email' => ['bruno', 'email'],
-            'valid email' => ['bruno@teste.com', 'email'],
             'invalid hour' => ['99:99', 'hour'],
             'invalid identifier' => ['11111111111', 'identifier'],
             'invalid int' => ['abc', 'int'],
+            'invalid phone' => ['123', 'phone'],
+            'invalid upper' => ['abc', 'upper'],
             'json rules' => ['ab', '{"required":true,"min":5}'],
             'max exceeded' => ['abcdef', 'max:3'],
-            'custom message' => ['ab', 'min:5, Muito curto'],
-            'min with short value' => ['ab', self::RULE_MIN_5],
             'min with ok value' => ['abcdef', self::RULE_MIN_5],
-            'invalid phone' => ['123', 'phone'],
+            'min with short value' => ['ab', self::RULE_MIN_5],
+            'non existent rule' => ['abc', 'ruleThatDoesNotExist'],
             'pipe with optional' => ['', 'optional|min:5'],
             'pipe with required and min' => ['ab', 'required|min:5'],
-            'non existent rule' => ['abc', 'ruleThatDoesNotExist'],
-            'required with null' => [null, 'required'],
-            'required with empty' => ['', 'required'],
             'required filled' => ['Bruno', 'required'],
-            'invalid upper' => ['abc', 'upper'],
+            'required with empty' => ['', 'required'],
+            'required with null' => [null, 'required'],
+            'valid email' => ['bruno@teste.com', 'email'],
         ];
     }
 

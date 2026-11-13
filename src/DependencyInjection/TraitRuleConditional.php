@@ -107,8 +107,10 @@ trait TraitRuleConditional
             return;
         }
 
-        if ($conditionMet) {
-            $this->validateFieldMandatory($field, $value, $message);
+        if (!$conditionMet) {
+            return;
         }
+
+        $this->validateFieldMandatory($field, $value, $message);
     }
 }

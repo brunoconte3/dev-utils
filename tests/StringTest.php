@@ -351,11 +351,11 @@ class StringTest extends TestCase
     public function testPassword(): void
     {
         $array = [
-            'testValid' => 'Password1!',
-            'testErrorNoUppercase' => 'password1!',
             'testErrorNoLowercase' => 'PASSWORD1!',
             'testErrorNoNumber' => 'Password!',
             'testErrorNoSymbol' => 'Password1',
+            'testErrorNoUppercase' => 'password1!',
+            'testValid' => 'Password1!',
         ];
         $rules = array_fill_keys(array_keys($array), 'password');
 
@@ -365,12 +365,12 @@ class StringTest extends TestCase
     public function testNumericPassword(): void
     {
         $array = [
-            'testValidWithLeadingZero' => '012345',
-            'testValid' => '123456',
-            'testErrorLetters' => '123a56',
             'testErrorDecimal' => '123.56',
-            'testErrorWhitespace' => '123 56',
             'testErrorEmpty' => '',
+            'testErrorLetters' => '123a56',
+            'testErrorWhitespace' => '123 56',
+            'testValid' => '123456',
+            'testValidWithLeadingZero' => '012345',
         ];
         $rules = array_fill_keys(array_keys($array), 'numericPassword');
 
@@ -382,7 +382,7 @@ class StringTest extends TestCase
         $message = 'A senha não atende aos requisitos de segurança.';
         $validator = $this->validate(
             ['password' => 'password1!'],
-            ['password' => 'password, ' . $message]
+            ['password' => 'password, ' . $message],
         );
 
         self::assertSame($message, $validator->getErros()['password']);
@@ -393,7 +393,7 @@ class StringTest extends TestCase
         $message = 'O PIN deve conter apenas números.';
         $validator = $this->validate(
             ['pin' => '12a4'],
-            ['pin' => 'numericPassword, ' . $message]
+            ['pin' => 'numericPassword, ' . $message],
         );
 
         self::assertSame($message, $validator->getErros()['pin']);
@@ -402,16 +402,16 @@ class StringTest extends TestCase
     public function testPasswordValidatorsWithLengthRules(): void
     {
         $array = [
-            'validPassword' => 'Password1!',
-            'shortPassword' => 'Aa1!',
-            'validPin' => '0123',
             'longPin' => '1234567',
+            'shortPassword' => 'Aa1!',
+            'validPassword' => 'Password1!',
+            'validPin' => '0123',
         ];
         $rules = [
-            'validPassword' => 'required|min:8|max:64|password',
-            'shortPassword' => 'required|min:8|max:64|password',
-            'validPin' => 'required|min:4|max:6|numericPassword',
             'longPin' => 'required|min:4|max:6|numericPassword',
+            'shortPassword' => 'required|min:8|max:64|password',
+            'validPassword' => 'required|min:8|max:64|password',
+            'validPin' => 'required|min:4|max:6|numericPassword',
         ];
 
         self::assertValidatorErrorCount(2, $array, $rules);
@@ -554,19 +554,19 @@ class StringTest extends TestCase
     {
         $array = [
             'testErrorWithUppercase' => 'hello123A',
+            'testValid' => 'hello world',
             'testValidWithNumbers' => 'hello123',
+            'testValidWithoutSpaces' => 'helloworld',
             'testValidWithSpecial' => 'hello@world',
             'testValidWithUnderscore' => 'hello_world',
-            'testValid' => 'hello world',
-            'testValidWithoutSpaces' => 'helloworld',
         ];
         $rules = [
             'testErrorWithUppercase' => 'lower',
+            'testValid' => 'lower',
             'testValidWithNumbers' => 'lower',
+            'testValidWithoutSpaces' => 'lower',
             'testValidWithSpecial' => 'lower',
             'testValidWithUnderscore' => 'lower',
-            'testValid' => 'lower',
-            'testValidWithoutSpaces' => 'lower',
         ];
         self::assertValidatorErrorCount(1, $array, $rules);
     }
@@ -575,16 +575,16 @@ class StringTest extends TestCase
     {
         $array = [
             'testErrorWithLowercase' => 'HELLO123a',
-            'testValidWithNumbers' => 'HELLO123',
             'testValid' => 'HELLO WORLD',
             'testValidWithCharacters' => 'HELLO@WORLD',
+            'testValidWithNumbers' => 'HELLO123',
             'testValidWithUnderscore' => 'HELLO_WORLD',
         ];
         $rules = [
             'testErrorWithLowercase' => 'upper',
-            'testValidWithNumbers' => 'upper',
             'testValid' => 'upper',
             'testValidWithCharacters' => 'upper',
+            'testValidWithNumbers' => 'upper',
             'testValidWithUnderscore' => 'upper',
         ];
         self::assertValidatorErrorCount(1, $array, $rules);

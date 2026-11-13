@@ -95,7 +95,7 @@ class RequiredIfTest extends TestCase
     {
         $errors = $this->validateReason(
             ['status' => 'ativo', 'motivo' => 'invalido'],
-            self::RULE_CANCELED . self::RULE_EMAIL_SUFFIX
+            self::RULE_CANCELED . self::RULE_EMAIL_SUFFIX,
         );
 
         self::assertSame(['motivo' => 'O campo motivo deve ser um endereço de e-mail válido!'], $errors);
@@ -116,7 +116,7 @@ class RequiredIfTest extends TestCase
     {
         $errors = $this->validateReason(
             ['status' => 'cancelado', 'motivo' => ''],
-            self::RULE_CANCELED . self::RULE_EMAIL_SUFFIX
+            self::RULE_CANCELED . self::RULE_EMAIL_SUFFIX,
         );
 
         self::assertSame(['motivo' => self::MESSAGE_MANDATORY], $errors);

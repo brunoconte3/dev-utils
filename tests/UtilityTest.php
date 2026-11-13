@@ -78,14 +78,14 @@ class UtilityTest extends TestCase
     public static function passwordCharsetProvider(): array
     {
         return [
-            'uppercase and numbers' => [10, true, false, true, false, '/^[A-Z0-9]+$/'],
-            'without symbols' => [12, true, true, true, false, '/^[A-Za-z0-9]+$/'],
-            'uppercase only' => [8, true, false, false, false, '/^[A-Z]+$/'],
+            'all charsets' => [20, true, true, true, true, '/^[A-Za-z0-9@#$!()\-+%=]+$/'],
             'lowercase only' => [8, false, true, false, false, '/^[a-z]+$/'],
+            'minimum size of one group' => [1, true, false, false, false, '/^[A-Z]$/'],
             'numbers only' => [8, false, false, true, false, '/^[0-9]+$/'],
             'symbols only' => [8, false, false, false, true, '/^[@#$!()\-+%=]+$/'],
-            'minimum size of one group' => [1, true, false, false, false, '/^[A-Z]$/'],
-            'all charsets' => [20, true, true, true, true, '/^[A-Za-z0-9@#$!()\-+%=]+$/'],
+            'uppercase and numbers' => [10, true, false, true, false, '/^[A-Z0-9]+$/'],
+            'uppercase only' => [8, true, false, false, false, '/^[A-Z]+$/'],
+            'without symbols' => [12, true, true, true, false, '/^[A-Za-z0-9]+$/'],
         ];
     }
 
@@ -121,10 +121,10 @@ class UtilityTest extends TestCase
     public static function passwordLongerThanCharsetProvider(): array
     {
         return [
-            'uppercase above charset' => [50, true, false, false, false],
+            'all above charset' => [100, true, true, true, true],
             'numbers above charset' => [30, false, false, true, false],
             'symbols above charset' => [20, false, false, false, true],
-            'all above charset' => [100, true, true, true, true],
+            'uppercase above charset' => [50, true, false, false, false],
         ];
     }
 
@@ -176,8 +176,8 @@ class UtilityTest extends TestCase
     public static function invalidPasswordSizeProvider(): array
     {
         return [
-            'smaller than the four groups' => [3],
             'negative' => [-1],
+            'smaller than the four groups' => [3],
             'zero' => [0],
         ];
     }
@@ -207,15 +207,15 @@ class UtilityTest extends TestCase
     public static function protocolProvider(): array
     {
         return [
+            'capitalized on' => ['On', 'https'],
+            'empty string' => ['', 'http'],
+            'lowercase on' => ['on', 'https'],
             'null value' => [null, 'http'],
             'off' => ['off', 'http'],
-            'capitalized on' => ['On', 'https'],
-            'uppercase on' => ['ON', 'https'],
-            'lowercase on' => ['on', 'https'],
-            'empty string' => ['', 'http'],
-            'true' => ['true', 'https'],
             'one' => ['1', 'https'],
+            'true' => ['true', 'https'],
             'unknown value' => ['banana', 'http'],
+            'uppercase on' => ['ON', 'https'],
             'yes' => ['yes', 'https'],
             'zero' => ['0', 'http'],
         ];

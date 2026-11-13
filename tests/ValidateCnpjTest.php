@@ -147,8 +147,8 @@ final class ValidateCnpjTest extends TestCase
         return [
             'array with masked value' => [self::CNPJ_ZEROS_MASKED, [self::CNPJ_ZEROS_MASKED], true],
             'array with non string element' => [self::CNPJ_ZEROS_MASKED, [null, self::CNPJ_ZEROS_RAW], true],
-            'array with raw value' => [self::CNPJ_ZEROS_MASKED, [self::CNPJ_ZEROS_RAW], true],
             'array without the cnpj' => [self::CNPJ_ZEROS_MASKED, ['11111111111111', self::CNPJ_TWOS_RAW], false],
+            'array with raw value' => [self::CNPJ_ZEROS_MASKED, [self::CNPJ_ZEROS_RAW], true],
             'boolean false' => [self::CNPJ_ZEROS_MASKED, false, false],
             'boolean true' => [self::CNPJ_ZEROS_MASKED, true, false],
             'empty array' => [self::CNPJ_ZEROS_MASKED, [], false],
