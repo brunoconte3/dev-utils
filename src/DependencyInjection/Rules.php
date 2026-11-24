@@ -47,23 +47,14 @@ class Rules
         }
 
         [$method, $callType] = $definition;
-        $call = [$this, $method];
-        if (!is_callable($call, true)) {
-            if (is_array($this->errors[$field] ?? null)) {
-                $this->errors[$field][$field] = 'Há regras de validação não implementadas no campo '
-                    . (string) $field . '!';
-            } else {
-                $this->errors[$field] = 'Há regras de validação não implementadas no campo ' . (string) $field . '!';
-            }
-            return;
-        }
-
         $arguments = match ($callType) {
             self::CALL_WITHOUT_RULE => [$field, $value, $msgCustomized],
             self::CALL_WITH_DATA => [$val, $field, $value, $msgCustomized, $data],
             default => [$val, $field, $value, $msgCustomized],
         };
 
+        /** @var callable $call */
+        $call = [$this, $method];
         call_user_func_array($call, $arguments);
     }
 
