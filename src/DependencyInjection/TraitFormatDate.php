@@ -5,22 +5,12 @@ declare(strict_types=1);
 namespace DevUtils\DependencyInjection;
 
 use DateTimeImmutable;
+use DevUtils\resource\DateNormalizer;
 use DevUtils\ValidateDate;
 use InvalidArgumentException;
 
 trait TraitFormatDate
 {
-    private static function americanToIsoDate(string $date): string
-    {
-        if (!str_contains($date, '/')) {
-            return $date;
-        }
-
-        [$month, $day, $year] = explode('/', $date);
-
-        return $year . '-' . $month . '-' . $day;
-    }
-
     private static function isoDateFromDigits(string $date, bool $brazilianOrder): ?string
     {
         $isoDate = $brazilianOrder
@@ -38,12 +28,9 @@ trait TraitFormatDate
             return self::isoDateFromDigits($date, $brazilianOrder);
         }
 
-        if (ValidateDate::validateDateBrazil($date)) {
-            return implode('-', array_reverse(explode('/', $date)));
-        }
-
-        if (ValidateDate::validateDateAmerican($date)) {
-            return self::americanToIsoDate($date);
+        $isoDate = DateNormalizer::toIsoDate($date);
+        if ($isoDate !== null) {
+            return $isoDate;
         }
 
         $parts = explode('-', $date);

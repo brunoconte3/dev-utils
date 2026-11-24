@@ -7,6 +7,7 @@ namespace DevUtils;
 use DateTimeImmutable;
 use DateTimeInterface;
 use DateTimeZone;
+use DevUtils\resource\DateNormalizer;
 use InvalidArgumentException;
 
 class Compare
@@ -14,30 +15,11 @@ class Compare
     private const DEFAULT_TIMEZONE = 'America/Sao_Paulo';
     private const HOUR_PATTERN = '/^(\d{1,2}):([0-5][0-9]):([0-5][0-9])$/';
 
-    private static function americanToIsoDate(string $date): string
-    {
-        if (!str_contains($date, '/')) {
-            return $date;
-        }
-
-        [$month, $day, $year] = explode('/', $date);
-
-        return $year . '-' . $month . '-' . $day;
-    }
-
     private static function normalizeDateFormat(string $date): string
     {
         $date = trim($date);
 
-        if (ValidateDate::validateDateBrazil($date)) {
-            return implode('-', array_reverse(explode('/', $date)));
-        }
-
-        if (ValidateDate::validateDateAmerican($date)) {
-            return self::americanToIsoDate($date);
-        }
-
-        throw new InvalidArgumentException(
+        return DateNormalizer::toIsoDate($date) ?? throw new InvalidArgumentException(
             "Data inválida: '{$date}'. Formatos aceitos: dd/mm/aaaa, mm/dd/aaaa ou aaaa-mm-dd.",
         );
     }
