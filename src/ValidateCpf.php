@@ -34,12 +34,6 @@ class ValidateCpf
 
     private static function validateRuleCpf(string $cpf): bool
     {
-        $cpf = preg_replace('/\D/', '', $cpf) ?? '';
-
-        if (strlen($cpf) !== 11) {
-            return false;
-        }
-
         $firstDigit = self::calculateDigit($cpf, 9);
         if ((int) $cpf[9] !== $firstDigit) {
             return false;

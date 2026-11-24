@@ -261,4 +261,55 @@ final class ValidateCpfTest extends TestCase
         $rawCpf = self::generateRawCpf($cpfRoot);
         self::assertTrue(ValidateCpf::validateCpf($rawCpf));
     }
+
+    public function testShortInputIsPaddedWithLeadingZeros(): void
+    {
+        foreach (['001002003', '012345678', '000000012'] as $cpfRoot) {
+            $rawCpf = self::generateRawCpf($cpfRoot);
+            $withoutLeadingZeros = ltrim($rawCpf, '0');
+
+            self::assertLessThan(11, strlen($withoutLeadingZeros));
+            self::assertTrue(
+                ValidateCpf::validateCpf($withoutLeadingZeros),
+                "CPF $withoutLeadingZeros deveria ser completado com zeros à esquerda",
+            );
+        }
+    }
+
+    public function testShortInputWithMaskIsPaddedWithLeadingZeros(): void
+    {
+        $rawCpf = self::generateRawCpf('001002003');
+        $maskedCpf = self::formatCpfWithMask($rawCpf);
+        $maskedWithoutLeadingZeros = ltrim($maskedCpf, '0');
+
+        self::assertTrue(ValidateCpf::validateCpf($maskedWithoutLeadingZeros));
+    }
+
+    public function testShortInputWithWrongDigitsIsRejectedAfterPadding(): void
+    {
+        $rawCpf = self::generateRawCpf('001002003');
+        $tampered = ltrim(substr($rawCpf, 0, 10) . ((int) $rawCpf[10] ^ 1), '0');
+
+        self::assertFalse(ValidateCpf::validateCpf($tampered));
+    }
+
+    public function testElevenDigitsWithMaskAndExtraDigitIsRejected(): void
+    {
+        self::assertFalse(ValidateCpf::validateCpf('111.444.777-355'));
+        self::assertFalse(ValidateCpf::validateCpf('0' . self::CPF_VALID_RAW));
+    }
+
+    public function testSurroundingWhitespaceAndNonAsciiNoiseAreIgnored(): void
+    {
+        self::assertTrue(ValidateCpf::validateCpf('  111.444.777-35  '));
+        self::assertTrue(ValidateCpf::validateCpf("111é444é777é35"));
+        self::assertTrue(ValidateCpf::validateCpf("\t111444777\n35"));
+    }
+
+    public function testSequenceWithMaskNoiseIsRejected(): void
+    {
+        self::assertFalse(ValidateCpf::validateCpf(' 111 111 111 11 '));
+        self::assertFalse(ValidateCpf::validateCpf('1'));
+        self::assertFalse(ValidateCpf::validateCpf('00'));
+    }
 }
