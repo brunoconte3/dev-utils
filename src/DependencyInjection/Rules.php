@@ -18,6 +18,9 @@ class Rules
     protected array $errors = [];
     public const RULES_WITHOUT_FUNCS = ['convert'];
     public const string RULE_REQUIRED_IF = 'requiredIf';
+    private const string CALL_WITHOUT_RULE = 'withoutRule';
+    private const string CALL_WITH_RULE = 'withRule';
+    private const string CALL_WITH_DATA = 'withData';
 
     protected function setError(string|int $field, ?string $message, string $defaultMessage): string
     {
@@ -29,29 +32,21 @@ class Rules
         $this->errors[$field] = "Uma regra inválida está sendo aplicada no campo $field!";
     }
 
-    private function getValidationMethod(string $rule): string
-    {
-        $functionsValidation = self::functionsValidation();
-        $trimmedRule = trim($rule);
-
-        return is_string($functionsValidation[$trimmedRule] ?? null)
-            ? trim($functionsValidation[$trimmedRule])
-            : '';
-    }
-
     private function callValidationMethod(
-        string $method,
+        string $rule,
         mixed $val,
         string|int $field,
         mixed $value,
         ?string $msgCustomized,
         array $data = []
     ): void {
-        if ($method === '') {
+        $definition = self::ruleDefinitions()[trim($rule)] ?? null;
+        if ($definition === null) {
             $this->invalidRule($field);
             return;
         }
 
+        [$method, $callType] = $definition;
         $call = [$this, $method];
         if (!is_callable($call, true)) {
             if (is_array($this->errors[$field] ?? null)) {
@@ -63,13 +58,13 @@ class Rules
             return;
         }
 
-        if (in_array($method, $this->methodsNoRuleValue())) {
-            call_user_func_array($call, [$field, $value, $msgCustomized]);
-        } elseif (in_array($method, ['validateEquals', 'validateRequiredIf'], true)) {
-            call_user_func_array($call, [$val, $field, $value, $msgCustomized, $data]);
-        } else {
-            call_user_func_array($call, [$val, $field, $value, $msgCustomized]);
-        }
+        $arguments = match ($callType) {
+            self::CALL_WITHOUT_RULE => [$field, $value, $msgCustomized],
+            self::CALL_WITH_DATA => [$val, $field, $value, $msgCustomized, $data],
+            default => [$val, $field, $value, $msgCustomized],
+        };
+
+        call_user_func_array($call, $arguments);
     }
 
     protected function validateHandleErrorsInArray(array $errorList = [], string $field = ''): void
@@ -136,12 +131,23 @@ class Rules
         return ($bom ? $bomchar : '') . $string;
     }
 
+    /**
+     * @return array<string, array{0: string, 1: string}>
+     */
+    private static function ruleDefinitions(): array
+    {
+        $data = self::ruleDefinitionsAtoL();
+        $data += self::ruleDefinitionsMtoN();
+
+        return $data + self::ruleDefinitionsOtoZ();
+    }
+
+    /**
+     * @return array<string, string>
+     */
     public static function functionsValidation(): array
     {
-        $data = self::functionsValidationAtoL();
-        $data += self::functionsValidationMtoN();
-
-        return $data + self::functionsValidationOtoZ();
+        return array_map(static fn(array $definition): string => $definition[0], self::ruleDefinitions());
     }
 
     protected function validateOptional(): bool
@@ -177,9 +183,8 @@ class Rules
             return;
         }
 
-        $method = $this->getValidationMethod($rule);
         //chama há função de validação, de cada parametro json
-        $this->callValidationMethod($method, $rule, $field, $value, $message);
+        $this->callValidationMethod($rule, $rule, $field, $value, $message);
     }
 
     protected function levelSubLevelsArrayReturnJson(array $data, bool $recursive = false): mixed

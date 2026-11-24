@@ -69,9 +69,8 @@ trait TraitRuleField
         array $data,
     ): void {
         //chama a função de validação, de cada parametro json
-        $method = $this->getValidationMethod((string) $key);
         $customMsg = is_string($msgCustomized) ? $msgCustomized : null;
-        $this->callValidationMethod($method, $val, $field, $value, $customMsg, $data);
+        $this->callValidationMethod((string) $key, $val, $field, $value, $customMsg, $data);
     }
 
     private function applyRuleToErrorList(
