@@ -8,17 +8,24 @@ use DevUtils\ValidateFile;
 
 trait TraitRuleFile
 {
+    private function setFileError(string $field, string $message): void
+    {
+        if (!is_array($this->errors[$field] ?? null)) {
+            $this->errors[$field] = [];
+        }
+        $this->errors[$field][0] = $message;
+    }
+
     private function validateRuleFile(int | string $rule, string $field, ?string $label): void
     {
         if (is_numeric($rule) && ($rule > 0)) {
             return;
         }
 
-        $text = "O parâmetro do validador '$label', deve ser numérico e maior ou igual a zero!";
-        if (!isset($this->errors[$field]) || !is_array($this->errors[$field])) {
-            $this->errors[$field] = [];
-        }
-        $this->errors[$field][0] = $text;
+        $this->setFileError(
+            $field,
+            "O parâmetro do validador '$label', deve ser numérico e maior ou igual a zero!",
+        );
     }
 
     protected function validateFileMaxUploadSize(
@@ -54,10 +61,7 @@ trait TraitRuleFile
     protected function validateFileName(string $field = '', array $value = [], ?string $message = ''): void
     {
         if (empty($value)) {
-            if (!isset($this->errors[$field]) || !is_array($this->errors[$field])) {
-                $this->errors[$field] = [];
-            }
-            $this->errors[$field][0] = !empty($message) ? $message : "O campo $field não pode ser vazio!";
+            $this->setFileError($field, !empty($message) ? $message : "O campo $field não pode ser vazio!");
             return;
         }
 
@@ -165,10 +169,7 @@ trait TraitRuleFile
         $msg = $this->validateFileCalculateSize($field);
 
         if (!empty($msg)) {
-            if (!isset($this->errors[$field]) || !is_array($this->errors[$field])) {
-                $this->errors[$field] = [];
-            }
-            $this->errors[$field][0] = $msg;
+            $this->setFileError($field, $msg);
         } else {
             $result = $validationMethod($field, (int) $rule, $value, $message);
             if (is_array($result)) {
